@@ -1,5 +1,5 @@
 
-var clicker = {}
+var clicker = {};
 var data = {};
 initStaticData();
 
@@ -170,7 +170,7 @@ initStaticData();
 
 }(clicker);
 
-var initStaticData = function(){
+function initStaticData(){
 	data.items = [];
 	data.champsion = [];
 };
