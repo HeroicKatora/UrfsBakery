@@ -1,30 +1,87 @@
+"use strict";
 
 var clicker = {};
 var data = {};
+
 initStaticData();
+if(typeof JSON !== 'object'){
+	console.log("No json module found in your browser, no fall back at the moment");
+}
 
-!function main(clicker){
+function initStaticData(){
+	data.items = [];
+	data.champions = [];
+	data.champions.tank = [];
+	data.champions.fighter = [];
+	data.champions.mage = [];
+	data.champions.marksman = [];
+	data.champions.assassin = [];
+	data.champions.support = [];
+};
 
-	var state = null;
+function main(clicker){
+
+	var state = clicker.state = {};
 	var started = false;
+	var save_time;
+	var progression_time;
 
-	var initState = function(){
-		state = {};
+	clicker.guardQuit = function(){
+		var dont_check = void 0;
+		if(save_time !== void 0 && new Date().getTime() - save_time < 10000 &&
+			progression_time !== void 0 && progression_time > save_time){
+			return "You may have unsafed progression. Press the save button before quitting to avoid this message";
+		}else{
+			return dont_check;
+		}
+	};
+
+	function initState(){
 		state.pastries = 0;
-		state.champions = {};
-		state.champions.amount = [];
-		state.champions.level = [];
+		state.champions = {
+			amount : [],
+			level : []
+		};
 		state.upgrades = [];
 		state.items = [];
-		state.match = {};
+		state.match = {
+			is_in_game : false,
+			champions : [],
+			lanes : {
+				top : 0,
+				mid : 0,
+				bot : 0,
+				base : 0,
+			},
+			is_fighting : false,
+			fight : {
+				friendly_hp : [],
+				enemies : [],
+				objective_hp : 0,
+				enemy_hp : [],
+			},
+			rewards : null
+		};
 		state.rank = 0;
 	};
+	function initNewMatch(){
+		state.match.lanes = {
+			top : 0,
+			mid : 0,
+			bot : 0,
+			base : 0
+		};
+		state.match.is_fighting = false;
+		state.match.rewards = null;
+	};
+
 	var startEmpty = function(){
 		if(started){ 
 			return;
 		}
 		initState();
 		startGame();
+		save();
 	};
 	var startConnectServer = function(name){
 		if(started){
@@ -47,47 +104,57 @@ initStaticData();
 /*
 * Transition the game start and stop edges
 */
-	var startGame = function(){
+	function startGame(){
 		if(started){
 			return;
 		}
 		started = true;
-		button_fresh.hidden=true;
-		button_start_server.hidden=true;
 		setTimeout(loop, 1);
+		updateGuiState();
 	}
-	var endGame = function(){
+	function endGame(){
 		started = false;
-		button_fresh.hidden=null;
-		button_start_server.hidden=null;
-		state = null;
+		clicker.state = state = {};
+		updateGuiState();
 	};
 
 /*
 * Save the game state to be able to restore it
 */
 	var save = function(){
-		document.cookie = JSON.stringify(state);
-		console.log(document.cookie);
+		if(!started){
+			console.log("No game in progress to save");
+			return;
+		}
+		save_time = new Date().getTime();
+		localStorage.setItem("urfclicker", JSON.stringify(state));
+		updateGuiState();
+		console.log("Game saved");
 	};
-	var canLoad = function(){
-		return document.cookie != null && document.cookie != "" && JSON.parse(document.cookie) != null;
+	function canLoad(){
+		var stored = localStorage.getItem("urfclicker");
+		return stored != null && stored != "" && JSON.parse(stored) != null;
 	};
 	var load = function(){
 		if(!canLoad()){
 			console.log("Couldn't load game data");
 			return false;
 		}
-		loadGameData(document.cookie);
+		loadGameData(localStorage.getItem("urfclicker"));
+		updateGuiState();
 		return true;
 	};
 
 	var loadGameData = function(json){
-		state = JSON.parse(json);
+		clicker.state = state = JSON.parse(json);
 	};
 	var deleteGameData = function(){
+		if(!confirm("This will stop the current game and delete all data from disk?\nDo really you want to continue?")){
+			return;
+		}
 		endGame();
-		document.cookie = null;
+		localStorage.setItem("urfclicker", null);
+		updateGuiState();
 	};
 
 	clicker.debugState = function(){
@@ -110,28 +177,37 @@ initStaticData();
 	button_load.addEventListener("click", loadSavedData);
 	button_delete.addEventListener("click", deleteGameData);
 	button_save.addEventListener("click", save);
-	button_bake.addEventListener("click", function(){
-		if(!started){
-			return;
-		}
-		state.pastries += 10;
-	});
+	button_bake.addEventListener("click", handle_click);
 	button_reset.addEventListener("click", function(){
 		initState();
+		updateGuiState();
 	});
 
+	updateGuiState();
 	if(canLoad()){
-		button_load.disabled=null;
 		console.log("Found existing game data, readying load screen before creation screen");
-	}else{
-		button_load.disabled=true;
 	}
 
+	function updateGuiState(){
+		function att(par){return par?true:null};
+		button_load.disabled = att(!canLoad());
+		button_fresh.hidden = att(started);
+		button_start_server.hidden = att(started);
+		button_delete.disabled = att(null==localStorage.getItem("urfclicker"));
+		button_save.disabled = att(!started);
+	};
 /*
 *
 * Game loop stuff from here onwards
 *
 */
+	var handle_click = function(){
+		if(!started){
+			return;
+		}
+		state.pastries += 10;
+	}
+
 	var buyFunction = function(ident){
 		return function(){
 			buy(ident);
@@ -141,6 +217,7 @@ initStaticData();
 	var Upgrade = 1;
 	var Item = 2;
 	var buy = function(ident){
+		progression_time = new Date().getTime();
 		if(ident.type == Champion){
 
 		}else if(ident.type == Upgrade){
@@ -149,6 +226,7 @@ initStaticData();
 
 		}else{
 			console.log("Received invalid buy request");
+			//TODO awards the cheater? achievement
 		}
 	};
 	var mainLoop = function(){
@@ -159,18 +237,15 @@ initStaticData();
 		state.pastries += 1;
 	};
 	var loop = function(){
-		if(!started){
-			return;
-		}
 		setTimeout(function(){
+			if(!started){
+				return;
+			}
 			mainLoop();
 			loop();
 		}, 100);
 	};
 
-}(clicker);
-
-function initStaticData(){
-	data.items = [];
-	data.champsion = [];
 };
+
+addEventListener("load", function(){main(clicker);});

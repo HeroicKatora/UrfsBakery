@@ -10,7 +10,7 @@
 		<link rel="stylesheet" media="all and (min-aspect-ratio: 2/1)" href="assets/styles/desktop.css">
 		<link rel="stylesheet" media="not all and (min-aspect-ratio: 2/1)" href="assets/styles/mobile.css">
 	</head>
-	<body>
+	<body onbeforeunload="return clicker.guardQuit()">
 		<div id="bakery" class="box">
 			<div style="background-color: #ccc;" class="row header">
 				<header>header</header>
