@@ -9,19 +9,39 @@ html, body {
   height: 100%;
 }
 
-.box .row {
-  border: 1px dotted grey;
+.box > .row {
   flex: 0 1 30px;
 }
 
-.box .row.header {
+.box > .row.header {
   flex: 0 1 auto;
 }
 
-.box .row.content {
+.box > .row.content {
   flex: 1 1 auto;
 }
 
-.box .row.footer {
+.box > .row.footer {
   flex: 0 1 40px;
+}
+
+.centered-shrink {
+  margin: 0 auto;
+}
+
+.shrink-to-fit {
+  display: table;
+  width: intrinsic;           /* Safari/WebKit uses a non-standard name */
+  width: -moz-max-content;    /* Firefox/Gecko */
+  width: -webkit-max-content; /* Chrome */
+}
+
+.anchor {
+  position: relative;
+}
+
+.anchored {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
