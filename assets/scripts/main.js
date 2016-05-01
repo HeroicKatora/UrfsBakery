@@ -19,7 +19,7 @@ function initStaticData(){
 	data.champions.support = [];
 };
 
-function main(clicker){
+function ClickerSetup(){
 
 	var state = clicker.state = {};
 	var started = false;
@@ -35,6 +35,7 @@ function main(clicker){
 			return dont_check;
 		}
 	};
+	window.onbeforeunload = clicker.guardQuit;
 
 	function initState(){
 		state.pastries = 0;
@@ -101,9 +102,9 @@ function main(clicker){
 		}
 	};
 
-/*
-* Transition the game start and stop edges
-*/
+	/*
+	* Transition the game start and stop edges
+	*/
 	function startGame(){
 		if(started){
 			return;
@@ -118,9 +119,9 @@ function main(clicker){
 		updateGuiState();
 	};
 
-/*
-* Save the game state to be able to restore it
-*/
+	/*
+	* Save the game state to be able to restore it
+	*/
 	var save = function(){
 		if(!started){
 			console.log("No game in progress to save");
@@ -161,9 +162,9 @@ function main(clicker){
 		console.log(state);
 	}
 
-/*
-* Setting up the display
-*/
+	/*
+	* Setting up the display
+	*/
 
 	var button_fresh = document.getElementById("fresh");
 	var button_delete = document.getElementById("delete");
@@ -196,11 +197,11 @@ function main(clicker){
 		button_delete.disabled = att(null==localStorage.getItem("urfclicker"));
 		button_save.disabled = att(!started);
 	};
-/*
-*
-* Game loop stuff from here onwards
-*
-*/
+	/*
+	*
+	* Game loop stuff from here onwards
+	*
+	*/
 	var handle_click = function(){
 		if(!started){
 			return;
@@ -245,7 +246,4 @@ function main(clicker){
 			loop();
 		}, 100);
 	};
-
 };
-
-addEventListener("load", function(){main(clicker);});
