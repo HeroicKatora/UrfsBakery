@@ -35,11 +35,19 @@ def init(key=None, userinput=True):
     defaultkey = entered_key 
 
 
+def low_limit():
+    return RateLimit(3000, 12.0)
+
+
+def high_limit():
+    return RateLimit(180000, 620.0)
+
+
 key_limits = defaultdict(lambda:lambda:None)
 '''Sets a function to return limit for an api key if there isn't one in place
 If no api key is given, then the defaultkey is limited
 '''
-def limit(limit_fun, apikey=None):
+def limit(apikey=None, limit_fun=low_limit):
     global defaultkey, key_limits
     apikey = apikey or defaultkey
     key_limits.setdefault(apikey, limit_fun)
@@ -58,8 +66,6 @@ class Downloader:
     the restrictions of a production key: 3000 rq/10s and 180.000rq/10min
     """
     def __init__(self, key, region):  
-        self.limit_fast = RateLimit(3000, 12.0)
-        self.limit_slow = RateLimit(180000, 620.0)
         self.lock = Lock()
         
         global key_limits
@@ -114,7 +120,7 @@ class Downloader:
 
 
 downloader_map = dict()
-def getDownloader(region = 'global', apikey=None):
+def getDownloader(apikey=None, region = 'global'):
     """Gets the downloader for the specified region. If no region is given,
     returns the global downloader for static endpoint.
     """
@@ -124,3 +130,6 @@ def getDownloader(region = 'global', apikey=None):
     if dl is None:
         downloader_map[(apikey, region)] = dl = Downloader(region=region, key=apikey)
     return dl
+
+
+regions = ['br', 'eune', 'euw', 'jp', 'kr', 'lan', 'las', 'na', 'oce', 'pbe', 'ru', 'tr']
