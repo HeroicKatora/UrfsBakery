@@ -1,0 +1,50 @@
+.box {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.box > .row {
+  flex: 0 1 30px;
+}
+
+.box > .row.header {
+  flex: 0 1 auto;
+}
+
+.box > .row.content {
+  flex: 1 1 auto;
+}
+
+.box > .row.footer {
+  flex: 0 1 40px;
+}
+
+.centered-shrink {
+  margin: 0 auto;
+}
+
+.shrink-to-fit {
+  display: table;
+  width: intrinsic;           /* Safari/WebKit uses a non-standard name */
+  width: -moz-max-content;    /* Firefox/Gecko */
+  width: -webkit-max-content; /* Chrome */
+}
+
+.image {
+    /*width: auto; */
+    /*! height: auto; */
+    /*! max-width: 100%; */
+    /*! max-height: 100%; */
+    vertical-align: bottom;
+}
+
+.anchor {
+  position: relative;
+}
+
+.anchored {
+  position: absolute;
+  top: 0;
+  left: 0;
+}

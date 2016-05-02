@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE xhtml>
+<html ng-app="bakery">
 	<head>
 		<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 		<meta content="utf-8" http-equiv="encoding">
@@ -11,17 +11,20 @@
 		<script type="text/javascript" src="app/components/game/gameController.js"></script>
 
 		<link rel="stylesheet" type="text/css" href="assets/styles/style.css">
+		<link rel="stylesheet" type="text/css" href="assets/styles/technical.css">
 		<link rel="stylesheet" media="all and (min-aspect-ratio: 2/1)" href="assets/styles/desktop.css">
 		<link rel="stylesheet" media="not all and (min-aspect-ratio: 2/1)" href="assets/styles/mobile.css">
+
+		<title ng-bind="pageTitle"></title>
 	</head>
-	<body ng-app="bakery">
+	<body>
 		<div id="bakery" class="box">
-			<div class="row header">
-				<header>header</header>
-			</div>
+			<header class="row header" id="page-header">
+				<span>header</span>
+			</header>
 			<div class="row content centered-shrink" ng-include="'app/components/game/game.htm'" data-onload="clickerSetup()">
 			</div>
-			<footer class="row footer">
+			<footer class="row footer" id="page-footer">
 				<small>Urf's Bakery isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends &copy; Riot Games, Inc.</small>
 			</footer>
 		</div>

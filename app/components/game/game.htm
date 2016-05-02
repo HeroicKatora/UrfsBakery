@@ -1,19 +1,19 @@
 <div>
-<div id="bakery-header" class="shrink-to-fit">
-	<button type="button" id="fresh">Fresh start</button>
-	<button type="button" id="start_server">Start with existing account</button>
-	<button type="button" id="load">Load</button>
-	<button type="button" id="save">Save</button>
-	<button type="button" id="bake">Bake</button>
-	<button type="button" id="reset">Reset</button>
-	<button type="button" id="delete">Delete game data</button>
-	<script src="main.js"></script>
-	<a id="pastries">Pastries:</a>
-</div>
-<div id="bakery-main" class="shrink-to-fit anchor">
-	<img src=""/>
-	<div class="anchored">
-		<span>Some text</span>
+	<div id="bakery-header" class="shrink-to-fit">
+		<button type="button" id="fresh">Fresh start</button>
+		<button type="button" id="start_server">Start with existing account</button>
+		<button type="button" id="load">Load</button>
+		<button type="button" id="save">Save</button>
+		<button type="button" id="bake">Bake</button>
+		<button type="button" id="reset">Reset</button>
+		<button type="button" id="delete">Delete game data</button>
+		<script src="main.js"></script>
+		<a id="pastries">Pastries:</a>
 	</div>
-</div>
+	<div id="bakery-main" class="anchor image" style="background-image: url(assets/img/bakery.bmp);">
+		<img src="assets/img/bakery.bmp" style="visibility: hidden;"/>
+		<span class="anchored">Some text</span>
+		<div ng-view>
+		</div>
+	</div>
 </div>
