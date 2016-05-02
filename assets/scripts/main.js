@@ -5,7 +5,7 @@ var data = {};
 
 initStaticData();
 if(typeof JSON !== 'object'){
-	console.log("No json module found in your browser, no fall back at the moment");
+	alert("No json module found in your browser, no fall back at the moment");
 }
 
 function initStaticData(){
@@ -18,6 +18,21 @@ function initStaticData(){
 	data.champions.assassin = [];
 	data.champions.support = [];
 };
+
+masteryurl = 'localhost:8001/mastery?playername={0}&region={1}';
+
+//https://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format/4673436#4673436
+if (!String.format) {
+  String.format = function(format) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return format.replace(/{(\d+)}/g, function(match, number) { 
+      return typeof args[number] != 'undefined'
+        ? args[number] 
+        : match
+      ;
+    });
+  };
+}
 
 function ClickerSetup(){
 
@@ -39,9 +54,10 @@ function ClickerSetup(){
 
 	function initState(){
 		state.pastries = 0;
+		state.mastery = {};
 		state.champions = {
 			amount : [],
-			level : []
+			experience : []
 		};
 		state.upgrades = [];
 		state.items = [];
@@ -56,10 +72,10 @@ function ClickerSetup(){
 			},
 			is_fighting : false,
 			fight : {
-				friendly_hp : [],
+				friendlies : [],
 				enemies : [],
-				objective_hp : 0,
-				enemy_hp : [],
+				exp : 0.0,
+				objective : null
 			},
 			rewards : null
 		};
@@ -84,13 +100,16 @@ function ClickerSetup(){
 		startGame();
 		save();
 	};
-	var startConnectServer = function(name){
+	var startConnectServer = function(name, region){
 		if(started){
 			return;	
 		}
-		//TODO special server connection
-		initState();
-		startGame();	
+		httpGetAsync(String.format(masteryurl, name, region), function(){
+			initState();
+			startGame();	
+		}, function(){
+			alert('Failed to connect to mastery server. Do you want to start without mastery data instead (can be refreshed at any time)?')
+		});
 	};
 	var loadSavedData = function(){
 		if(!load()){
@@ -246,15 +265,50 @@ function ClickerSetup(){
 			loop();
 		}, 100);
 	};
-};
-addEventListener("load", function(){main(clicker);});
 
-function httpGetAsync(theUrl, callback)
+
+	function champion_exp(id){
+		return (state.mastery[String(id)] || 0) + (state.champions.experience[id] || 0);
+	};
+	function champion_level(id){
+		xp = champion_exp(id);
+		return Math.floor(Math.log(4, xp + 1))
+	};
+	function champion_hp(amount, id){
+
+	};
+	function champion_att(amount, id){
+
+	};
+	function champion_def(amount, id){
+
+	};
+	function startFight(){
+		state.match.champions.forEach(function(num, id){
+			champ = {
+				id : id,
+				max_hp : 0,
+			}
+			champ.max_hp = champ.hp = champion_hp(num, id);
+			state.match.fight.friendlies.push(champ);
+		});
+		state.match.is_fighting = true;
+	};
+	function endFight(){
+
+		state.match.is_fighting = false;
+	};
+};
+
+function httpGetAsync(theUrl, callback, error_callback=null)
 {
     var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() { 
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-            callback(xmlHttp.responseText);
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            if(callback !== null) callback(xmlHttp.responseText);
+        }else if(error_callback){
+        	if(error_callback !== null) error_callback(xmlHttp);
+        }
     }
     xmlHttp.open("GET", theUrl, true); // true for asynchronous 
     xmlHttp.send(null);
