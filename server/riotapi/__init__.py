@@ -3,7 +3,7 @@ import certifi
 import json
 import time
 import sys
-from optparse import OptionParser
+from argparse import ArgumentParser 
 from threading import Lock
 from .RateLimit import RateLimit
 from collections import defaultdict
@@ -21,11 +21,11 @@ def init(key=None, userinput=True):
     if defaultkey or key:
         defaultkey = defaultkey or key
         return
-    parser = OptionParser()
-    parser.add_option("-f", "--failed", action="store_false", dest="ignoreFailedFiles",
-                  default=True, help="Retry previously failed game ids")
-    parser.add_option("-k", default = None, action="store", dest="key", type="string", help="Retry previously failed game ids")
-    parsed_options = parser.parse_args(sys.argv)[0]
+    parser = ArgumentParser()
+    parser.add_argument('-f', '--failed', action='store_false', dest='ignoreFailedFiles',
+                  default=True, help='Retry previously failed game ids')
+    parser.add_argument('-k', default = None, action='store', dest='key', type=str, help='Retry previously failed game ids')
+    parsed_options = parser.parse_known_args(sys.argv)[0]
     entered_key = parsed_options.key
     if (not entered_key) and userinput:
         print("To work correctly, the api needs to have a key, please enter it now or start again with option -k <key>.")
