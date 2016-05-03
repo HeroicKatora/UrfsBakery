@@ -154,7 +154,8 @@ if __name__ == '__main__':
     addr = ('', port)
     httpd = HTTPServer(addr, NameRequest)
     try:
-        httpd.serve_forever()
+        with cache_db:
+            httpd.serve_forever()
     except KeyboardInterrupt:
         print('Cancel received, shut down server')
 
