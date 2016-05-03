@@ -1,5 +1,4 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from socketserver import ThreadingMixIn
 from sys import argv
 import riotapi as rp
 import json
@@ -17,9 +16,6 @@ region_ref = 'region'
 player_ref = 'playername'
 class NameRequest(BaseHTTPRequestHandler):
     def do_GET(self):
-        self.cache_db = DBCache('.database')
-        self.cache_db.register_map('get_playerid', 'playerid', ['region', 'playername'], ['playerid'] , get_playerid)
-        self.cache_db.register_map('get_mastery_blob', 'mastery', ['region', 'playerid'], ['data', 'query_time'], get_mastery_blob)
         _,_,path,_,query,_ = urlparse(self.path)
         self.log_message('query: %s', str(query))
         query_parts = query.split('&')
@@ -35,7 +31,7 @@ class NameRequest(BaseHTTPRequestHandler):
         try:
             assert(wellformed)
             player = player.lower()
-            data = get_mastery(self.cache_db, region, player)
+            data = get_mastery(cache_db, region, player)
         except AssertionError:
             self.send_response(400)
         except Exception as ex:
@@ -144,8 +140,9 @@ class DBCache:
         setattr(self, name+'_fresh', set_method)
 
 
-class MultiThreadServer(ThreadingMixIn, HTTPServer):
-    pass
+cache_db = DBCache('.database')
+cache_db.register_map('get_playerid', 'playerid', ['region', 'playername'], ['playerid'] , get_playerid)
+cache_db.register_map('get_mastery_blob', 'mastery', ['region', 'playerid'], ['data', 'query_time'], get_mastery_blob)
 
 
 if __name__ == '__main__':
@@ -155,7 +152,7 @@ if __name__ == '__main__':
     rp.init()
     port = int(options.port)
     addr = ('', port)
-    httpd = MultiThreadServer(addr, NameRequest)
+    httpd = HTTPServer(addr, NameRequest)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
