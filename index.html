@@ -10,6 +10,8 @@
 		<script type="text/javascript" src="app/bakery.module.js"></script>
 		<script type="text/javascript" src="app/components/game/gameController.js"></script>
 
+		<link href='https://fonts.googleapis.com/css?family=Merriweather&subset=latin,cyrillic-ext,latin-ext,cyrillic' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="assets/styles/style.css">
 		<link rel="stylesheet" type="text/css" href="assets/styles/technical.css">
 		<link rel="stylesheet" media="all and (min-aspect-ratio: 2/1)" href="assets/styles/desktop.css">
@@ -20,7 +22,7 @@
 	<body>
 		<div id="bakery" class="box fill-parent">
 			<header class="row header" id="page-header">
-				<span>header</span>
+				<span class="headline">header</span>
 			</header>
 			<div class="row content" ng-include="'app/components/game/game.htm'" data-onload="clickerSetup()">
 			</div>

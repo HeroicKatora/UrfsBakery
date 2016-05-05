@@ -1,6 +1,7 @@
 html, body {
   height: 100%;
-  margin: 0
+  margin: 0;
+  font-family: 'Lato';
 }
 
 #page-header {
@@ -10,4 +11,8 @@ html, body {
 #page-footer {
   text-align: center;
   background-color: #ccc;
+}
+
+.headline {
+  font-family: 'Merriweather';
 }

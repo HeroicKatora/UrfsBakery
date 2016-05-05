@@ -10,10 +10,6 @@
   overflow: hidden;
 }
 
-.fill-parent {
-  height: 100%;
-}
-
 .box > .row.header {
   flex: 0 0 auto;
 }
@@ -24,6 +20,10 @@
 
 .box > .row.footer {
   flex: 0 0 auto;
+}
+
+.fill-parent {
+  height: 100%;
 }
 
 .centered-shrink {
