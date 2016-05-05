@@ -1,5 +1,6 @@
-<div>
-	<div id="bakery-header" class="shrink-to-fit">
+<!DOCTYPE xhtml>
+<div class="box">
+	<div id="bakery-header" class="centered-shrink row header">
 		<button type="button" id="fresh">Fresh start</button>
 		<button type="button" id="start_server">Start with existing account</button>
 		<button type="button" id="load">Load</button>
@@ -8,12 +9,12 @@
 		<button type="button" id="reset">Reset</button>
 		<button type="button" id="delete">Delete game data</button>
 		<script src="main.js"></script>
+		<button ng-click="Bakery.openMenu('champions')" ng-init="count=0">View champions</button>
 		<a id="pastries">Pastries:</a>
 	</div>
-	<div id="bakery-main" class="anchor image" style="background-image: url(assets/img/bakery.bmp);">
-		<img src="assets/img/bakery.bmp" style="visibility: hidden;"/>
-		<span class="anchored">Some text</span>
-		<div ng-view>
+	<div id="bakery-main" class="row content anchor image box">
+		<img src="assets/img/bakery.bmp" style="object-fit: contain; height: 100%" alt="Bakery image">
+		<div id="bakery-menu" class="anchored-bot centered-shrink" ng-include="Bakery.menuPath" ng-hide="Bakery.menuPath == ''">
 		</div>
 	</div>
 </div>
