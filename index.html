@@ -18,11 +18,11 @@
 		<title ng-bind="pageTitle"></title>
 	</head>
 	<body>
-		<div id="bakery" class="box">
+		<div id="bakery" class="box fill-parent">
 			<header class="row header" id="page-header">
 				<span>header</span>
 			</header>
-			<div class="row content centered-shrink" ng-include="'app/components/game/game.htm'" data-onload="clickerSetup()">
+			<div class="row content" ng-include="'app/components/game/game.htm'" data-onload="clickerSetup()">
 			</div>
 			<footer class="row footer" id="page-footer">
 				<small>Urf's Bakery isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends &copy; Riot Games, Inc.</small>
