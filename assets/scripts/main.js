@@ -365,6 +365,7 @@ function ClickerSetup(){
 /*
  * Exporting the state
  */
+ 	initState();
 	this.state = state;
 	this.manual_bake = manual_bake;
 	this.buy_function = buyFunction;
