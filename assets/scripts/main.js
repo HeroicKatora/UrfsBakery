@@ -1,11 +1,16 @@
 "use strict";
 
-var clicker = {};
 var data = {};
+var ClickerVersion = "0.1";
 
 initStaticData();
 if(typeof JSON !== 'object'){
 	alert("No json module found in your browser, no fall back at the moment");
+}
+if(!Date.now){
+	Date.now = function(){
+		return new Date().getTime();
+	}
 }
 
 function initStaticData(){
@@ -19,7 +24,7 @@ function initStaticData(){
 	data.champions.support = [];
 };
 
-masteryurl = 'localhost:8001/mastery?playername={0}&region={1}';
+var masteryurl = 'localhost:8001/mastery?playername={0}&region={1}';
 
 //https://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format/4673436#4673436
 if (!String.format) {
@@ -36,12 +41,12 @@ if (!String.format) {
 
 function ClickerSetup(){
 
-	var state = clicker.state = {};
+	var state = {};
 	var started = false;
 	var save_time;
 	var progression_time;
 
-	clicker.guardQuit = function(){
+	function guardQuit(){
 		var dont_check = void 0;
 		if(save_time !== void 0 && new Date().getTime() - save_time < 10000 &&
 			progression_time !== void 0 && progression_time > save_time){
@@ -50,20 +55,24 @@ function ClickerSetup(){
 			return dont_check;
 		}
 	};
-	window.onbeforeunload = clicker.guardQuit;
+	window.onbeforeunload = guardQuit;
 
 	function initState(){
 		state.pastries = 0;
+		state.max_pastries = 0;
+		state.last_tick;
+		state.version = ClickerVersion;
 		state.mastery = {};
-		state.champions = {
-			amount : [],
-			experience : []
-		};
-		state.upgrades = [];
-		state.items = [];
+		state.champions = {};
+		for(var champ in data.champions){
+			state.champions[champ] = {amount: 0, experience: 0};
+		}
+		state.upgrades = {}; 
+		state.items = {};
 		state.match = {
 			is_in_game : false,
-			champions : [],
+			champions : {},
+			in_fight : {},
 			lanes : {
 				top : 0,
 				mid : 0,
@@ -72,13 +81,14 @@ function ClickerSetup(){
 			},
 			is_fighting : false,
 			fight : {
+				lane : null,
 				friendlies : [],
 				enemies : [],
-				exp : 0.0,
 				objective : null
 			},
 			rewards : null
 		};
+		state.achievements = {};
 		state.rank = 0;
 	};
 	function initNewMatch(){
@@ -134,7 +144,7 @@ function ClickerSetup(){
 	}
 	function endGame(){
 		started = false;
-		clicker.state = state = {};
+		state = {};
 		updateGuiState();
 	};
 
@@ -157,16 +167,30 @@ function ClickerSetup(){
 	};
 	var load = function(){
 		if(!canLoad()){
-			console.log("Couldn't load game data");
+			console.log("There is no game data to load");
 			return false;
 		}
-		loadGameData(localStorage.getItem("urfclicker"));
-		updateGuiState();
+		var loadResult = loadGameData(localStorage.getItem("urfclicker")) || function(){
+			angular.element(document.body).scope().$digest();
+			return null;
+		}();
+		if(loadResult){
+		   	alert("Couldn't load game data:\n" + loadResult);
+			return false;
+		}
+		
 		return true;
 	};
 
 	var loadGameData = function(json){
-		clicker.state = state = JSON.parse(json);
+		var gameData = JSON.parse(json);
+		if(gameData.version != ClickerVersion){
+			return "Mismatching versions, unfortunately there is not conversion possible";
+		}
+		for(var att in gameData){
+			state[att] = gameData[att];
+		}
+		return null;
 	};
 	var deleteGameData = function(){
 		if(!confirm("This will stop the current game and delete all data from disk?\nDo really you want to continue?")){
@@ -176,14 +200,10 @@ function ClickerSetup(){
 		localStorage.setItem("urfclicker", null);
 		updateGuiState();
 	};
-
-	clicker.debugState = function(){
-		console.log(state);
-	}
-
-	/*
-	* Setting up the display
-	*/
+	
+/*
+* Setting up the display
+*/
 
 	var button_fresh = document.getElementById("fresh");
 	var button_delete = document.getElementById("delete");
@@ -216,11 +236,11 @@ function ClickerSetup(){
 		button_delete.disabled = att(null==localStorage.getItem("urfclicker"));
 		button_save.disabled = att(!started);
 	};
-	/*
-	*
-	* Game loop stuff from here onwards
-	*
-	*/
+/*
+*
+* Game loop stuff from here onwards
+*
+*/
 	var handle_click = function(){
 		if(!started){
 			return;
@@ -233,6 +253,40 @@ function ClickerSetup(){
 			buy(ident);
 		};
 	};
+	var mainLoop = function(){
+		var now_date = Date.now();
+		state.last_tick = state.last_tick || now_date - 100;
+		var time_passed = now_date - state.last_tick;
+		if(time_passed < 0){
+			bake(time_passed);
+			fight(time_passed);
+			document.getElementById("pastries").innerHTML = "Pastries: "+state.pastries;
+		}
+		state.last_tick = now_date;
+	};
+	function manual_bake(){
+		console.log("Click")
+		state.pastries += 10;
+	};
+	function bake(time_step){
+		state.pastries += 1;
+	};
+	function fight(time_step){
+		//This ignores time step for now
+
+	};
+	var loop = function(){
+		setTimeout(function(){
+			if(!started){
+				return;
+			}
+			mainLoop();
+			loop();
+		}, 100);
+	};
+/*
+ * Achievements, items, upgrades, champions, unlockables
+ */
 	var Champion = 0;
 	var Upgrade = 1;
 	var Item = 2;
@@ -249,55 +303,76 @@ function ClickerSetup(){
 			//TODO awards the cheater? achievement
 		}
 	};
-	var mainLoop = function(){
-		bake();
-		document.getElementById("pastries").innerHTML = "Pastries: "+state.pastries;
-	};
-	function bake(){
-		state.pastries += 1;
-	};
-	var loop = function(){
-		setTimeout(function(){
-			if(!started){
-				return;
-			}
-			mainLoop();
-			loop();
-		}, 100);
-	};
 
-
-	function champion_exp(id){
-		return (state.mastery[String(id)] || 0) + (state.champions.experience[id] || 0);
+	function unlock_achievement(ident){
+		ident.reduce(function(ob, id){
+			return ob[id] || (ob[id] = {});
+		}, state.achievements);
+	}
+	
+/*
+ * Fight related stuff
+ */
+	function mk_champion_exp(champ){
+		champion_id = data.champions[champ].id;
+		return (state.mastery[champion_id] || 0) + (state.champions[champ].experience || 0);
 	};
 	function champion_level(id){
 		xp = champion_exp(id);
 		return Math.floor(Math.log(4, xp + 1))
 	};
-	function champion_hp(amount, id){
-
+	function mk_champion_hp(amount, id, level){
+		return 100 + data.champions[id].id;
 	};
-	function champion_att(amount, id){
-
+	function mk_champion_attack(amount, id, level){
+		return 100 + data.champions[id].id;
 	};
-	function champion_def(amount, id){
-
+	function mk_champion_defense(amount, id, level){
+		return 100 + data.champions[id].id;
 	};
-	function startFight(){
-		state.match.champions.forEach(function(num, id){
+	function start_fight(lane, match){
+		for(var id in match.champions){
+			num = match.champions[id];
+			level = champion_level(id);
+			if(!num) continue;
 			champ = {
 				id : id,
 				max_hp : 0,
 			}
-			champ.max_hp = champ.hp = champion_hp(num, id);
-			state.match.fight.friendlies.push(champ);
-		});
-		state.match.is_fighting = true;
-	};
-	function endFight(){
+			champ.max_hp = champ.hp = mk_champion_hp(num, id, level);
+			champ.attack = mk_champion_attack(num, id, level);
+			champ.defense = mk_champion_defense(num, id, level);
+			match.fight.friendlies.push(champ);
+			match.in_fight[id] = num;
+		}
 
-		state.match.is_fighting = false;
+		match.fight.lane = lane;
+		match.is_fighting = true;
 	};
+	function end_fight(match){
+		wonFight = match.fight.objective.hp <= 0;
+		if(wonFight){
+			match.lanes[fight.lane] += 1;
+		}
+
+		for(var id in state.match.in_fight){
+			match.in_fight[id] = 0;
+		}
+		match.fight.friendlies.length = 0;
+		math.fight.enemies.length = 0;
+		match.is_fighting = false;
+	};
+/*
+ * Exporting the state
+ */
+	this.state = state;
+	this.manual_bake = manual_bake;
+	this.buy_function = buyFunction;
+	this.end_fight = end_fight;
+	this.load = load;
+	this.save = save;
+	this.start_connect_server = startConnectServer;
+	this.start_empty = startEmpty;
 };
 
 function httpGetAsync(theUrl, callback, error_callback=null)

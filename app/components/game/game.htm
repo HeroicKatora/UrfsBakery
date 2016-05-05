@@ -4,11 +4,11 @@
 		<button type="button" id="start_server">Start with existing account</button>
 		<button type="button" id="load">Load</button>
 		<button type="button" id="save">Save</button>
-		<button type="button" id="bake">Bake</button>
+		<button type="button" id="bake" ng-click="clicker.manual_bake()">Bake</button>
 		<button type="button" id="reset">Reset</button>
 		<button type="button" id="delete">Delete game data</button>
 		<script src="main.js"></script>
-		<a id="pastries">Pastries:</a>
+		<div class="entry-text" id="pastries">Pastries: {{clicker.state.pastries}}</div>
 	</div>
 	<div id="bakery-main" class="anchor image" style="background-image: url(assets/img/bakery.bmp);">
 		<img src="assets/img/bakery.bmp" style="visibility: hidden;"/>
