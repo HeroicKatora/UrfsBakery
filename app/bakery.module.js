@@ -1,4 +1,5 @@
 /* Setup, load and config angular */
+"use strict";
 var bakeryModule = angular.module('bakery', []);
 
 bakeryModule
@@ -8,7 +9,9 @@ bakeryModule
 		menuPath: '',
 		openMenu: function(menu) {
 			if(menu == 'champions') {
-				this.menuPath = 'app/components/game/championMenu.htm'
+				this.menuPath = 'app/components/game/championMenu.htm';
+			} else if(menu == '') {
+				this.menuPath = '';
 			} else {
 				console.log("missing menu " + menu);
 			}
