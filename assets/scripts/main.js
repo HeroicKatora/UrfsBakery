@@ -43,18 +43,18 @@ function ClickerSetup($scope, Menu){
 	/* http://javascript.crockford.com/private.html */
 	var that = this;
 	this.started = false; // Primitive, sorry <.<
+	this.save_time;
+	this.progression_time;
 
 	var state = {};
-	var save_time;
-	var progression_time;
 
 	function guardQuit(){
-		var dont_check = void 0;
-		if(save_time !== void 0 && new Date().getTime() - save_time < 10000 &&
-			progression_time !== void 0 && progression_time > save_time){
+		var undefined = void 0;
+		if(that.save_time !== undefined && new Date().getTime() - that.save_time > 3000 ||
+			that.progression_time !== undefined && that.progression_time > that.save_time){
 			return "You may have unsafed progression. Press the save button before quitting to avoid this message";
 		}else{
-			return dont_check;
+			return undefined;
 		}
 	};
 	window.onbeforeunload = guardQuit;
@@ -158,7 +158,7 @@ function ClickerSetup($scope, Menu){
 			console.log("No game in progress to save");
 			return;
 		}
-		save_time = new Date().getTime();
+		that.save_time = new Date().getTime();
 		localStorage.setItem("urfclicker", JSON.stringify(state));
 		updateGuiState();
 		console.log("Game saved");
@@ -285,7 +285,7 @@ function ClickerSetup($scope, Menu){
 	var Upgrade = 1;
 	var Item = 2;
 	var buy = function(ident){
-		progression_time = new Date().getTime();
+		that.progression_time = new Date().getTime();
 		if(ident.type == Champion){
 
 		}else if(ident.type == Upgrade){
