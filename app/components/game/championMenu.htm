@@ -1,12 +1,12 @@
 <div style="text-align: center;"><span>menu text</span></div>
-<div>You own the champions</div>
+<div>You own the following champions</div>
 <div id="champions-tank">
 	<div>Tank type champions:</div>
 	<div ng-repeat="champ in Bakery.to_display.tank">{{champ.name}}: {{Bakery.state.champions[champ.identifier] || 0}} Costs: {{champ.costs()}}</div>
 </div>
 <div id="champions_fighter">
 	<div>Fighter type champions:</div>
-	<div ng-repeat="champ in Bakery.to_display.fighter" ng-click="champ.buy()" ng-disabled="champ.costs() > Bakery.state.pastries">{{champ.name}}: {{champ.amount()}} Costs: {{champ.costs()}}</div>
+	<div ng-repeat="champ in Bakery.to_display.fighter" ng-click="champ.buy()" ng-disabled="champ.costs() > Bakery.state.pastries">{{champ.name}}: {{champ.amount()}} Costs: {{Bakery.format(champ.costs())}}</div>
 </div>
 <div id="champions_mage">
 	<div>Mage type champions:</div>

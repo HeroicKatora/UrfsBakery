@@ -266,6 +266,22 @@ function ClickerSetup($scope, Menu){
 	function updateGuiState(){
 		$scope.$apply(); // Notify angular of possible model changes
 	};
+
+	var scaleEnd = {
+		2 : 'Million',
+		3 : 'Billion',
+		4 : 'Quadrillion'
+	}
+	function format(number){
+		if(number < 10e6) return number.toFixed();
+		var scale = Math.floor(Math.log(10, number) / 3);
+		var scaleText = scaleEnd[scale];
+		if(scaleText == undefined){
+			scale = 4;
+			scaleText = scaleEnd[4];
+		}
+		return String(number/Math.pow(10, 3 * scale)).toFixed(3) + ' '+scaleText;
+	}
 /*
 *
 * Game loop stuff from here onwards
@@ -322,7 +338,9 @@ function ClickerSetup($scope, Menu){
  * Achievements, items, upgrades, champions, unlockables
  */
 	function cost_champion(ident){
-		return data.champions[ident].base_cost;
+		var cost = data.champions[ident].base_cost;
+		cost = Math.pow(1.15, amount_champion(ident)) * cost;
+		return cost;
 	}
 	function cost_item(ident){
 		
@@ -434,6 +452,7 @@ function ClickerSetup($scope, Menu){
 		assassin: data.champions.assassin.map(champ_disp),
 		support: data.champions.support.map(champ_disp)
 	};
+	this.format = format;
 	if(!canLoad() || !startSavedData()){
 		console.log('Could not load saved data, maybe this is the first play through');
 		startEmpty();
