@@ -241,6 +241,10 @@ function ClickerSetup(){
 * Game loop stuff from here onwards
 *
 */
+	//Logs that some kind of progress took place for the sake of saving and close warning
+	function progress(){
+		progression_time = new Date().getTime();
+	}
 	var handle_click = function(){
 		if(!started){
 			return;
@@ -265,7 +269,6 @@ function ClickerSetup(){
 		state.last_tick = now_date;
 	};
 	function manual_bake(){
-		console.log("Click")
 		state.pastries += 10;
 	};
 	function bake(time_step){
@@ -273,6 +276,7 @@ function ClickerSetup(){
 	};
 	function fight(time_step){
 		//This ignores time step for now
+
 
 	};
 	var loop = function(){
@@ -291,7 +295,7 @@ function ClickerSetup(){
 	var Upgrade = 1;
 	var Item = 2;
 	var buy = function(ident){
-		progression_time = new Date().getTime();
+		progress();
 		if(ident.type == Champion){
 
 		}else if(ident.type == Upgrade){
@@ -345,7 +349,8 @@ function ClickerSetup(){
 			match.fight.friendlies.push(champ);
 			match.in_fight[id] = num;
 		}
-
+		for(var en_i = 0;en_i < match.lanes[lane] + 2;en_i +=1 ){
+		}
 		match.fight.lane = lane;
 		match.is_fighting = true;
 	};
@@ -365,11 +370,10 @@ function ClickerSetup(){
 /*
  * Exporting the state
  */
- 	initState();
 	this.state = state;
 	this.manual_bake = manual_bake;
 	this.buy_function = buyFunction;
-	this.end_fight = end_fight;
+	this.cancel_fight = function(){end_fight(state.match);};
 	this.load = load;
 	this.save = save;
 	this.start_connect_server = startConnectServer;
