@@ -13,7 +13,14 @@
 		<button ng-click="Menu.openMenu('')">Close Menu</button>
 	</div>
 	<div id="bakery-main" class="row content anchor">
-		<img src="assets/img/bakery.bmp" class="letter-boxed" alt="Bakery image"/>
+		<div class="view-aligned-flex">
+			<div id="menu1" class="row content">
+			text
+			</div>
+			<div id="menu2" class="row content">
+			more text
+			</div>
+		</div>
 		<div id="bakery-menu" class="anchored-bot centered-shrink" ng-hide="Menu.menuPath == ''" style="background-color: red;">
 			<ng-include src="Menu.menuPath">
 			</ng-include>

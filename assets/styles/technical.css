@@ -3,22 +3,26 @@
   flex-flow: column;
 }
 
-.box > .row {
+.view-aligned-flex {
+  display: flex;
+}
+
+.row {
   min-width: 0;
   min-height: 0;
   text-overflow: ellipsis;
   overflow: hidden;
 }
 
-.box > .row.header {
+.row.header {
   flex: 0 0 auto;
 }
 
-.box > .row.content {
+.row.content {
   flex: 1 1 auto;
 }
 
-.box > .row.footer {
+.row.footer {
   flex: 0 0 auto;
 }
 
@@ -41,6 +45,7 @@
   object-fit: contain;
   height: 100%;
   width: 100%;
+  object-position: top;
 }
 
 .anchor {
