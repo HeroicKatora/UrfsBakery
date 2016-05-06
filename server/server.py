@@ -147,7 +147,7 @@ cache_db.register_map('get_mastery_blob', 'mastery', ['region', 'playerid'], ['d
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument('-p', dest='port', nargs=1, default='8000', action='store', help='port number')
+    parser.add_argument('-p', dest='port', default='8000', action='store', help='port number')
     options,_ = parser.parse_known_args()
     rp.init()
     port = int(options.port)

@@ -1,9 +1,7 @@
 "use strict";
 
-var data = {};
 var ClickerVersion = "0.1";
 
-initStaticData();
 if(typeof JSON !== 'object'){
 	alert("No json module found in your browser, no fall back at the moment");
 }
@@ -13,18 +11,7 @@ if(!Date.now){
 	}
 }
 
-function initStaticData(){
-	data.items = [];
-	data.champions = [];
-	data.champions.tank = [];
-	data.champions.fighter = [];
-	data.champions.mage = [];
-	data.champions.marksman = [];
-	data.champions.assassin = [];
-	data.champions.support = [];
-};
-
-var masteryurl = 'localhost:8001/mastery?playername={0}&region={1}';
+var masteryurl = 'http://t-tides.net:8000/mastery?playername={0}&region={1}';
 
 //https://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format/4673436#4673436
 if (!String.format) {
@@ -38,6 +25,48 @@ if (!String.format) {
     });
   };
 }
+
+/*
+ * Updates obj1 with obj2 like a dictionary but deep instead of shallow
+ */
+function update_object(obj1, obj2){
+	for(var prop in obj2){
+		if(typeof obj1[prop] == 'Object' && typeof obj2[prop] == 'Object'){
+			update_object(obj1[prop], obj2[prop]);
+		}else{
+			obj1[prop] = obj2[prop];
+		}
+	}
+}
+
+/*
+ * Uses an object as a path storage
+ */
+function retrieve_object(object, path){
+	return path.reduce(function(ob, id){
+			return ob[id] || (ob[id] = {});
+	}, object);
+}
+
+function store_object(object_base, path, data){
+	if(!path.length) return false;
+	var prop = path[0];
+	var rest = path.slice(1);
+	if(!rest.length) {
+		return object_base[prop] = data;
+	}
+	if(typeof object_base[prop] !== 'Object')
+		object_base[prop] = {};
+	store_object(object_base[prop], rest, data);
+}
+
+data.item_map = data.upgrade_map = {};
+data.items.forEach(function(item){
+	store_object(data.item_map, item.identifier, item);
+});
+data.upgrades.forEach(function(upgrade){
+	store_object(data.upgrade_map, upgrade.identifier, upgrade);
+});
 
 function ClickerSetup($scope, Menu){
 	/* http://javascript.crockford.com/private.html */
@@ -58,6 +87,11 @@ function ClickerSetup($scope, Menu){
 		}
 	};
 	window.onbeforeunload = guardQuit;
+
+	function guardReset(){
+		var req;
+		return (req = guardQuit()) && !confirm(req);
+	}
 
 	function initState(){
 		state.pastries = 0;
@@ -107,15 +141,20 @@ function ClickerSetup($scope, Menu){
 
 	var startEmpty = function(){
 		if(that.started){ 
-			return;
+			guardReset();
+			initState();
 		}else{
 			initState();
 			startGame();
 		}
 	};
-	var startConnectServer = function(name, region){
+	function refresh_mastery(name, region){
+		console.log('Refreshing mastery for '+name+' in region '+region);
 		httpGetAsync(String.format(masteryurl, name, region), function(res){
 			state.mastery = JSON.parse(res);
+			state.summoner = name;
+			state.region = region;
+			console.log('Refreshed mastery data');
 		}, function(error){
 			alert('Failed to connect to mastery server (Your mastery data can be refreshed at any time).\nWe are sorry, feel free to send a bug report!')
 		});
@@ -165,7 +204,7 @@ function ClickerSetup($scope, Menu){
 		var stored = localStorage.getItem("urfclicker");
 		return stored != null && stored != "" && JSON.parse(stored) != null;
 	};
-	var load = function(){
+	function load(){
 		if(!canLoad()){
 			console.log("There is no game data to load");
 			return false;
@@ -184,9 +223,7 @@ function ClickerSetup($scope, Menu){
 		if(gameData.version != ClickerVersion){
 			return "Mismatching versions, unfortunately there is not conversion possible";
 		}
-		for(var att in gameData){
-			state[att] = gameData[att];
-		}
+		update_object(state, gameData);
 		return null;
 	};
 	var deleteGameData = function(){
@@ -195,7 +232,13 @@ function ClickerSetup($scope, Menu){
 		}
 		initState();
 		localStorage.setItem("urfclicker", null);
+		updateGuiState();
 	};
+	function reset(){
+		if(guardReset()) return;
+		initState();
+		updateGuiState();
+	}
 	
 /*
 * Setting up the display
@@ -209,15 +252,11 @@ function ClickerSetup($scope, Menu){
 		var button_bake = document.getElementById("bake");
 		var button_reset = document.getElementById("reset");
 		button_fresh.addEventListener("click", startEmpty);
-		button_start_server.addEventListener("click", startConnectServer);
 		button_load.addEventListener("click", startSavedData);
 		button_delete.addEventListener("click", deleteGameData);
 		button_save.addEventListener("click", save);
 		button_bake.addEventListener("click", handle_click);
-		button_reset.addEventListener("click", function(){
-			initState();
-			updateGuiState();
-		});
+		button_reset.addEventListener("click", reset);
 	}
 
 	if(canLoad()){
@@ -239,18 +278,13 @@ function ClickerSetup($scope, Menu){
 		state.pastries += 10;
 	}
 
-	var buyFunction = function(ident){
-		return function(){
-			buy(ident);
-		};
-	};
 	var mainLoop = function(){
 		var now_date = Date.now();
 		state.last_tick = state.last_tick || now_date - 100;
 		var time_passed = now_date - state.last_tick;
 		if(time_passed > grace_period){
 			console.log('Made a jump in time, maybe suspended pc, load of an old save etc.');
-			console.log(String.format('Old time {0}, new time {1}', state.last_tick, now_date))
+			console.log(String.format('Missed {0} seconds', now_date - state.last_tick ))
 			time_passed = grace_period;
 		}
 		if(time_passed > 0){
@@ -261,7 +295,6 @@ function ClickerSetup($scope, Menu){
 		updateGuiState();
 	};
 	function manual_bake(){
-		console.log("Click")
 		state.pastries += 10;
 	};
 	function bake(time_step){
@@ -288,27 +321,32 @@ function ClickerSetup($scope, Menu){
 /*
  * Achievements, items, upgrades, champions, unlockables
  */
-	var Champion = 0;
-	var Upgrade = 1;
-	var Item = 2;
-	var buy = function(ident){
-		progress();
-		if(ident.type == Champion){
+	function cost_champion(ident){
+		return data.champions[ident].base_cost;
+	}
+	function cost_item(ident){
+		
+	}
+	function amount_champion(ident){
+		return state.champions[ident].amount;
+	}
 
-		}else if(ident.type == Upgrade){
-
-		}else if(ident.type == Item){
-
-		}else{
-			console.log("Received invalid buy request");
-			//TODO awards the cheater? achievement
+	function amount_champion_type(type){
+		return data.champions[type].reduce(function(a,b){return a+b;}, 0);
+	}
+	function buy_champion(ident){
+		var costs = cost_champion(ident);
+		if(costs > state.pastries){
+			console.log('Not enough to buy');
+			return;
 		}
+		state.pastries -= costs;
+		state.champions[ident].amount = amount_champion(ident) + 1;
+		progress();
 	};
 
 	function unlock_achievement(ident){
-		ident.reduce(function(ob, id){
-			return ob[id] || (ob[id] = {});
-		}, state.achievements);
+		store_object(state.achievements, ident, {})['unlocked'] = true;
 	}
 	
 /*
@@ -366,18 +404,35 @@ function ClickerSetup($scope, Menu){
 /*
  * Exporting the state
  */
+	function id(a){return a;}
+	function champ_disp(id){
+		var disp = JSON.parse(JSON.stringify(data.champions[id]));
+		disp.amount = amount_champion.bind(this, id);
+		disp.costs = cost_champion.bind(this, id);
+		disp.buy = buy_champion.bind(this, id);
+		return disp;
+	}
  	initState();
+	this.data = data;
+	this.refresh_mastery = refresh_mastery;
 	this.state = state;
 	this.manual_bake = manual_bake;
-	this.buy_function = buyFunction;
+	this.buy_function = buy_champion;
 	this.end_fight = end_fight;
 	this.load = load;
 	this.save = save;
 	this.canLoad = canLoad;
-	this.start_connect_server = startConnectServer;
 	this.start_empty = startEmpty;
 	this.onDomLoaded = onDomLoaded;
 	this.to_display = {
+		upgrades : data.upgrades.map(id),
+		items : data.items.map(id),
+		tank: data.champions.tank.map(champ_disp),
+		fighter: data.champions.fighter.map(champ_disp),
+		mage: data.champions.mage.map(champ_disp),
+		marksman: data.champions.marksman.map(champ_disp),
+		assassin: data.champions.assassin.map(champ_disp),
+		support: data.champions.support.map(champ_disp)
 	};
 	if(!canLoad() || !startSavedData()){
 		console.log('Could not load saved data, maybe this is the first play through');
@@ -391,10 +446,14 @@ function httpGetAsync(theUrl, callback, error_callback=null)
     xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
             if(callback !== null) callback(xmlHttp.responseText);
-        }else if(error_callback){
+        }else if(xmlHttp.readyState == 4 && error_callback){
         	if(error_callback !== null) error_callback(xmlHttp);
         }
     }
     xmlHttp.open("GET", theUrl, true); // true for asynchronous 
-    xmlHttp.send(null);
+	try{
+    	xmlHttp.send(null);
+	}catch(err){
+		alert('To work correctly, you need to allow access to t-tides.net. This is were the actual data is fetched, since as we hosted the website on github we need some dynamic system.');
+	}
 }

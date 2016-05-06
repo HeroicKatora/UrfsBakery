@@ -1,0 +1,4 @@
+<textarea id='select-name' placeholder='Your summoner name here' ng-model='mastery_name' ng-default="" rows=1></textarea><br>
+<select id='select-region' ng-model='mastery_region'
+	ng-options="region.name for region in Bakery.data.regions track by region.id"></select><br>
+<button ng-click='Bakery.refresh_mastery(mastery_name, mastery_region.id)'>Refresh Mastery</button>

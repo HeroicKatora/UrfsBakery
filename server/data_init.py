@@ -4,11 +4,22 @@ from collections import namedtuple, defaultdict
 from argparse import ArgumentParser
 
 
-PurchaseElement = namedtuple('Upgrade', 'identifier cost name imghref description info')
+PurchaseElement = namedtuple('Upgrade', 'identifier base_cost name imghref description info')
 PhE = PurchaseElement
-ChampUpgrade = namedtuple('ChampUpgrade', 'cost name description skin')
+ChampUpgrade = namedtuple('ChampUpgrade', 'base_cost name description skin')
 ChU = ChampUpgrade
 
+regions = [{'id' :'br','name' : 'Brazil'},
+{'id' :'eune','name' : 'Europe North/East'},
+{'id' :'euw','name' : 'Europe West'},
+{'id' :'jp','name' : 'Japan'},
+{'id' :'kr','name' : 'Korea'},
+{'id' :'lan','name' : 'Latin America North'},
+{'id' :'las','name' : 'Latin America South'},
+{'id' :'na','name' : 'North America'},
+{'id' :'oce','name' : 'Oceania'},
+{'id' :'ru','name' : 'Russia'},
+{'id' :'tr','name' : 'Turkey'}]
 
 class ChampReg:
     def __init__(self, upgradereg, name, cost, base_production, description, ch_class):
@@ -36,9 +47,9 @@ class ChampReg:
         return self.skin.format(name=self.name, ind=ind, version = self.upref.ddragonversion)
 
     def __exit__(self, stat, typ, exc):
-        self.upgrades.sort(key=lambda t:t.cost)
+        self.upgrades.sort(key=lambda t:t.base_cost)
         for ind, up in enumerate(self.upgrades):
-            ref_up = PurchaseElement([self.name, ind], up.cost, up.name, self.mk_portrait(ind), up.description, {'skin': self.mk_skin(up.skin)})
+            ref_up = PurchaseElement([self.name, ind], up.base_cost, up.name, self.mk_portrait(ind), up.description, {'skin': self.mk_skin(up.skin)})
             self.upref.register_upgrade(ref_up)
 
 
@@ -105,4 +116,7 @@ if __name__ == "__main__":
         ch_reg.register_upgrade(ChU(140, 'Weat flavoured spear', 'After the fight, his enemies smell like bread. Terrifying.', '0'))
     with open(args.filename, 'w') as ofile:
         up.write(ofile)
+        ofile.write('data.regions = ')
+        json.dump(regions, ofile)
+        ofile.write('\n')
 

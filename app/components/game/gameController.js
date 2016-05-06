@@ -3,13 +3,16 @@ var bakeryModule = angular.module('bakery');
 
 bakeryModule
 .factory('Menu', [function() {
+	var mapping = {
+		'champions' : 'app/components/game/championMenu.htm',
+		'mastery' : 'app/components/game/masteryMenu.htm',
+		'' : '',
+	}
 	return {
 		menuPath: '',
 		openMenu: function(menu) {
-			if(menu == 'champions') {
-				this.menuPath = 'app/components/game/championMenu.htm';
-			} else if(menu == '') {
-				this.menuPath = '';
+			if(mapping.hasOwnProperty(menu)) {
+				this.menuPath = mapping[menu]; 			
 			} else {
 				console.log("missing menu " + menu);
 			}
