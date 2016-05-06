@@ -8,13 +8,13 @@
 		<button type="button" id="reset">Reset</button>
 		<button type="button" id="delete">Delete game data</button>
 		<div class="entry-text" id="pastries">Pastries: <span ng-cloak>{{Bakery.state.pastries || 0}}</span></div>
-		<button ng-click="Bakery.openMenu('champions')">View champions</button>
-		<button ng-click="Bakery.openMenu('')">Close Menu</button>
+		<button ng-click="Menu.openMenu('champions')">View champions</button>
+		<button ng-click="Menu.openMenu('')">Close Menu</button>
 	</div>
 	<div id="bakery-main" class="row content anchor">
 		<img src="assets/img/bakery.bmp" class="letter-boxed" alt="Bakery image"/>
-		<div id="bakery-menu" class="anchored-bot centered-shrink" ng-hide="Bakery.menuPath == ''" style="background-color: red;">
-			<ng-include src="Bakery.menuPath">
+		<div id="bakery-menu" class="anchored-bot centered-shrink" ng-hide="Menu.menuPath == ''" style="background-color: red;">
+			<ng-include src="Menu.menuPath">
 			</ng-include>
 		</div>
 	</div>
