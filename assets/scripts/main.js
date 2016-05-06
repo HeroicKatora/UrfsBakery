@@ -47,11 +47,11 @@ function ClickerSetup($scope, Menu){
 	this.progression_time;
 
 	var state = {};
+	var grace_period = 5000;
 
 	function guardQuit(){
-		var undefined = void 0;
-		if(that.save_time !== undefined && new Date().getTime() - that.save_time > 3000 ||
-			that.progression_time !== undefined && that.progression_time > that.save_time){
+		if(that.save_time === undefined || Date.now() - that.save_time > grace_period ||
+			(that.progression_time !== undefined && that.progression_time > that.save_time)){
 			return "You may have unsafed progression. Press the save button before quitting to avoid this message";
 		}else{
 			return undefined;
@@ -92,6 +92,7 @@ function ClickerSetup($scope, Menu){
 		};
 		state.achievements = {};
 		state.rank = 0;
+		progress();
 	};
 	function initNewMatch(){
 		state.match.lanes = {
@@ -107,30 +108,27 @@ function ClickerSetup($scope, Menu){
 	var startEmpty = function(){
 		if(that.started){ 
 			return;
+		}else{
+			initState();
+			startGame();
 		}
-		initState();
-		startGame();
-		save();
 	};
 	var startConnectServer = function(name, region){
-		if(that.started){
-			return;	
-		}
-		httpGetAsync(String.format(masteryurl, name, region), function(){
-			initState();
-			startGame();	
-		}, function(){
-			alert('Failed to connect to mastery server. Do you want to start without mastery data instead (can be refreshed at any time)?')
+		httpGetAsync(String.format(masteryurl, name, region), function(res){
+			state.mastery = JSON.parse(res);
+		}, function(error){
+			alert('Failed to connect to mastery server (Your mastery data can be refreshed at any time).\nWe are sorry, feel free to send a bug report!')
 		});
 	};
-	var loadSavedData = function(){
+	var startSavedData = function(){
 		if(!load()){
 			console.log("Couldn't load game data");
-			return;
+			return false;
 		}
 		if(!that.started){
 			startGame();
 		}
+		return true;
 	};
 
 	/*
@@ -146,7 +144,7 @@ function ClickerSetup($scope, Menu){
 	}
 	function endGame(){
 		that.started = false;
-		state = {};
+		initState();
 		updateGuiState();
 	};
 
@@ -177,7 +175,7 @@ function ClickerSetup($scope, Menu){
 		   	alert("Couldn't load game data:\n" + loadResult);
 			return false;
 		}
-		
+		that.save_time = Date.now();
 		return true;
 	};
 
@@ -195,9 +193,8 @@ function ClickerSetup($scope, Menu){
 		if(!confirm("This will stop the current game and delete all data from disk?\nDo really you want to continue?")){
 			return;
 		}
-		endGame();
+		initState();
 		localStorage.setItem("urfclicker", null);
-		updateGuiState();
 	};
 	
 /*
@@ -213,7 +210,7 @@ function ClickerSetup($scope, Menu){
 		var button_reset = document.getElementById("reset");
 		button_fresh.addEventListener("click", startEmpty);
 		button_start_server.addEventListener("click", startConnectServer);
-		button_load.addEventListener("click", loadSavedData);
+		button_load.addEventListener("click", startSavedData);
 		button_delete.addEventListener("click", deleteGameData);
 		button_save.addEventListener("click", save);
 		button_bake.addEventListener("click", handle_click);
@@ -251,6 +248,11 @@ function ClickerSetup($scope, Menu){
 		var now_date = Date.now();
 		state.last_tick = state.last_tick || now_date - 100;
 		var time_passed = now_date - state.last_tick;
+		if(time_passed > grace_period){
+			console.log('Made a jump in time, maybe suspended pc, load of an old save etc.');
+			console.log(String.format('Old time {0}, new time {1}', state.last_tick, now_date))
+			time_passed = grace_period;
+		}
 		if(time_passed > 0){
 			bake(time_passed);
 			fight(time_passed);
@@ -263,7 +265,9 @@ function ClickerSetup($scope, Menu){
 		state.pastries += 10;
 	};
 	function bake(time_step){
-		state.pastries += 1;
+		var pps = 10;
+		state.pastries += Math.round(time_step/1000 * pps);
+
 	};
 	function fight(time_step){
 		//This ignores time step for now
@@ -278,6 +282,9 @@ function ClickerSetup($scope, Menu){
 			mainLoop();
 		}, 100);
 	};
+	function progress(){
+		that.progression_time = Date.now();
+	}
 /*
  * Achievements, items, upgrades, champions, unlockables
  */
@@ -285,7 +292,7 @@ function ClickerSetup($scope, Menu){
 	var Upgrade = 1;
 	var Item = 2;
 	var buy = function(ident){
-		that.progression_time = new Date().getTime();
+		progress();
 		if(ident.type == Champion){
 
 		}else if(ident.type == Upgrade){
@@ -370,6 +377,12 @@ function ClickerSetup($scope, Menu){
 	this.start_connect_server = startConnectServer;
 	this.start_empty = startEmpty;
 	this.onDomLoaded = onDomLoaded;
+	this.to_display = {
+	};
+	if(!canLoad() || !startSavedData()){
+		console.log('Could not load saved data, maybe this is the first play through');
+		startEmpty();
+	}
 };
 
 function httpGetAsync(theUrl, callback, error_callback=null)
