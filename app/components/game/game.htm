@@ -1,13 +1,13 @@
 <div class="box fill-parent">
 	<div id="bakery-header" class="centered-shrink row header">
-		<button type="button" id="fresh">Fresh start</button>
-		<button type="button" id="start_server">Start with existing account</button>
-		<button type="button" id="load">Load</button>
-		<button type="button" id="save">Save</button>
-		<button type="button" id="bake" ng-click="clicker.manual_bake()">Bake</button>
+		<button type="button" id="fresh" ng-hide="Bakery.started">Fresh start</button>
+		<button type="button" id="start_server" ng-hide="Bakery.started">Start with existing account</button>
+		<button type="button" id="load" ng-disabled="!Bakery.canLoad()">Load</button>
+		<button type="button" id="save" ng-disabled="!Bakery.started">Save</button>
+		<button type="button" id="bake" ng-click="Bakery.manual_bake()">Bake</button>
 		<button type="button" id="reset">Reset</button>
 		<button type="button" id="delete">Delete game data</button>
-		<div class="entry-text" id="pastries">Pastries: <span ng-cloak>{{clicker.state.pastries || 0}}</span></div>
+		<div class="entry-text" id="pastries">Pastries: <span ng-cloak>{{Bakery.state.pastries || 0}}</span></div>
 		<button ng-click="Bakery.openMenu('champions')">View champions</button>
 		<button ng-click="Bakery.openMenu('')">Close Menu</button>
 	</div>

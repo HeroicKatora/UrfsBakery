@@ -39,10 +39,12 @@ if (!String.format) {
   };
 }
 
-function ClickerSetup(){
+function ClickerSetup($scope){
+	/* http://javascript.crockford.com/private.html */
+	var that = this;
+	this.started = false; // Primitive, sorry <.<
 
 	var state = {};
-	var started = false;
 	var save_time;
 	var progression_time;
 
@@ -103,7 +105,7 @@ function ClickerSetup(){
 	};
 
 	var startEmpty = function(){
-		if(started){ 
+		if(that.started){ 
 			return;
 		}
 		initState();
@@ -111,7 +113,7 @@ function ClickerSetup(){
 		save();
 	};
 	var startConnectServer = function(name, region){
-		if(started){
+		if(that.started){
 			return;	
 		}
 		httpGetAsync(String.format(masteryurl, name, region), function(){
@@ -126,7 +128,7 @@ function ClickerSetup(){
 			console.log("Couldn't load game data");
 			return;
 		}
-		if(!started){
+		if(!that.started){
 			startGame();
 		}
 	};
@@ -135,15 +137,15 @@ function ClickerSetup(){
 	* Transition the game start and stop edges
 	*/
 	function startGame(){
-		if(started){
+		if(that.started){
 			return;
 		}
-		started = true;
+		that.started = true;
 		setTimeout(loop, 1);
 		updateGuiState();
 	}
 	function endGame(){
-		started = false;
+		that.started = false;
 		state = {};
 		updateGuiState();
 	};
@@ -152,7 +154,7 @@ function ClickerSetup(){
 	* Save the game state to be able to restore it
 	*/
 	var save = function(){
-		if(!started){
+		if(!that.started){
 			console.log("No game in progress to save");
 			return;
 		}
@@ -204,37 +206,32 @@ function ClickerSetup(){
 /*
 * Setting up the display
 */
+	function onDomLoaded() {
+		var button_fresh = document.getElementById("fresh");
+		var button_delete = document.getElementById("delete");
+		var button_start_server = document.getElementById("start_server");
+		var button_save = document.getElementById("save");
+		var button_load = document.getElementById("load");
+		var button_bake = document.getElementById("bake");
+		var button_reset = document.getElementById("reset");
+		button_fresh.addEventListener("click", startEmpty);
+		button_start_server.addEventListener("click", startConnectServer);
+		button_load.addEventListener("click", loadSavedData);
+		button_delete.addEventListener("click", deleteGameData);
+		button_save.addEventListener("click", save);
+		button_bake.addEventListener("click", handle_click);
+		button_reset.addEventListener("click", function(){
+			initState();
+			updateGuiState();
+		});
+	}
 
-	var button_fresh = document.getElementById("fresh");
-	var button_delete = document.getElementById("delete");
-	var button_start_server = document.getElementById("start_server");
-	var button_save = document.getElementById("save");
-	var button_load = document.getElementById("load");
-	var button_bake = document.getElementById("bake");
-	var button_reset = document.getElementById("reset");
-	button_fresh.addEventListener("click", startEmpty);
-	button_start_server.addEventListener("click", startConnectServer);
-	button_load.addEventListener("click", loadSavedData);
-	button_delete.addEventListener("click", deleteGameData);
-	button_save.addEventListener("click", save);
-	button_bake.addEventListener("click", handle_click);
-	button_reset.addEventListener("click", function(){
-		initState();
-		updateGuiState();
-	});
-
-	updateGuiState();
 	if(canLoad()){
 		console.log("Found existing game data, readying load screen before creation screen");
 	}
 
 	function updateGuiState(){
-		function att(par){return par?true:null};
-		button_load.disabled = att(!canLoad());
-		button_fresh.hidden = att(started);
-		button_start_server.hidden = att(started);
-		button_delete.disabled = att(null==localStorage.getItem("urfclicker"));
-		button_save.disabled = att(!started);
+		$scope.$apply(); // Notify angular of possible model changes
 	};
 /*
 *
@@ -246,7 +243,7 @@ function ClickerSetup(){
 		progression_time = new Date().getTime();
 	}
 	var handle_click = function(){
-		if(!started){
+		if(!that.started){
 			return;
 		}
 		state.pastries += 10;
@@ -261,12 +258,12 @@ function ClickerSetup(){
 		var now_date = Date.now();
 		state.last_tick = state.last_tick || now_date - 100;
 		var time_passed = now_date - state.last_tick;
-		if(time_passed < 0){
+		if(time_passed > 0){
 			bake(time_passed);
 			fight(time_passed);
-			document.getElementById("pastries").innerHTML = "Pastries: "+state.pastries;
 		}
 		state.last_tick = now_date;
+		updateGuiState();
 	};
 	function manual_bake(){
 		state.pastries += 10;
@@ -280,12 +277,12 @@ function ClickerSetup(){
 
 	};
 	var loop = function(){
-		setTimeout(function(){
-			if(!started){
+		var handle = setInterval(function(){
+			if(!that.started){
+				clearInterval(handle);
 				return;
 			}
 			mainLoop();
-			loop();
 		}, 100);
 	};
 /*
@@ -364,7 +361,7 @@ function ClickerSetup(){
 			match.in_fight[id] = 0;
 		}
 		match.fight.friendlies.length = 0;
-		math.fight.enemies.length = 0;
+		match.fight.enemies.length = 0;
 		match.is_fighting = false;
 	};
 /*
@@ -376,8 +373,10 @@ function ClickerSetup(){
 	this.cancel_fight = function(){end_fight(state.match);};
 	this.load = load;
 	this.save = save;
+	this.canLoad = canLoad;
 	this.start_connect_server = startConnectServer;
 	this.start_empty = startEmpty;
+	this.onDomLoaded = onDomLoaded;
 };
 
 function httpGetAsync(theUrl, callback, error_callback=null)
