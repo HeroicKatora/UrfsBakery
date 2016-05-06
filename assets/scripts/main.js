@@ -39,7 +39,7 @@ if (!String.format) {
   };
 }
 
-function ClickerSetup($scope){
+function ClickerSetup($scope, Menu){
 	/* http://javascript.crockford.com/private.html */
 	var that = this;
 	this.started = false; // Primitive, sorry <.<
@@ -172,10 +172,7 @@ function ClickerSetup($scope){
 			console.log("There is no game data to load");
 			return false;
 		}
-		var loadResult = loadGameData(localStorage.getItem("urfclicker")) || function(){
-			angular.element(document.body).scope().$digest();
-			return null;
-		}();
+		var loadResult = loadGameData(localStorage.getItem("urfclicker"));
 		if(loadResult){
 		   	alert("Couldn't load game data:\n" + loadResult);
 			return false;
@@ -238,10 +235,6 @@ function ClickerSetup($scope){
 * Game loop stuff from here onwards
 *
 */
-	//Logs that some kind of progress took place for the sake of saving and close warning
-	function progress(){
-		progression_time = new Date().getTime();
-	}
 	var handle_click = function(){
 		if(!that.started){
 			return;
@@ -266,6 +259,7 @@ function ClickerSetup($scope){
 		updateGuiState();
 	};
 	function manual_bake(){
+		console.log("Click")
 		state.pastries += 10;
 	};
 	function bake(time_step){
@@ -273,7 +267,6 @@ function ClickerSetup($scope){
 	};
 	function fight(time_step){
 		//This ignores time step for now
-
 
 	};
 	var loop = function(){
@@ -292,7 +285,7 @@ function ClickerSetup($scope){
 	var Upgrade = 1;
 	var Item = 2;
 	var buy = function(ident){
-		progress();
+		progression_time = new Date().getTime();
 		if(ident.type == Champion){
 
 		}else if(ident.type == Upgrade){
@@ -346,8 +339,7 @@ function ClickerSetup($scope){
 			match.fight.friendlies.push(champ);
 			match.in_fight[id] = num;
 		}
-		for(var en_i = 0;en_i < match.lanes[lane] + 2;en_i +=1 ){
-		}
+
 		match.fight.lane = lane;
 		match.is_fighting = true;
 	};
@@ -367,10 +359,11 @@ function ClickerSetup($scope){
 /*
  * Exporting the state
  */
+ 	initState();
 	this.state = state;
 	this.manual_bake = manual_bake;
 	this.buy_function = buyFunction;
-	this.cancel_fight = function(){end_fight(state.match);};
+	this.end_fight = end_fight;
 	this.load = load;
 	this.save = save;
 	this.canLoad = canLoad;
