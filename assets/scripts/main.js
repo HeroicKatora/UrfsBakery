@@ -202,12 +202,10 @@ function ClickerSetup($scope, Menu){
 		}
 		that.started = true;
 		setTimeout(loop, 1);
-		updateGuiState();
 	}
 	function endGame(){
 		that.started = false;
 		initState();
-		updateGuiState();
 	};
 
 	/*
@@ -220,7 +218,6 @@ function ClickerSetup($scope, Menu){
 		}
 		that.save_time = new Date().getTime();
 		localStorage.setItem("urfclicker", JSON.stringify(state));
-		updateGuiState();
 		console.log("Game saved");
 	};
 	function canLoad(){
@@ -255,30 +252,15 @@ function ClickerSetup($scope, Menu){
 		}
 		initState();
 		localStorage.setItem("urfclicker", null);
-		updateGuiState();
 	};
 	function reset(){
 		if(guardReset()) return;
 		initState();
-		updateGuiState();
 	}
 	
 /*
 * Setting up the display
 */
-	function onDomLoaded() {
-		var button_fresh = document.getElementById("fresh");
-		var button_delete = document.getElementById("delete");
-		var button_start_server = document.getElementById("start_server");
-		var button_save = document.getElementById("save");
-		var button_load = document.getElementById("load");
-		var button_reset = document.getElementById("reset");
-		button_fresh.addEventListener("click", startEmpty);
-		button_load.addEventListener("click", startSavedData);
-		button_delete.addEventListener("click", deleteGameData);
-		button_save.addEventListener("click", save);
-		button_reset.addEventListener("click", reset);
-	}
 
 	if(canLoad()){
 		console.log("Found existing game data, readying load screen before creation screen");
@@ -691,9 +673,10 @@ function ClickerSetup($scope, Menu){
 
 	this.load = load;
 	this.save = save;
+	this.reset = reset;
+	this.deleteData = deleteGameData;
 	this.canLoad = canLoad;
 	this.start_empty = startEmpty;
-	this.onDomLoaded = onDomLoaded;
 	this.to_display = {
 		upgrades : data.upgrades.map(id),
 		items : data.items.map(id),
