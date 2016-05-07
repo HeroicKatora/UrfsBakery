@@ -22,7 +22,7 @@ regions = [{'id' :'br','name' : 'Brazil'},
 {'id' :'tr','name' : 'Turkey'}]
 
 class ChampReg:
-    def __init__(self, upgradereg, name, cost, base_production, description, ch_class):
+    def __init__(self, upgradereg, name, cost, base_production, description, ch_class, hp, attack, armor, mr):
         self.upref = upgradereg
         self.upgrades = []
         self.name = name
@@ -32,7 +32,8 @@ class ChampReg:
         self.portrait = 'http://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{name}.png'.format(version = self.upref.ddragonversion, name=name)
         self.upgrade_portrait = 'http://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{name}.png'
         self.skin = 'http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{name}_{ind}.jpg'
-        extra_info = {'base_production': base_production, 'ch_class': ch_class}
+        extra_info = {'base_production': base_production, 'ch_class': ch_class, 'base_hp' : hp,
+                        'base_attack' : attack, 'base_armor' : armor, 'base_mr' : mr};
         self.upref.register_champion(PurchaseElement(name, cost, name, self.portrait, description, extra_info), ch_class)
 
     def register_upgrade(self, champ_upgrade):
@@ -113,8 +114,8 @@ if __name__ == "__main__":
 
     up = UpgradeReg('6.9.1')
     up.register_upgrade(PhE(['start'], 100, 'Everyone start slowly', 'assets/img/bakery.bmp', 'Some informal description', {}))
-    with up.for_champion('Pantheon', 100, 4, 'The best baker on summoners rift', fighter) as ch_reg:
-        ch_reg.register_upgrade(ChU(140, 'Weat flavoured spear', 'After the fight, his enemies smell like bread. Terrifying.', '0'))
+    with up.for_champion('Pantheon', 100, 4, 'The best baker on summoners rift', fighter, 400, 60, 20, 40) as ch_reg:
+        ch_reg.register_upgrade(ChU(140, 'Weat flavoured spear', 'After the fight, his enemies smell like bread. Terrifying.', '1'))
     with open(args.filename, 'w') as ofile:
         up.write(ofile)
         ofile.write('data.regions = ')

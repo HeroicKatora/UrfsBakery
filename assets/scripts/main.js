@@ -76,6 +76,12 @@ data.items.forEach(function(item){
 data.upgrades.forEach(function(upgrade){
 	store_object(data.upgrade_map, upgrade.identifier, upgrade);
 });
+
+data.champions.types = ['tank', 'fighter', 'mage', 'marksman', 'assassin', 'support'];
+data.champions.all = data.champions.types.reduce(function(list, type){
+	return list.concat(data.champions[type]);
+}, []);
+
 data.buffs = {'baron':{
 	identifier : 'baron',
 	name: 'Baron Nashor',
@@ -87,9 +93,12 @@ data.buffs = {'baron':{
 };
 
 
+var __debug;
+
 function ClickerSetup($scope, Menu){
 	/* http://javascript.crockford.com/private.html */
 	var that = this;
+	__debug = this;
 	this.started = false; // Primitive, sorry <.<
 	this.save_time;
 	this.progression_time;
@@ -380,6 +389,7 @@ function ClickerSetup($scope, Menu){
 		return split[fighter_t];
 	}
 	function damage_of_entity(entity){
+		if(!entity) return {physical: 0, magical: 0};
 		var damage = entity.attack;
 		var ph_p = damage_split(entity.type);
 		var mg_p = 1-ph_p;
@@ -391,22 +401,36 @@ function ClickerSetup($scope, Menu){
 		if(!match.is_fighting){
 			//Farm
 		}else{
-			for(var champ in match.fight.friendlies){
+			if(!match.fight.friendlies.length || match.fight.objective.hp <= 0){
+				var push = end_fight(match);
+				console.log('Fight is over');
+				if(push < 0){
+					console.log('You lost');
+				}else{
+					console.log('You won');
+				}
+				if(push >= 7){
+					win_match();
+				}
+			}
+			match.fight.friendlies.forEach(function(champ){
 				var target = match.fight.enemies[Math.floor(Math.random()*match.fight.enemies.length)];
+				console.log(target, 'attacked by', champ);
 				var damage = damage_of_entity(champ);
 				var ph_dmg = damage.physical;
 				var mg_dmg = damage.magical;
 				damage_entity_physical(target, ph_dmg);
 				damage_entity_magic(target, mg_dmg);
-			}
-			for(var enemy in match.fight.enemies){
+			});
+			match.fight.enemies.forEach(function(enemy){
 				var target = match.fight.friendlies[Math.floor(Math.random()*match.fight.friendlies.length)];
-				var damage = damage_of_entity(champ);
+				console.log(target, 'attacked by', enemy);
+				var damage = damage_of_entity(enemy);
 				var ph_dmg = damage.physical;
 				var mg_dmg = damage.magical;
 				damage_entity_physical(target, ph_dmg);
 				damage_entity_magic(target, mg_dmg);
-			}
+			});
 			match.fight.friendlies = match.fight.friendlies.filter(lives_entity);
 			match.fight.enemies = match.fight.enemies.filter(function(enemy){
 				if(!lives_entity(enemy)){
@@ -419,12 +443,6 @@ function ClickerSetup($scope, Menu){
 				}
 				return true;
 			});
-			if(!match.fight.friendlies.length || match.fight.objective.hp <= 0){
-				var push = end_fight(match);
-				if(push >= 7){
-					win_match();
-				}
-			}
 		}
 	};
 
@@ -511,7 +529,7 @@ function ClickerSetup($scope, Menu){
 			console.log(error);
 			return error;
 		}
-		state.match.champions[ident] += 1;
+		increment_count(state.match.champions, [ident], 1);
 	}
 	function move_bake(ident){
 		var error = null;
@@ -528,26 +546,26 @@ function ClickerSetup($scope, Menu){
 		state.match.champions[ident] -= 1;
 	}
 
-	function mk_champion_exp(champ){
-		champion_id = data.champions.map[champ].id;
+	function champion_exp(champ){
+		var champion_id = data.champions.map[champ].id;
 		return (state.mastery[champion_id] || 0) + (state.champions[champ].experience || 0);
 	};
 	function champion_level(id){
-		xp = champion_exp(id);
+		var xp = champion_exp(id);
 		return Math.floor(Math.log(4, xp + 1))
 	};
 	function mk_champion_hp(amount, id, level){
-		return 100 + data.champions.map[id].id;
+		return data.champions.map[id].base_hp;
 	};
 	function mk_champion_attack(amount, id, level){
-		return 100 + data.champions.map[id].id;
+		return data.champions.map[id].base_attack;
 	};
-	function mk_champion_defense(amount, id, level){
-		return 100 + data.champions.map[id].id;
+	function mk_champion_armor(amount, id, level){
+		return data.champions.map[id].base_armor;
 	};
 	function mk_champion_mr(amount, id, level){
-		return 100;
-	};
+		return data.champions.map[id].base_mr;
+	}
 	var champion_type = {'tank': fighter_type.hybrid,
 						'fighter': fighter_type.physical,
 						'mage': fighter_type.magical,
@@ -555,23 +573,28 @@ function ClickerSetup($scope, Menu){
 						'assassin': fighter_type.hybrid,
 						'support': fighter_type.magical};
 	function can_start_fight(match, lane){
-		if(match.is_fighting || (lane == 'base' && (match.lanes.bot < 4 && match.lanes.mid < 4 && match.lanes.top < 4))){
+		var match = state.match;
+		if(!lane || match.is_fighting || (lane == 'base' && (match.lanes.bot < 4 && match.lanes.mid < 4 && match.lanes.top < 4))){
 			return false;
 		}
 		return true;
 	}
-	function start_fight(match, lane){
+	function start_fight(lane){
+		var match = state.match;
 		if(match.is_fighting){
 			console.log('There is already a fight happening');
+		}
+		if(!lane){
+			console.log("Can only fight on a lane");
 		}
 		if(!can_start_fight(match, lane)){
 			console.log(String.format('You can\'t attack at {0} yet, clear other objectives first', lane));
 		}
 		for(var id in match.champions){
-			num = match.champions[id];
-			level = champion_level(id);
+			var num = match.champions[id];
+			var level = champion_level(id);
 			if(!num) continue;
-			champ = {
+			var champ = {
 				champ_id : id,
 				max_hp : 0,
 			}
@@ -579,46 +602,81 @@ function ClickerSetup($scope, Menu){
 			champ.type = champion_type[data.champions.map[id].ch_class];
 			champ.max_hp = champ.hp = mk_champion_hp(num, id, level);
 			champ.attack = mk_champion_attack(num, id, level);
-			champ.armor = mk_champion_defense(num, id, level);
+			champ.armor = mk_champion_armor(num, id, level);
 			champ.magic_res = mk_champion_mr(num, id, level);
 			match.fight.friendlies.push(champ);
 			match.in_fight[id] = num;
 		}
 
-		function mk_enemy(name, type, hp, attack, armor, magic_res, exp){
-			return {name : name,
-				type :type,
-				hp : hp,
-				max_hp : hp,
-				attack : attack,
-				armor : armor,
-				magic_res : magic_res,
-				experience: exp,
+		function mk_enemy(name_i, type_i, hp_i, attack_i, armor_i, magic_res_i, exp_i){
+			return {name : name_i,
+				type :type_i,
+				hp : hp_i,
+				max_hp : hp_i,
+				attack : attack_i,
+				armor : armor_i,
+				magic_res : magic_res_i,
+				experience: exp_i,
 				friendly : false};
 		}
-		if(lane.startWith('buff_')){
+		if(lane.startsWith('buff_')){
 			var buffname = lane.substring(5);
 			var buff = data.buffs[buffname];
+			if(!buff) return "Could not find specified buff";
 			var base_hp = buff.base_hp;
 			var slay_count = retrieve_object(state.stats, ['buffs_slain', buffname], false) || 0;
 			var base_attack = buff.base_attack * Math.pow(1.15, slay_count);
 			var base_armor = buff.base_armor * Math.pow(1.05, slay_count);
 			var base_mr = buff.base_magic_res * Math.pow(1.10, slay_count);
 			var base_exp = buff.base_exp * (1 + slay_count/4);
-			match.objective = mk_enemy(buff.name, buff.type, base_hp, base_attack, base_armor, base_magic_res, base_exp);
-			match.enemies.push(match.objective);
+			match.fight.objective = mk_enemy(buff.name, buff.type, base_hp, base_attack, base_armor, base_magic_res, base_exp);
+			match.fight.enemies.push(match.objective);
 		}else{
 			var push = match.lanes[lane] + (lane == 'base'?4:0);
-			var chance = 0.5 + push * (0.5 / 9);
+			var chance = 0.1 + push * (0.9 / 9);
 			var enm_list = Array.apply(null, Array(5)).map(function (_, i) {return i;});
 			for(var enm_id in enm_list){
-				//<TODO>;
+				if(Math.random() > chance) continue;
+				var rnd_champ = data.champions.all[Math.floor(Math.random() * data.champions.all.length)];
+				console.log('Adding enemy champion', rnd_champ);
+				var enm_champ = data.champions.map[rnd_champ];
+				var enm_name = enm_champ.name;
+				var enm_type = champion_type[enm_champ.ch_class];
+				var enm_hp = enm_champ.base_hp;
+				var enm_attack = enm_champ.base_attack;
+				var enm_armor = enm_champ.base_armor;
+				var enm_mr = enm_champ.base_mr;
+				var enm_exp = 100;
+				match.fight.enemies.push(mk_enemy(enm_name, enm_type, enm_hp, enm_attack, enm_armor, enm_mr, enm_exp));
 			}
+			var tower_base_stats = {
+				0: {name: 'Tier 1 tower', hp: 1000, attack: 100, armor: 100, mr: 50, exp: 200},
+				1: {name: 'Tier 2 tower', hp: 1500, attack: 100, armor: 100, mr: 50, exp: 200},
+				2: {name: 'Inhibitor tower', hp: 2000, attack: 100, armor: 100, mr: 50, exp: 200},
+				3: {name: 'Inhibitor', hp: 2000, attack: 0, armor: 100, mr: 50, exp: 200},
+				4: {name: 'Base tower 1', hp: 3000, attack: 100, armor: 100, mr: 50, exp: 200},
+				5: {name: 'Base tower 2', hp: 3000, attack: 100, armor: 100, mr: 50, exp: 200},
+				6: {name: 'Nexus', hp: 4000, attack: 0, armor: 100, mr: 50, exp: 200}
+			}
+			{//Tower
+				var tower_stat = tower_base_stats[push];
+				var tower_name = tower_stat.name;
+				var tower_hp = tower_stat.hp;
+				var tower_attack = tower_stat.attack;
+				var tower_armor = tower_stat.armor;
+				var tower_mr = tower_stat.mr;
+				var tower_exp = tower_stat.exp;
+				var tower_type = fighter_type.physical;
+				match.fight.objective = mk_enemy(tower_name, tower_type, tower_hp, tower_attack, tower_armor, tower_mr, tower_exp);
+				match.fight.enemies.push(match.fight.objective);
+			}
+			
 		}
 		match.fight.lane = lane;
 		match.is_fighting = true;
 	};
-	function end_fight(match){
+	function end_fight(){
+		var match = state.match;
 		var wonFight = match.fight.objective.hp <= 0;
 		var push = 0;
 		if(wonFight){
@@ -639,6 +697,7 @@ function ClickerSetup($scope, Menu){
 		match.fight.friendlies.length = 0;
 		match.fight.enemies.length = 0;
 		match.is_fighting = false;
+		if(!wonFight) return -1;
 		return push;
 	};
 	function win_match(){
@@ -683,9 +742,9 @@ function ClickerSetup($scope, Menu){
 	this.pastries_per_second = calculate_pps;
 	this.manual_bake = manual_bake;
 
-	this.can_start_fight = can_start_fight.bind(this, state.match);
-	this.start_fight = start_fight.bind(this, state.match);
-	this.end_fight = end_fight.bind(this, state.match);
+	this.can_start_fight = can_start_fight;
+	this.start_fight = start_fight;
+	this.end_fight = end_fight;
 	this.start_match = start_match;
 	this.collect_rewards = collect_rewards;
 
