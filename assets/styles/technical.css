@@ -76,8 +76,15 @@
 
 .ruler {
   flex: 0 0 0;
-  border-left: 2px solid;
-  border-top: 2px solid;
+  border-left: 1px solid;
+  border-top: 1px solid;
   border-radius: 1px;
   margin: 10px;
+}
+
+.section-header::before, .section-header::after {
+  content: '';
+  display: block;
+  height: 1px;
+  margin: 6px 0px;
 }

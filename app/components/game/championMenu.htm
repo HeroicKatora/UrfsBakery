@@ -1,10 +1,10 @@
 <div>
-	<h1>Kitchen Staff</h1>
+	<h1 class="section-header">Kitchen Staff</h1>
 	<div>You own the following champions</div>
 	<div ng-repeat="(type, class) in Bakery.to_display.classes">
 		<div>{{class.name}} champions:</div>
 		<div ng-repeat="champ in class.champions" ng-click="champ.buy()" ng-disabled="champ.costs() > Bakery.state.pastries">{{champ.name}}: {{champ.amount() | prettyNumber}} Costs: {{champ.costs() | prettyNumber}}</div>
 	</div>
 	<div class="ruler"></div>
-	<h1>Kitchen Upgrades</h1>
+	<h1 class="section-header">Kitchen Upgrades</h1>
 </div>

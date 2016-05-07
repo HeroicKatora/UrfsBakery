@@ -70,4 +70,7 @@ h1, .section-header {
   border-color: var(--light-dark) !important;
 }
 
+.section-header::before, .section-header::after {
+  background: linear-gradient(to right, rgba(255,0,0,0) 0%, var(--light-dark) 40%, var(--light-dark) 60%, rgba(255,0,0,0) 100%);
+}
 
