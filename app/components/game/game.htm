@@ -10,15 +10,17 @@
 		<div class="view-aligned-flex sheet">
 			<ng-include src="'app/components/game/championOverview.htm'" class="equal-flex" ng-click="Menu.openMenu('champions')"></ng-include>
 			<div class="ruler"></div>
-			<ng-include src="'app/components/game/matchOverview.htm'" class="equal-flex"></ng-include>
+			<ng-include src="'app/components/game/matchOverview.htm'" class="equal-flex" ng-click="Menu.openMenu('match')"></ng-include>
 		</div>
 		<div id="bakery-menu" class="anchored-bot centered-shrink" ng-hide="Menu.menuPath == ''">
 			<div class="sheet fill-parent">
-				<div style="position: absolute; right: 0; top: 0;">
-					<button ng-click="Menu.openMenu('')">Close</button>
-				</div>
-				<ng-include src="Menu.menuPath">
-				</ng-include>
+				<div style="height: 100%; overflow: auto;">
+					<div style="position: absolute; right: 0; top: 0;">
+						<button class="close-button" ng-click="Menu.openMenu('')">Close</button>
+					</div>
+					<ng-include src="Menu.menuPath">
+					</ng-include>
+				<div>
 			</div>
 		</div>
 	</div>

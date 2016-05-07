@@ -1,9 +1,17 @@
 <div>
 	<h1 class="section-header">Kitchen Staff</h1>
-	<div>You own the following champions</div>
-	<div ng-repeat="(type, class) in Bakery.to_display.classes">
-		<div>{{class.name}} champions:</div>
-		<div ng-repeat="champ in class.champions" ng-click="champ.buy()" ng-disabled="champ.costs() > Bakery.state.pastries">{{champ.name}}: {{champ.amount() | prettyNumber}} Costs: {{champ.costs() | prettyNumber}}</div>
+	<div class="wrap-floating">
+		<div class="vertical-tab-selection" ng-init="view_tab = 'tank'">
+	        <div ng-repeat="(type, class) in Bakery.to_display.classes" ng-class="{'active': view_tab == type}" ng-click="$parent.view_tab = type" class="tab-item">
+	        	<div class="icon" ng-style="{'background': 'url(' + class.icon_href + ')', 'background-position': -class.icon_y + ' ' + -class.icon_x}", 'background-size': '48px 48px'></div>
+	        </div>
+		</div>
+		<div class="vertical-tab-content">
+			<div ng-repeat="(type, class) in Bakery.to_display.classes" ng-show="view_tab == type">
+				<h2 class="small-section-header">{{class.name}} champions:</h2>
+				<div ng-repeat="champ in class.champions" ng-click="champ.buy()" ng-disabled="champ.costs() > Bakery.state.pastries">{{champ.name}}: {{champ.amount() | prettyNumber}} Costs: {{champ.costs() | prettyNumber}}</div>
+			</div>
+		</div>
 	</div>
 	<div class="ruler"></div>
 	<h1 class="section-header">Kitchen Upgrades</h1>

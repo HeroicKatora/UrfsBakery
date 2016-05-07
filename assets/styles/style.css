@@ -46,6 +46,13 @@ h1, .section-header {
   text-align: center;
 }
 
+h2, .small-section-header {
+  font-family: 'Merriweather';
+  font-size: 1.3em;
+  font-weight: bold;
+  text-align: center;
+}
+
 .sheet {
   border: 3px solid transparent;
   border-radius: 10px 10px 0 0;
@@ -71,6 +78,24 @@ h1, .section-header {
 }
 
 .section-header::before, .section-header::after {
-  background: linear-gradient(to right, rgba(255,0,0,0) 0%, var(--light-dark) 40%, var(--light-dark) 60%, rgba(255,0,0,0) 100%);
+  background: linear-gradient(to right, rgba(255,0,0,0) 0%, rgba(255,0,0,0) 20%, var(--light-dark) 40%, var(--light-dark) 60%, rgba(255,0,0,0) 80%, rgba(255,0,0,0) 100%);
+}
+
+.small-section-header::after {
+  background: linear-gradient(to right, var(--light-dark), var(--light-dark) 20%, rgba(255,0,0,0) 40%, rgba(255,0,0,0) 100%);
+}
+
+
+div[ng-click]:hover, ng-include[ng-click]:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-item.active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.icon {
+  height: 3em;
+  width: 3em;
 }
 

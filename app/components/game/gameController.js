@@ -7,6 +7,7 @@ bakeryModule
 		'champions' : 'app/components/game/championMenu.htm',
 		'mastery' : 'app/components/game/masteryMenu.htm',
 		'options' : 'app/components/game/optionsMenu.htm',
+		'match' : 'app/components/game/matchMenu.htm',
 		'' : '',
 	}
 	return {

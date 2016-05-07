@@ -136,12 +136,12 @@ if __name__ == "__main__":
     args = argparser.parse_known_args()[0]
 
     up = UpgradeReg('6.9.1')
-    up.register_class(ClassReg(tank, 'Tank', '', 'missing.png', 0, 0))
-    up.register_class(ClassReg(fighter, 'Fighter', '', 'missing.png', 0, 0))
-    up.register_class(ClassReg(mage, 'Mage', '', 'missing.png', 0, 0))
-    up.register_class(ClassReg(marksman, 'Marksman', '', 'missing.png', 0, 0))
-    up.register_class(ClassReg(assassin, 'Assassin', '', 'missing.png', 0, 0))
-    up.register_class(ClassReg(support, 'Support', '', 'missing.png', 0, 0))
+    up.register_class(ClassReg(tank, 'Tank', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 7*48))
+    up.register_class(ClassReg(fighter, 'Fighter', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 3*48))
+    up.register_class(ClassReg(mage, 'Mage', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 4*48))
+    up.register_class(ClassReg(marksman, 'Marksman', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 5*48))
+    up.register_class(ClassReg(assassin, 'Assassin', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 2*48))
+    up.register_class(ClassReg(support, 'Support', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 6*48))
     up.register_upgrade(PhE(['start'], 100, 'Everyone start slowly', 'assets/img/bakery.bmp', 'Some informal description', {}))
     with up.for_champion('Pantheon', 100, 4, 'The best baker on summoners rift', fighter, 400, 60, 20, 40) as ch_reg:
         ch_reg.register_upgrade(ChU(140, 'Weat flavoured spear', 'After the fight, his enemies smell like bread. Terrifying.', '1'))

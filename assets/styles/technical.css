@@ -82,9 +82,22 @@
   margin: 10px;
 }
 
-.section-header::before, .section-header::after {
+.section-header::before, .section-header::after, .small-section-header::after {
   content: '';
   display: block;
   height: 1px;
   margin: 6px 0px;
+}
+
+.vertical-tab-selection, .vertical-tab-content {
+  float: left;
+  padding-left: 10px;
+}
+
+.tab-item {
+  padding-right: 10px;
+}
+
+.wrap-floating {
+  overflow-y: hidden;
 }
