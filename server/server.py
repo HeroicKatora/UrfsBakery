@@ -55,15 +55,23 @@ class NameRequest(BaseHTTPRequestHandler):
             self.wfile.write(b'\n')
 
 
+cache_period = 1000 * 60 * 10
+def time_millis():
+    return int(time.time() * 1000)
+
+
 def get_mastery(cache_db, region, player):
     try:
         playerid, = cache_db.get_playerid(region, player)
         if playerid is None:
             return None
-        data,qtime = cache_db.get_mastery_blob(region, playerid)
-        return data
-    except rp.AnswerException:
-        pass
+        data, qtime = cache_db.get_mastery_blob(region, playerid)
+        if time_millis() - qtime < cache_period:
+            return data
+        print('Data set for {region} {player} too old, refreshing'.format(region=region, player=player))
+        return cache_db.get_mastery_blob_fresh(region, playerid)[0]
+    except rp.AnswerException as ex:
+        raise ex
 
 
 def get_mastery_blob(region, playerid):
@@ -85,7 +93,7 @@ def get_mastery_blob(region, playerid):
         req_time = time.time()
         response = dl.api_request('/championmastery/location/{platformId}/player/{playerId}/champions'.format(platformId=platformIdMap[region], playerId=playerid))
         print('Took {time_sec} seconds to query'.format(time_sec=time.time()-req_time))
-        return (json.dumps({a['championId']:make_mastery_data(a)._asdict() for a in response}).encode('utf-8'), int(time.time() * 10000))
+        return (json.dumps({a['championId']:make_mastery_data(a)._asdict() for a in response}).encode('utf-8'), time_millis()) 
     except rp.AnswerException:
         pass
 

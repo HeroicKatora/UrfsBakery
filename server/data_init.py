@@ -32,7 +32,8 @@ class ChampReg:
         self.portrait = 'http://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{name}.png'.format(version = self.upref.ddragonversion, name=name)
         self.upgrade_portrait = 'http://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{name}.png'
         self.skin = 'http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{name}_{ind}.jpg'
-        self.upref.register_champion(PurchaseElement(name, cost, name, self.portrait, description, {'base_production': base_production, 'class': ch_class}), ch_class)
+        extra_info = {'base_production': base_production, 'ch_class': ch_class}
+        self.upref.register_champion(PurchaseElement(name, cost, name, self.portrait, description, extra_info), ch_class)
 
     def register_upgrade(self, champ_upgrade):
         self.upgrades.append(champ_upgrade)
@@ -77,8 +78,8 @@ class UpgradeReg:
         obuf.write(';\n')
         obuf.write('data.items = ')
         json.dump(list(map(self.as_dict, self.items)), obuf)
-        obuf.write(';\n')
-        obuf.write('data.champions = ')
+        obuf.write(';\ndata.champions = {};\n')
+        obuf.write('data.champions.map = ')
         json.dump({k : self.as_dict(e) for k, e in self.champions.items()}, obuf)
         obuf.write(';\n')
         for cl, it in self.classes.items():

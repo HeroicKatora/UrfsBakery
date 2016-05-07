@@ -7,6 +7,7 @@
 		<button type="button" id="reset">Reset</button>
 		<button type="button" id="delete">Delete game data</button>
 		<div class="entry-text" id="pastries">Pastries: <span ng-cloak>{{Bakery.format(Bakery.state.pastries || 0)}}</span></div>
+		<div class="entry-text" id="pps">Pastry production: <span ng-cloak>{{Bakery.format(Bakery.pastries_per_second())}}</span></div>
 		<button ng-click="Menu.openMenu('champions')">View champions</button>
 		<button ng-click="Menu.openMenu('mastery')">Update mastery data</button>
 		<button ng-click="Menu.openMenu('')">Close Menu</button>

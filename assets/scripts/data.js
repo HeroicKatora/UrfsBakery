@@ -1,11 +1,12 @@
 var data = {};
 data.upgrades = [{"identifier": ["start"], "base_cost": 100, "name": "Everyone start slowly", "imghref": "assets/img/bakery.bmp", "description": "Some informal description"}, {"identifier": ["Pantheon", 0], "base_cost": 140, "name": "Weat flavoured spear", "imghref": "http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/Pantheon.png", "description": "After the fight, his enemies smell like bread. Terrifying.", "skin": "http://ddragon.leagueoflegends.com/cdn/img/champion/loading/Pantheon_0.jpg"}];
 data.items = [];
-data.champions = {"Pantheon": {"identifier": "Pantheon", "base_cost": 100, "name": "Pantheon", "imghref": "http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/Pantheon.png", "description": "The best baker on summoners rift", "class": "fighter", "base_production": 4}};
-data.champions.marksman = [];
-data.champions.mage = [];
+data.champions = {};
+data.champions.map = {"Pantheon": {"identifier": "Pantheon", "base_cost": 100, "name": "Pantheon", "imghref": "http://ddragon.leagueoflegends.com/cdn/6.9.1/img/champion/Pantheon.png", "description": "The best baker on summoners rift", "ch_class": "fighter", "base_production": 4}};
 data.champions.assassin = [];
 data.champions.support = [];
 data.champions.fighter = ["Pantheon"];
 data.champions.tank = [];
+data.champions.mage = [];
+data.champions.marksman = [];
 data.regions = [{"name": "Brazil", "id": "br"}, {"name": "Europe North/East", "id": "eune"}, {"name": "Europe West", "id": "euw"}, {"name": "Japan", "id": "jp"}, {"name": "Korea", "id": "kr"}, {"name": "Latin America North", "id": "lan"}, {"name": "Latin America South", "id": "las"}, {"name": "North America", "id": "na"}, {"name": "Oceania", "id": "oce"}, {"name": "Russia", "id": "ru"}, {"name": "Turkey", "id": "tr"}]
