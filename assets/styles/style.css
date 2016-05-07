@@ -2,6 +2,11 @@ html, body {
   height: 100%;
   margin: 0;
   font-family: 'Lato';
+  color: whitesmoke;
+  --super-dark: rgb(3, 8, 10);
+  --dark: rgb(7, 16, 21);
+  --moody-dark: rgb(21, 44, 52);
+  --light-dark: rgb(140, 227, 255);
 }
 
 #page-header {
@@ -12,17 +17,47 @@ html, body {
   text-align: center;
   background-color: #ccc;
   max-height: 3.3em;
-  overflow-y: scroll;
+  padding-right: 17px;
+  overflow-y: auto;
 }
 
 #bakery-menu {
   width: 80%;
   height: 80%;
+  z-index: 2;
 }
 
 #game {
+  z-index: 9999;
+  background:  url(http://euw.leagueoflegends.com/profiles/lol2_profile/themes/custom/lolt/img/lol_news_new_bg.jpg);
+  background-size: cover;
+  background-position: center center;
 }
 
 .headline {
   font-family: 'Merriweather';
+}
+
+.sheet {
+  border: 3px solid transparent;
+  border-radius: 10px 10px 0 0;
+  background: linear-gradient(to bottom, var(--moody-dark), var(--dark));
+  background-clip: padding-box;
+  padding: 10px;
+  position: relative;
+  box-shadow: 0 0 3px 0 black;
+}
+
+.sheet::after {
+  top: -3px; bottom: -3px;
+  left: -3px; right: -3px;
+  background: linear-gradient(to bottom, var(--light-dark), var(--moody-dark) 35%);
+  content: '';
+  border-radius: 7px 7px 0 0;
+  position: absolute;
+  z-index: -1;
+}
+
+.ruler {
+  border-color: var(--moody-dark) !important;
 }

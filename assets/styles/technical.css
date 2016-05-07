@@ -16,7 +16,7 @@
   overflow: hidden;
 }
 
-.row.header {
+.row.filler {
   flex: 0 0 auto;
 }
 
@@ -24,15 +24,14 @@
   flex: 1 1 auto;
 }
 
-.row.footer {
-  flex: 0 0 auto;
-}
-
 .equal-flex {
+  position: relative;
   flex-basis: 100%;
 }
 
 .fill-parent {
+  box-sizing: border-box;
+  width: auto;
   height: 100%;
 }
 
@@ -70,4 +69,10 @@
   bottom: 0;
   left: 0;
   right: 0;
+}
+
+.ruler {
+  border-left: 1px solid;
+  border-top: 1px solid;
+  margin: 10px;
 }

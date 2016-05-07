@@ -1,5 +1,5 @@
 <div class="box fill-parent">
-	<div id="bakery-header" class="centered-shrink row header">
+	<div id="bakery-header" class="centered-shrink row filler">
 		<button ng-click="Bakery.start_empty()" id="fresh" ng-hide="Bakery.started">Fresh start</button>
 		<button ng-click="Bakery.load()" id="load" ng-disabled="!Bakery.canLoad()">Load</button>
 		<button ng-click="Bakery.save()" id="save" ng-disabled="!Bakery.started">Save</button>
@@ -15,11 +15,14 @@
 	<div id="bakery-main" class="row content anchor">
 		<div class="view-aligned-flex">
 			<ng-include src="'app/components/game/championOverview.htm'" class="equal-flex"></ng-include>
+			<div class="ruler filler"></div>
 			<ng-include src="'app/components/game/matchOverview.htm'" class="equal-flex"></ng-include>
 		</div>
-		<div id="bakery-menu" class="anchored-bot centered-shrink" ng-hide="Menu.menuPath == ''" style="background-color: red;">
-			<ng-include src="Menu.menuPath">
-			</ng-include>
+		<div id="bakery-menu" class="anchored-bot centered-shrink" ng-hide="Menu.menuPath == ''">
+			<div class="sheet fill-parent">
+				<ng-include src="Menu.menuPath">
+				</ng-include>
+			</div>
 		</div>
 	</div>
 </div>
