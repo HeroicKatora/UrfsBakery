@@ -14,12 +14,8 @@
 	</div>
 	<div id="bakery-main" class="row content anchor">
 		<div class="view-aligned-flex">
-			<div id="menu1" class="row content">
-			text
-			</div>
-			<div id="menu2" class="row content">
-			more text
-			</div>
+			<ng-include src="'app/components/game/championOverview.htm'" class="equal-flex"></ng-include>
+			<ng-include src="'app/components/game/matchOverview.htm'" class="equal-flex"></ng-include>
 		</div>
 		<div id="bakery-menu" class="anchored-bot centered-shrink" ng-hide="Menu.menuPath == ''" style="background-color: red;">
 			<ng-include src="Menu.menuPath">

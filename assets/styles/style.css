@@ -12,6 +12,7 @@ html, body {
   text-align: center;
   background-color: #ccc;
   max-height: 3.3em;
+  overflow-y: scroll;
 }
 
 #bakery-menu {

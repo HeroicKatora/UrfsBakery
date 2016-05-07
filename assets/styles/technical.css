@@ -5,6 +5,8 @@
 
 .view-aligned-flex {
   display: flex;
+  height: 100%;
+  width: 100%;
 }
 
 .row {
@@ -24,6 +26,10 @@
 
 .row.footer {
   flex: 0 0 auto;
+}
+
+.equal-flex {
+  flex-basis: 100%;
 }
 
 .fill-parent {
