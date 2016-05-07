@@ -1,0 +1,7 @@
+<div>
+	<button ng-click="Bakery.start_empty()" id="fresh" ng-hide="Bakery.started">Fresh start</button>
+	<button ng-click="Bakery.load()" id="load" ng-disabled="!Bakery.canLoad()">Load</button>
+	<button ng-click="Bakery.save()" id="save" ng-disabled="!Bakery.started">Save</button>
+	<button ng-click="Bakery.reset()" id="reset">Reset</button>
+	<button ng-click="Bakery.deleteData()" id="delete">Delete game data</button>
+</div>

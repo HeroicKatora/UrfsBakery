@@ -1,15 +1,10 @@
 <div class="box fill-parent">
 	<div id="bakery-header" class="centered-shrink row filler">
-		<button ng-click="Bakery.start_empty()" id="fresh" ng-hide="Bakery.started">Fresh start</button>
-		<button ng-click="Bakery.load()" id="load" ng-disabled="!Bakery.canLoad()">Load</button>
-		<button ng-click="Bakery.save()" id="save" ng-disabled="!Bakery.started">Save</button>
 		<button ng-click="Bakery.manual_bake()" id="bake">Bake</button>
-		<button ng-click="Bakery.reset()" id="reset">Reset</button>
-		<button ng-click="Bakery.deleteData()" id="delete">Delete game data</button>
 		<div class="entry-text" id="pastries">Pastries: <span ng-cloak>{{(Bakery.state.pastries || 0) | prettyNumber}}</span></div>
 		<div class="entry-text" id="pps">Pastry production: <span ng-cloak>{{Bakery.pastries_per_second() | prettyNumber}}</span></div>
 		<button ng-click="Menu.openMenu('mastery')">Update mastery data</button>
-		<button ng-click="Menu.openMenu('')">Close Menu</button>
+		<button ng-click="Menu.openMenu('options')">Options</button>
 	</div>
 	<div id="bakery-main" class="row content anchor">
 		<div class="view-aligned-flex sheet">

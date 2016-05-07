@@ -6,6 +6,7 @@ bakeryModule
 	var mapping = {
 		'champions' : 'app/components/game/championMenu.htm',
 		'mastery' : 'app/components/game/masteryMenu.htm',
+		'options' : 'app/components/game/optionsMenu.htm',
 		'' : '',
 	}
 	return {
