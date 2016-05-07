@@ -120,7 +120,7 @@ function ClickerSetup($scope, Menu){
 		state.version = ClickerVersion;
 		state.mastery = {};
 		state.champions = {};
-		for(var champ in data.champions){
+		for(var champ in data.champions.map){
 			state.champions[champ] = {amount: 0, experience: 0};
 		}
 		state.upgrades = {}; 
@@ -308,13 +308,6 @@ function ClickerSetup($scope, Menu){
 * Game loop stuff from here onwards
 *
 */
-	var handle_click = function(){
-		if(!that.started){
-			return;
-		}
-		state.pastries += 10;
-	}
-
 	var mainLoop = function(){
 		var now_date = Date.now();
 		state.last_tick = state.last_tick || now_date - 100;
@@ -360,7 +353,7 @@ function ClickerSetup($scope, Menu){
 	}
 
 	function bake(time_step){
-		var pps = calculate_pps() || 0;
+		var pps = calculate_pps();
 		state.pastries += Math.round(time_step/1000 * pps);
 
 	};
@@ -396,6 +389,7 @@ function ClickerSetup($scope, Menu){
 		//This ignores time step for now
 		var match = state.match;
 		if(!match.is_fighting){
+			//Farm
 		}else{
 			for(var champ in match.fight.friendlies){
 				var target = match.fight.enemies[Math.floor(Math.random()*match.fight.enemies.length)];
@@ -483,9 +477,29 @@ function ClickerSetup($scope, Menu){
 		state.champions[ident].amount = amount_champion(ident) + 1;
 		progress();
 	};
+	function buy_item(ident){
+		var cost = cost_item(ident);
+		if(costs > state.pastries){
+			console.log('Not enough to buy');
+			return;
+		}
+		state.pastries -= costs;
+		state.champions[ident].amount = amount_champion(ident) + 1;
+		progress();
+	}
 
 	function unlock_achievement(ident){
-		store_object(state.achievements, ident, {})['unlocked'] = true;
+		retrieve_object(state.achievements, ident, true)['unlocked'] = true;
+	}
+	function has_achievement(ident){
+		return (retrieve_object(state.achievements, ident, false) || {unlocked : false}).unlocked;
+	}
+
+	function unlock_upgrade(ident){
+		retrieve_object(state.upgrades, ident, true)['unlocked'] = true;
+	}
+	function has_achievement(ident){
+		return (retrieve_object(state.upgrades, ident, false) || {unlocked : false}).unlocked;
 	}
 	
 /*
