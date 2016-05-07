@@ -1,0 +1,5 @@
+@media not all and (min-aspect-ratio: 1/1) {
+.view-aligned-flex {
+	flex-direction: column;
+}
+}

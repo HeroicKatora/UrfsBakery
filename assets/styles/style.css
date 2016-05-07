@@ -11,6 +11,16 @@ html, body {
 #page-footer {
   text-align: center;
   background-color: #ccc;
+  max-height: 3.3em;
+  overflow-y: scroll;
+}
+
+#bakery-menu {
+  width: 80%;
+  height: 80%;
+}
+
+#game {
 }
 
 .headline {

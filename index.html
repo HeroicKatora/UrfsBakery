@@ -18,6 +18,8 @@
 		<link href='https://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="assets/styles/style.css">
 		<link rel="stylesheet" type="text/css" href="assets/styles/technical.css">
+		<link rel="stylesheet" type="text/css" href="assets/styles/horizontal.css">
+		<link rel="stylesheet" type="text/css" href="assets/styles/vertical.css">
 
 		<title ng-bind="pageTitle"></title>
 	</head>
@@ -26,7 +28,7 @@
 			<header class="row header" id="page-header">
 				<span class="headline">header</span>
 			</header>
-			<div class="row content" ng-include="'app/components/game/game.htm'" data-onload="Bakery.onDomLoaded()">
+			<div id="game" class="row content" ng-include="'app/components/game/game.htm'">
 			</div>
 			<footer class="row footer" id="page-footer">
 				<small>Urf's Bakery isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends &copy; Riot Games, Inc.</small>
