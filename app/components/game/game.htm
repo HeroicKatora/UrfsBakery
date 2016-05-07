@@ -6,20 +6,22 @@
 		<button ng-click="Bakery.manual_bake()" id="bake">Bake</button>
 		<button ng-click="Bakery.reset()" id="reset">Reset</button>
 		<button ng-click="Bakery.deleteData()" id="delete">Delete game data</button>
-		<div class="entry-text" id="pastries">Pastries: <span ng-cloak>{{Bakery.format(Bakery.state.pastries || 0)}}</span></div>
-		<div class="entry-text" id="pps">Pastry production: <span ng-cloak>{{Bakery.format(Bakery.pastries_per_second())}}</span></div>
-		<button ng-click="Menu.openMenu('champions')">View champions</button>
+		<div class="entry-text" id="pastries">Pastries: <span ng-cloak>{{(Bakery.state.pastries || 0) | prettyNumber}}</span></div>
+		<div class="entry-text" id="pps">Pastry production: <span ng-cloak>{{Bakery.pastries_per_second() | prettyNumber}}</span></div>
 		<button ng-click="Menu.openMenu('mastery')">Update mastery data</button>
 		<button ng-click="Menu.openMenu('')">Close Menu</button>
 	</div>
 	<div id="bakery-main" class="row content anchor">
 		<div class="view-aligned-flex sheet">
-			<ng-include src="'app/components/game/championOverview.htm'" class="equal-flex"></ng-include>
+			<ng-include src="'app/components/game/championOverview.htm'" class="equal-flex" ng-click="Menu.openMenu('champions')"></ng-include>
 			<div class="ruler"></div>
 			<ng-include src="'app/components/game/matchOverview.htm'" class="equal-flex"></ng-include>
 		</div>
 		<div id="bakery-menu" class="anchored-bot centered-shrink" ng-hide="Menu.menuPath == ''">
 			<div class="sheet fill-parent">
+				<div style="position: absolute; right: 0; top: 0;">
+					<button ng-click="Menu.openMenu('')">Close</button>
+				</div>
 				<ng-include src="Menu.menuPath">
 				</ng-include>
 			</div>

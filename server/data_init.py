@@ -62,6 +62,25 @@ marksman = 'marksman'
 assassin = 'assassin'
 support = 'support'
 
+
+class ClassReg:
+    def __init__(self, name, longname, description, icon_href, icon_x, icon_y):
+        self.identifier = name
+        self.name = longname
+        self.descr = description
+        self.icon_href = icon_href
+        self.icon_x = icon_x
+        self.icon_y = icon_y
+        self.champions = []
+
+    def write(self, obuf):
+        json.dump({'name': self.name, 'description': self.descr,
+            'icon_href' : self.icon_href, 'icon_x': self.icon_x,
+            'icon_y': self.icon_y, 'champions': self.champions}, obuf)
+
+    def add_champion(self, champion):
+        self.champions.append(champion.identifier)
+
        
 class UpgradeReg:
     def __init__(self, ddragonversion):
@@ -69,8 +88,7 @@ class UpgradeReg:
         self.items = []
         self.upgrades = []
         self.champions = {}
-        self.classes = defaultdict(list)
-        list(map(lambda a : self.classes[a], (tank, fighter, mage, marksman, assassin, support)))
+        self.classes = {}
 
     def write(self, obuf):
         obuf.write('var data = {};\n')
@@ -79,13 +97,15 @@ class UpgradeReg:
         obuf.write(';\n')
         obuf.write('data.items = ')
         json.dump(list(map(self.as_dict, self.items)), obuf)
-        obuf.write(';\ndata.champions = {};\n')
+        obuf.write(';\n')
+        obuf.write('data.champions = {};\n')
         obuf.write('data.champions.map = ')
         json.dump({k : self.as_dict(e) for k, e in self.champions.items()}, obuf)
         obuf.write(';\n')
+        obuf.write('data.classes = {};\n')
         for cl, it in self.classes.items():
-            obuf.write('data.champions.{key} = '.format(key=cl))
-            json.dump(it, obuf)
+            obuf.write('data.classes.{key} = '.format(key=cl))
+            it.write(obuf)
             obuf.write(';\n')
 
     def as_dict(self, element):
@@ -93,6 +113,9 @@ class UpgradeReg:
         d.update(element.info)
         d.pop('info')
         return d
+
+    def register_class(self, classreg):
+        self.classes[classreg.identifier] = classreg
 
     def register_upgrade(self, element):
         self.upgrades.append(element)
@@ -102,7 +125,7 @@ class UpgradeReg:
 
     def register_champion(self, champ_element, ch_class):
         self.champions[champ_element.identifier] = champ_element
-        self.classes[ch_class].append(champ_element.identifier)
+        self.classes[ch_class].add_champion(champ_element)
 
     def for_champion(self, *args):
         return ChampReg(self, *args)
@@ -113,6 +136,12 @@ if __name__ == "__main__":
     args = argparser.parse_known_args()[0]
 
     up = UpgradeReg('6.9.1')
+    up.register_class(ClassReg(tank, 'Tank', '', 'missing.png', 0, 0))
+    up.register_class(ClassReg(fighter, 'Fighter', '', 'missing.png', 0, 0))
+    up.register_class(ClassReg(mage, 'Mage', '', 'missing.png', 0, 0))
+    up.register_class(ClassReg(marksman, 'Marksman', '', 'missing.png', 0, 0))
+    up.register_class(ClassReg(assassin, 'Assassin', '', 'missing.png', 0, 0))
+    up.register_class(ClassReg(support, 'Support', '', 'missing.png', 0, 0))
     up.register_upgrade(PhE(['start'], 100, 'Everyone start slowly', 'assets/img/bakery.bmp', 'Some informal description', {}))
     with up.for_champion('Pantheon', 100, 4, 'The best baker on summoners rift', fighter, 400, 60, 20, 40) as ch_reg:
         ch_reg.register_upgrade(ChU(140, 'Weat flavoured spear', 'After the fight, his enemies smell like bread. Terrifying.', '1'))

@@ -1,27 +1,8 @@
-<div style="text-align: center;"><span>menu text</span></div>
-<div>You own the following champions</div>
-<div id="champions-tank">
-	<div>Tank type champions:</div>
-	<div ng-repeat="champ in Bakery.to_display.tank">{{champ.name}}: {{Bakery.state.champions[champ.identifier] || 0}} Costs: {{champ.costs()}}</div>
+<div>
+	<h1>Kitchen Staff</h1>
+	<div>You own the following champions</div>
+	<div ng-repeat="(type, class) in Bakery.to_display.classes">
+		<div>{{class.name}} champions:</div>
+		<div ng-repeat="champ in class.champions" ng-click="champ.buy()" ng-disabled="champ.costs() > Bakery.state.pastries">{{champ.name}}: {{champ.amount() | prettyNumber}} Costs: {{champ.costs() | prettyNumber}}</div>
+	</div>
 </div>
-<div id="champions_fighter">
-	<div>Fighter type champions:</div>
-	<div ng-repeat="champ in Bakery.to_display.fighter" ng-click="champ.buy()" ng-disabled="champ.costs() > Bakery.state.pastries">{{champ.name}}: {{champ.amount()}} Costs: {{Bakery.format(champ.costs())}}</div>
-</div>
-<div id="champions_mage">
-	<div>Mage type champions:</div>
-	<div ng-repeat="champ in Bakery.to_display.mage">{{champ.name}}: {{Bakery.state.champions[champ.identifier] || 0}} Costs: {{champ.costs()}}</div>
-</div>
-<div id="champions_marksman">
-	<div>Marksman type champions:</div>
-	<div ng-repeat="champ in Bakery.to_display.marksman">{{champ.name}}: {{Bakery.state.champions[champ.identifier] || 0}} Costs: {{champ.costs()}}</div>
-</div>
-<div id="champions_assassin">
-	<div>Assassin type champions:</div>
-	<div ng-repeat="champ in Bakery.to_display.assassin">{{champ.name}}: {{Bakery.state.champions[champ.identifier] || 0}} Costs: {{champ.costs()}}</div>
-</div>
-<div id="champions_support">
-	<div>Support type champions:</div>
-	<div ng-repeat="champ in Bakery.to_display.support">{{champ.name}}: {{Bakery.state.champions[champ.identifier] || 0}} Costs: {{champ.costs()}}</div>
-</div>
-

@@ -1,4 +1,7 @@
 <div class="fill-parent">
-	<h1>Champion overview</h1>
+	<h1>Kitchen Assistants</h1>
 	<div class="ruler"></div>
+	<div ng-repeat="(type, class) in Bakery.to_display.classes">
+		{{class.name}}: {{class.champions}}
+	</div>
 </div>

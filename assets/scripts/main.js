@@ -77,9 +77,8 @@ data.upgrades.forEach(function(upgrade){
 	store_object(data.upgrade_map, upgrade.identifier, upgrade);
 });
 
-data.champions.types = ['tank', 'fighter', 'mage', 'marksman', 'assassin', 'support'];
-data.champions.all = data.champions.types.reduce(function(list, type){
-	return list.concat(data.champions[type]);
+data.champions.all = ['tank', 'fighter', 'mage', 'marksman', 'assassin', 'support'].reduce(function(list, type){
+	return list.concat(data.classes[type].champions);
 }, []);
 
 data.buffs = {'baron':{
@@ -278,22 +277,6 @@ function ClickerSetup($scope, Menu){
 	function updateGuiState(){
 		$scope.$apply(); // Notify angular of possible model changes
 	};
-
-	var scaleEnd = {
-		2 : 'Million',
-		3 : 'Billion',
-		4 : 'Quadrillion'
-	}
-	function format_number(number){
-		if(number < 1e6) return number.toFixed(2);
-		var scale = Math.floor(Math.log(number) / Math.log(10)  / 3);
-		var scaleText = scaleEnd[scale];
-		if(scaleText == undefined){
-			scale = 4;
-			scaleText = scaleEnd[4];
-		}
-		return String((number/Math.pow(10, 3 * scale)).toFixed(3)) + ' '+scaleText;
-	}
 /*
 *
 * Game loop stuff from here onwards
@@ -717,6 +700,16 @@ function ClickerSetup($scope, Menu){
 		disp.move_bake = move_bake.bind(this, id);
 		return disp;
 	}
+	function classes_disp(type) {
+		return {
+			name : type.name,
+			descr : type.description,
+			icon_href : type.icon_href,
+			icon_x : type.icon_x,
+			icon_y : type.icon_y,
+			champions : type.champions.map(champ_disp)
+		}
+	}
  	initState();
 	this.data = data;
 	this.refresh_mastery = refresh_mastery;
@@ -739,14 +732,15 @@ function ClickerSetup($scope, Menu){
 	this.to_display = {
 		upgrades : data.upgrades.map(id),
 		items : data.items.map(id),
-		tank: data.champions.tank.map(champ_disp),
-		fighter: data.champions.fighter.map(champ_disp),
-		mage: data.champions.mage.map(champ_disp),
-		marksman: data.champions.marksman.map(champ_disp),
-		assassin: data.champions.assassin.map(champ_disp),
-		support: data.champions.support.map(champ_disp)
+		classes : {
+			tank: classes_disp(data.classes.tank),
+			fighter: classes_disp(data.classes.fighter),
+			mage: classes_disp(data.classes.mage),
+			marksman: classes_disp(data.classes.marksman),
+			assassin: classes_disp(data.classes.assassin),
+			support: classes_disp(data.classes.support)
+		}
 	};
-	this.format = format_number;
 	if(!canLoad() || !startSavedData()){
 		console.log('Could not load saved data, maybe this is the first play through');
 		startEmpty();
