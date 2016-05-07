@@ -314,7 +314,7 @@ function ClickerSetup($scope, Menu){
 		var time_passed = now_date - state.last_tick;
 		if(time_passed > grace_period){
 			console.log('Made a jump in time, maybe suspended pc, load of an old save etc.');
-			console.log(String.format('Missed {0} seconds', now_date - state.last_tick ))
+			console.log(String.format('Missed {0} milliseconds', now_date - state.last_tick ))
 			time_passed = grace_period;
 		}
 		if(time_passed > 0){
@@ -354,7 +354,7 @@ function ClickerSetup($scope, Menu){
 
 	function bake(time_step){
 		var pps = calculate_pps();
-		state.pastries += Math.round(time_step/1000 * pps);
+		state.pastries += time_step/1000 * pps;
 
 	};
 
