@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 .box {
   display: flex;
   flex-flow: column;
@@ -30,7 +34,6 @@
 }
 
 .fill-parent {
-  box-sizing: border-box;
   width: auto;
   height: 100%;
 }
@@ -72,7 +75,9 @@
 }
 
 .ruler {
-  border-left: 1px solid;
-  border-top: 1px solid;
+  flex: 0 0 0;
+  border-left: 2px solid;
+  border-top: 2px solid;
+  border-radius: 1px;
   margin: 10px;
 }

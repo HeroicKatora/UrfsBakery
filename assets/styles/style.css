@@ -6,7 +6,8 @@ html, body {
   --super-dark: rgb(3, 8, 10);
   --dark: rgb(7, 16, 21);
   --moody-dark: rgb(21, 44, 52);
-  --light-dark: rgb(140, 227, 255);
+  --light-dark: rgb(42, 88, 104);
+  --bright: rgb(140, 227, 255);
 }
 
 #page-header {
@@ -29,13 +30,20 @@ html, body {
 
 #game {
   z-index: 9999;
-  background:  url(http://euw.leagueoflegends.com/profiles/lol2_profile/themes/custom/lolt/img/lol_news_new_bg.jpg);
+  background:  url(//euw.leagueoflegends.com/profiles/lol2_profile/themes/custom/lolt/img/lol_news_new_bg.jpg);
   background-size: cover;
   background-position: center center;
 }
 
 .headline {
   font-family: 'Merriweather';
+}
+
+h1, .section-header {
+  font-family: 'Merriweather';
+  font-size: 1.7em;
+  font-weight: bold;
+  text-align: center;
 }
 
 .sheet {
@@ -51,7 +59,7 @@ html, body {
 .sheet::after {
   top: -3px; bottom: -3px;
   left: -3px; right: -3px;
-  background: linear-gradient(to bottom, var(--light-dark), var(--moody-dark) 35%);
+  background: linear-gradient(to bottom, var(--bright), var(--moody-dark) 35%);
   content: '';
   border-radius: 7px 7px 0 0;
   position: absolute;
@@ -59,5 +67,7 @@ html, body {
 }
 
 .ruler {
-  border-color: var(--moody-dark) !important;
+  border-color: var(--light-dark) !important;
 }
+
+
