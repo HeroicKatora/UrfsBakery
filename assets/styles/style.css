@@ -37,6 +37,39 @@ html, body {
   background-position: center center;
 }
 
+#bakery-header {
+  margin-top: 0.5em;
+}
+
+#logo-wrapper {
+  min-width: 30vw;
+}
+#logo {
+  background: url(../img/urf.png) no-repeat;
+  background-position: 20% 0%;
+  background-size: 90%;
+}
+
+#bake {
+  background-size: cover;
+}
+
+#menu-close {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+}
+
+#message-board {
+  width: 200px;
+  z-index: 999;
+}
+
+#message-board .message {
+  text-align: center;
+}
+
+
 .headline {
   font-family: 'Merriweather';
 }
@@ -138,26 +171,6 @@ tr.overviewRow > td {
 }
 .class-description {
   font-size: x-small;
-}
-
-#bakery-header {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-}
-
-#menu-close {
-  position: absolute;
-  right: 3px;
-  top: 3px;
-}
-
-#message-board {
-  width: 200px;
-  z-index: 999;
-}
-
-#message-board .message {
-  text-align: center;
 }
 
 .message.ng-animate {

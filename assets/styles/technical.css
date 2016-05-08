@@ -12,6 +12,10 @@
   flex-flow: row;
 }
 
+.wrap-content {
+  display: table;
+}
+
 .view-aligned-flex {
   display: flex;
   height: 100%;
