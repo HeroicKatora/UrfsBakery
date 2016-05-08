@@ -8,6 +8,7 @@ html, body {
   --moody-dark: rgb(21, 44, 52);
   --light-dark: rgb(42, 88, 104);
   --bright: rgb(140, 227, 255);
+  --error: #f03;
 }
 
 #page-header {
@@ -94,7 +95,7 @@ h3, .emphazise-header {
 }
 
 
-div[ng-click]:hover, ng-include[ng-click]:hover {
+div[ng-click]:hover:not([disabled]), ng-include[ng-click]:hover:not([disabled]) {
   background: rgba(255, 255, 255, 0.05);
 }
 
@@ -106,6 +107,11 @@ div[ng-click]:hover, ng-include[ng-click]:hover {
   height: 48px;
   width: 48px;
   display: inline-block;
+}
+
+.splash {
+  display: inline-block;
+  width: 3em;
 }
 
 .costs::after {
