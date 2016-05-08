@@ -132,3 +132,12 @@ tr.overviewRow > td {
   white-space: nowrap;
 }
 
+#message-board {
+  width: 200px;
+  z-index: 999;
+}
+
+#message-board > message {
+  text-align: center;
+}
+

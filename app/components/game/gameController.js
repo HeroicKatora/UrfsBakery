@@ -10,14 +10,22 @@ bakeryModule
 		'match' : 'app/components/game/matchMenu.htm',
 		'' : '',
 	}
+	var timeoutQueue = [];
 	return {
 		messages: [],
 		addMessage: function(message) {
+			while(this.messages.length > 4) {
+				this.messages.shift();
+				var promise = timeoutQueue.shift();
+				$timeout.cancel(promise);
+			}
 			this.messages.push(message);
 			var messages = this.messages;
-			$timeout(function() {
+			timeoutQueue.push($timeout(function() {
 				messages.shift();
-			}, 15000);
+				// We should be first
+				timeoutQueue.shift();
+			}, 15000));
 		},
 		menuPath: '',
 		openMenu: function(menu) {
