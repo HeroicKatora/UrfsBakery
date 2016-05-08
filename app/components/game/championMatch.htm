@@ -1,8 +1,8 @@
 <div>
 	<div class="box" style="flex-flow: row; padding: 5px;">
-		<div class="row filler icon" ng-style="{'background': 'url(' + champ.imghref + ')', 'background-size': 'contain'}">
-			<div class="box anchored-bot-left" ng-click="champ.move_match()">+</div>
-			<div class="box anchored-bot-right" ng-click="champ.move_bake()">-</div>
+		<div class="row filler icon anchor" ng-style="{'background': 'url(' + champ.imghref + ')', 'background-size': 'contain'}">
+			<button class="box anchored-bot-left" ng-click="champ.move_match()" ng-disabled="!champ.can_move_match()">+</button>
+			<button class="box anchored-bot-right" ng-click="champ.move_bake()" ng-disabled="!champ.can_move_bake()">-</button>
 		</div>
 		<div class="row filler">
 		</div>
@@ -10,8 +10,19 @@
 			<div>
 				<span class="emphazise-header">{{champ.name}}</span><small>{{champ.description}}</small>
 			</div>
-			<small style="padding-left: 5px" ng-style="{'color': (champ.costs() > Bakery.state.pastries) ? 'var(--error)' : 'inherit'}" class="costs">{{champ.costs() | prettyNumber}}</small>
-			<div class="emphazise-header anchored-bot-right">{{champ.amount() | prettyNumber}}
+			<table>
+				<tr>
+					<td>Attack</td><td>{{champ.base_attack}}</td>
+					<td>Health</td><td>{{champ.base_hp}}</td>
+				</tr>
+				<tr>
+					<td>Armor</td><td>{{champ.base_armor}}</td>
+					<td>Magic resistance</td><td>{{champ.base_mr}}</td>
+				</tr>
+				</tr>
+				</tr>
+			</table>
+			<div class="emphazise-header anchored-bot-right">Selected {{champ.amount_match() | prettyNumber}} / {{champ.amount() | prettyNumber}}
 			</div>
 		</div>
 	</div>

@@ -1,4 +1,10 @@
 <div>
-	<h1 class="section-header">Match overview</h1>
-	<span>Work in progress</span>
+	<div style="position:relative">
+		<ng-include src="'app/components/game/matchRank.htm'"></ng-include>
+	</div>
+	<div style="width: 50%; height: 50%;">
+		<ng-include src="'app/components/game/matchMap.htm'" ng-if="Bakery.show_start_fight()"></ng-include>
+		<div ng-if="Bakery.show_start_match()">You are not in a match right now</div>
+		<div ng-if="Bakery.show_reward()">Collect your rewards</div>
+	</div>
 </div>

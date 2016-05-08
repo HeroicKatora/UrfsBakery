@@ -192,3 +192,9 @@ button, input[type="button"] {
 button:hover, input[type="button"]:hover {
   background-image: linear-gradient(to bottom, var(--bright) 30%, var(--dimmed) 70%);
 }
+
+.img-tower{
+	height: 6%;
+	width: 6%;
+	position: absolute;
+}

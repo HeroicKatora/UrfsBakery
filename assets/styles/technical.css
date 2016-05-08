@@ -81,6 +81,12 @@
   right: 0;
 }
 
+.anchored-bot-left {
+ position: absolute;
+ bottom: 0;
+ left: 0;
+}
+
 .ruler {
   flex: 0 0 0;
   border-left: 1px solid;

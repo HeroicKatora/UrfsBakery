@@ -77,18 +77,21 @@ function increment_count(object_base, path, amount = 1){
 function count_object(object_base, fn){
 	var count = 0;
 	for(var sub in object_base){
-		if(fn(sub))
+		if(fn(sub, object_base[sub]))
 			count += 1;
 	}
 	return count;
 }
 
-data.item_map = data.upgrade_map = {};
+data.achievement_map = data.item_map = data.upgrade_map = {};
 data.items.forEach(function(item){
 	store_object(data.item_map, item.identifier, item);
 });
 data.upgrades.forEach(function(upgrade){
 	store_object(data.upgrade_map, upgrade.identifier, upgrade);
+});
+data.achievements.forEach(function(achievement){
+	store_object(data.achievement_map, achievement.identifier, achievement);
 });
 
 data.champions.all = ['tank', 'fighter', 'mage', 'marksman', 'assassin', 'support'].reduce(function(list, type){
@@ -165,12 +168,18 @@ function ClickerSetup($scope, Menu){
 			bot : 0,
 			base : 0,
 		};
+		match.lane_hp = {
+			top : 0,
+			mid : 0,
+			bot : 0,
+			base : 0,
+		};
 		match.is_fighting = false;
 		match.fight = {
 			lane : undefined,
 			friendlies : [],
 			enemies : [],
-			objective : undefined 
+			objective : function(){return state.match.fight.enemies[0] || {hp: -1};} 
 		};
 		match.rewards = undefined;
 		state.buffs = {};
@@ -335,6 +344,18 @@ function ClickerSetup($scope, Menu){
 		increment_count(state.stats, ['manual_bake'], amount);
 	
 		Menu.addMessage('+'+amount);
+		increment_count(state.stats, ['user', 'clicking'], amount);
+		var baked = retrieve_object(state.stats, ['user', 'clicking']);
+		if(baked >= 1e0) unlock_achievement(['user', 'clicking', '0']);
+		if(baked >= 1e2) unlock_achievement(['user', 'clicking', '1']);
+		if(baked >= 1e4) unlock_achievement(['user', 'clicking', '2']);
+		if(baked >= 1e6) unlock_achievement(['user', 'clicking', '3']);
+		if(baked >= 1e9) unlock_achievement(['user', 'clicking', '4']);
+		if(baked >= 1e12) unlock_achievement(['user', 'clicking', '5']);
+		if(baked >= 1e15) unlock_achievement(['user', 'clicking', '6']);
+		if(baked >= 1e18) unlock_achievement(['user', 'clicking', '7']);
+		if(baked >= 1e21) unlock_achievement(['user', 'clicking', '8']);
+		if(baked >= 1e24) unlock_achievement(['user', 'clicking', '9']);
 		state.pastries += amount;
 	};
 
@@ -401,7 +422,7 @@ function ClickerSetup($scope, Menu){
 		if(!match.is_fighting){
 			//Farm
 		}else{
-			if(!match.fight.friendlies.length || match.fight.objective.hp <= 0){
+			if(!match.fight.friendlies.length || match.fight.objective().hp <= 0){
 				var push = end_fight(match);
 				console.log('Fight is over');
 				if(push < 0){
@@ -415,7 +436,7 @@ function ClickerSetup($scope, Menu){
 					win_match();
 				}
 			}else{
-				var fightspeed = 1/100;
+				var fightspeed = 1/4;
 				match.fight.friendlies.forEach(function(champ){
 					var target = match.fight.enemies[Math.floor(Math.random()*match.fight.enemies.length)];
 					dlog(2, target, 'attacked by', champ);
@@ -443,7 +464,7 @@ function ClickerSetup($scope, Menu){
 							var exp = exp_bonus / match.fight.friendlies.length;
 							var fighter_count = amount_champion_type('fighter');
 							exp *= (1 + 0.1 * fighter_count);
-							state.champions[ident].experience += exp;
+							add_experience(ident, exp, ' defeating '+enemy.name);
 						});
 						return false;
 					}
@@ -506,8 +527,21 @@ function ClickerSetup($scope, Menu){
 		return state.items[ident].ident;
 	}
 
+	function add_experience(ident, amount, reason){
+		var level_pre = champion_level(ident);
+		state.champions[ident].experience += amount;
+		var level_post = champion_level(ident);
+		if(level_post > level_pre){
+			Menu.addMessage(data.champions.map[ident] + ' gained level ' + level_post + (reason? (' by ' + reason) : ''));
+		}
+	}
+
 	function amount_champion_type(type){
 		return data.classes[type].champions.reduce(function(counter, champ){return counter+amount_champion(champ);}, 0);
+	}
+	
+	function amount_champion_type_match(type){
+		return data.classes[type].champions.reduce(function(counter, champ){return counter+match_champion(champ);}, 0);
 	}
 
 	function buy_champion(ident){
@@ -532,7 +566,11 @@ function ClickerSetup($scope, Menu){
 	}
 
 	function unlock_achievement(ident){
-		retrieve_object(state.achievements, ident, true)['unlocked'] = true;
+		var achievement_object = retrieve_object(state.achievements, ident, true);
+		if(!achievement_object['unlocked']){
+			Menu.addMessage('You have unlocked:\n'+retrieve_object(data.achievement_map, ident).name);
+		}
+		achievement_object['unlocked'] = true;
 	}
 	function has_achievement(ident){
 		return (retrieve_object(state.achievements, ident, false) || {unlocked : false}).unlocked;
@@ -572,15 +610,31 @@ function ClickerSetup($scope, Menu){
 /*
  * Fight related stuff
  */
+	function can_move_match(ident){
+		return !state.match.is_in_game && (state.match.champions[ident] || 0) < amount_champion(ident);
+	}
 	function move_match(ident){
-		if((state.match.champions[ident] || 0) >= amount_champion(ident)){
+		if(state.match.is_in_game){
+			var error = "You are currently in a game";
+			console.log(error);
+			return error;
+		}
+		if(!can_move_match(ident)){
 			var error = "You don't have enough champions to move one to a match";
 			console.log(error);
 			return error;
 		}
 		increment_count(state.match.champions, [ident], 1);
 	}
+	function can_move_bake(ident){
+		return !state.match.is_in_game && state.match.champions[ident] && state.match.champions[ident] > (state.match.in_fight[ident] || 0);
+	}
 	function move_bake(ident){
+		if(state.match.is_in_game){
+			var error = "You are currently in a game";
+			console.log(error);
+			return error;
+		}
 		var error = null;
 		if(!state.match.champions[ident]){
 			error = "This champion does not participate in the match";
@@ -696,26 +750,12 @@ function ClickerSetup($scope, Menu){
 			var base_armor = buff.base_armor * Math.pow(1.05, slay_count);
 			var base_mr = buff.base_magic_res * Math.pow(1.10, slay_count);
 			var base_exp = buff.base_exp * (1 + slay_count/4);
-			match.fight.objective = mk_enemy(buff.name, buff.type, base_hp, base_attack, base_armor, base_mr, base_exp);
-			match.fight.enemies.push(match.objective);
+			var objective = mk_enemy(buff.name, buff.type, base_hp, base_attack, base_armor, base_mr, base_exp);
+			match.fight.enemies.push(objective);
 		}else{
 			var push = match.lanes[lane] + (lane == 'base'?4:0);
 			var chance = 0.1 + push * (0.9 / 9);
 			var enm_list = Array.apply(null, Array(5)).map(function (_, i) {return i;});
-			for(var enm_id in enm_list){
-				if(Math.random() > chance) continue;
-				var rnd_champ = data.champions.all[Math.floor(Math.random() * data.champions.all.length)];
-				console.log('Adding enemy champion', rnd_champ);
-				var enm_champ = data.champions.map[rnd_champ];
-				var enm_name = enm_champ.name;
-				var enm_type = champion_type[enm_champ.ch_class];
-				var enm_hp = enm_champ.base_hp;
-				var enm_attack = enm_champ.base_attack;
-				var enm_armor = enm_champ.base_armor;
-				var enm_mr = enm_champ.base_mr;
-				var enm_exp = 100;
-				match.fight.enemies.push(mk_enemy(enm_name, enm_type, enm_hp, enm_attack, enm_armor, enm_mr, enm_exp));
-			}
 			var tower_base_stats = {
 				0: {name: 'Tier 1 tower', hp: 1000, attack: 100, armor: 100, mr: 50, exp: 200},
 				1: {name: 'Tier 2 tower', hp: 1500, attack: 100, armor: 100, mr: 50, exp: 200},
@@ -734,8 +774,25 @@ function ClickerSetup($scope, Menu){
 				var tower_mr = tower_stat.mr;
 				var tower_exp = tower_stat.exp;
 				var tower_type = fighter_type.physical;
-				match.fight.objective = mk_enemy(tower_name, tower_type, tower_hp, tower_attack, tower_armor, tower_mr, tower_exp);
-				match.fight.enemies.push(match.fight.objective);
+				var objective = mk_enemy(tower_name, tower_type, tower_hp, tower_attack, tower_armor, tower_mr, tower_exp);
+				if(match.lane_hp[lane] > 0){
+					objective.hp = match.lane_hp[lane];
+				}
+				match.fight.enemies.push(objective);
+			}
+			for(var enm_id in enm_list){
+				if(Math.random() > chance) continue;
+				var rnd_champ = data.champions.all[Math.floor(Math.random() * data.champions.all.length)];
+				console.log('Adding enemy champion', rnd_champ);
+				var enm_champ = data.champions.map[rnd_champ];
+				var enm_name = enm_champ.name;
+				var enm_type = champion_type[enm_champ.ch_class];
+				var enm_hp = enm_champ.base_hp;
+				var enm_attack = enm_champ.base_attack;
+				var enm_armor = enm_champ.base_armor;
+				var enm_mr = enm_champ.base_mr;
+				var enm_exp = 100;
+				match.fight.enemies.push(mk_enemy(enm_name, enm_type, enm_hp, enm_attack, enm_armor, enm_mr, enm_exp));
 			}
 			
 		}
@@ -744,7 +801,7 @@ function ClickerSetup($scope, Menu){
 	};
 	function end_fight(){
 		var match = state.match;
-		var wonFight = match.fight.objective.hp <= 0;
+		var wonFight = match.fight.objective().hp <= 0;
 		var push = 0;
 		var lane = match.fight.lane;
 		if(wonFight){
@@ -753,9 +810,11 @@ function ClickerSetup($scope, Menu){
 				state.buffs[buffname] = (state.buffs[buffname] || 0) + 1;
 				increment_count(state.stats, ['buffs_slain', buffname]);
 			}else if(lane != 'base'){
-				push = (match.lanes[fight.lane] += 1);
+				push = (match.lanes[lane] += 1);
+				match.lane_hp[lane] = match.fight.objective().hp;
 			}else{
 				push = (match.lanes.base += 1) + 4;
+				match.lane_hp[lane] = match.fight.objective().hp;
 			}
 		}
 
@@ -775,6 +834,15 @@ function ClickerSetup($scope, Menu){
 		state.match.is_in_game = false;
 		Menu.addMessage('You won a Match, collect your reward now!');
 	}
+	function cancel_match(){
+		if(state.match.is_fighting){
+			end_fight();
+		}
+		state.match.lanes = {top: 0, mid:0, bot:0, base:0};
+		state.match.rewards = undefined;
+		state.match.is_in_game = false;
+		Menu.addMessage('You have forfeited a game, try again when you think you can beat it');
+	}
 
 	function collect_rewards(){
 		if(!state.match.rewards){
@@ -793,6 +861,29 @@ function ClickerSetup($scope, Menu){
 /*
  * Exporting the state
  */
+	function display_rank(){
+		var league = function(rank){
+			if(rank < 5) return "bronze";
+			if(rank < 10) return "silver";
+			if(rank < 15) return "gold";
+			if(rank < 20) return "platin";
+			if(rank < 25) return "diamond";
+			if(rank < 26) return "master";
+			return "challenger";
+		}(state.rank);
+		var tier = function(tier){
+			if(tier == 0) return 'v';
+			if(tier == 1) return 'iv';
+			if(tier == 2) return 'iii';
+			if(tier == 3) return 'ii';
+			return 'i';
+		}(state.rank % 5);
+		if(league == 'challenger')
+			return 'assets/img/challenger.png';
+		if(league == 'master')
+			return 'assets/img/master.png';
+		return String.format('assets/img/{0}_{1}.png', league, tier);
+	}
 	function id(a){return a;}
 	function item_disp(item){
 		var disp = JSON.parse(JSON.stringify(item));
@@ -819,7 +910,9 @@ function ClickerSetup($scope, Menu){
 
 		disp.costs = cost_champion.bind(this, id);
 		disp.buy = buy_champion.bind(this, id);
+		disp.can_move_match = can_move_match.bind(this, id);
 		disp.move_match = move_match.bind(this, id);
+		disp.can_move_bake = can_move_bake.bind(this, id);
 		disp.move_bake = move_bake.bind(this, id);
 		return disp;
 	}
@@ -831,7 +924,8 @@ function ClickerSetup($scope, Menu){
 			icon_x : type.icon_x,
 			icon_y : type.icon_y,
 			champions : type.champions.map(champ_disp),
-			amount : amount_champion_type.bind(this, type)
+			amount : amount_champion_type.bind(this, type.identifier),
+			amount_match : amount_champion_type_match.bind(this, type.identifier)
 		}
 	}
 	function lanes_disp(){
@@ -857,12 +951,14 @@ function ClickerSetup($scope, Menu){
 	this.start_fight = start_fight;
 	this.end_fight = end_fight;
 	this.start_match = start_match;
+	this.cancel_match = cancel_match;
 	this.collect_rewards = collect_rewards;
 	this.show_fight = function(){return state.match.is_fighting;};
 	this.show_reward = function(){return state.match.rewards != undefined;};
 	this.show_start_match = function(){return !state.match.is_in_game && state.match.rewards == undefined;};
 	this.show_start_fight = function(){return state.match.rewards == undefined && state.match.is_in_game && !state.match.is_fighting;};
 	this.show_end_fight = function(){return state.match.is_fighting;};
+	this.show_cancel_match = function(){return state.match.is_in_game};
 
 	this.load = load;
 	this.save = save;
@@ -883,6 +979,7 @@ function ClickerSetup($scope, Menu){
 		},
 		lanes : lanes_disp()
 	};
+	this.rank = display_rank;
 	if(!canLoad() || !startSavedData()){
 		console.log('Could not load saved data, maybe this is the first play through');
 		startEmpty();

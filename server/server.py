@@ -62,7 +62,10 @@ def time_millis():
 
 def get_mastery(cache_db, region, player):
     try:
-        playerid, = cache_db.get_playerid(region, player)
+        player_query = cache_db.get_playerid(region, player)
+        if player_query is None:
+            return None
+        playerid, = player_query 
         if playerid is None:
             return None
         data, qtime = cache_db.get_mastery_blob(region, playerid)
