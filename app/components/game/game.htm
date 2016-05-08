@@ -2,7 +2,7 @@
 	<div id="bakery-header" class="centered-shrink row filler">
 		<button ng-click="Bakery.manual_bake()" id="bake">Bake</button>
 		<div class="entry-text" id="pastries">Pastries: <span ng-cloak>{{(Bakery.state.pastries || 0) | prettyNumber}}</span></div>
-		<div class="entry-text" id="pps">Pastry production: <span ng-cloak>{{Bakery.pastries_per_second() | prettyNumber}}</span></div>
+		<div class="entry-text" id="pps">Pastry production: <span ng-cloak>{{Bakery.pastries_per_second() | prettyNumber:2}}</span></div>
 		<button ng-click="Menu.openMenu('mastery')">Update mastery data</button>
 		<button ng-click="Menu.openMenu('options')">Options</button>
 	</div>

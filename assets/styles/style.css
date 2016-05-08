@@ -114,8 +114,12 @@ div[ng-click]:hover:not([disabled]), ng-include[ng-click]:hover:not([disabled]) 
   width: 3em;
 }
 
-.costs::after {
-  content: ' pasteries';
+.costs[currency]::after {
+  content: " " attr(currency);
+}
+
+.costs:not([currency])::after {
+  content: " pastries";
 }
 
 .overviewRow {

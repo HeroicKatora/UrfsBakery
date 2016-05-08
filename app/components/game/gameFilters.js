@@ -8,8 +8,9 @@ bakeryModule.filter('prettyNumber', function() {
 		4 : 'Trillion',
 		5 : 'Quadrillion'
 	}
-	return function (number){
-		if(Math.abs(number) < 1e3) return number.toFixed();
+	return function (number, decimals){
+		if(!decimals) decimals = 0;
+		if(Math.abs(number) < 1e3) return number.toFixed(decimals);
 		if(Math.abs(number) < 1e6) {
 			var lastPart = ("000" + (number % 1000).toFixed()).substr(-3);
 			return Math.floor(number / 1000).toFixed() + ',' + lastPart;
