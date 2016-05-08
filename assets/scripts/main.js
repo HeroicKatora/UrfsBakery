@@ -319,8 +319,9 @@ function ClickerSetup($scope, Menu){
 	};
 	function manual_bake(){
 		var amount = 1;
-		var support_count = amount_champion_type('support');
-		amount *= (1 + 0.5*support_count);
+		var marksman_count = amount_champion_type('marksman');
+		amount *= (1 + 0.5*marksman_count);
+		increment_count(state.stats, ['manual_bake'], amount);
 		state.pastries += amount;
 	};
 
@@ -342,6 +343,8 @@ function ClickerSetup($scope, Menu){
 			pps_champ *= (champ_amou-champ_match) + (champ_match - champ_fight) * 0.3 + champ_fight * 0.1;
 			pps += pps_champ;
 		}
+		var support_count = amount_champion_type('support');
+		pps *= (1 + 0.001 * support_count);
 		return pps;
 	}
 
@@ -422,7 +425,10 @@ function ClickerSetup($scope, Menu){
 						var exp_bonus = enemy.experience;
 						match.fight.friendlies.forEach(function(ch){
 							var ident = ch.champ_id;
-							state.champions[ident].experience += exp_bonus / match.fight.friendlies.length;
+							var exp = exp_bonus / match.fight.friendlies.length;
+							var fighter_count = amount_champion_type('fighter');
+							exp *= (1 + 0.1 * fighter_count);
+							state.champions[ident].experience += exp;
 						});
 						return false;
 					}
@@ -451,12 +457,23 @@ function ClickerSetup($scope, Menu){
 	function cost_champion(ident){
 		var cost = data.champions.map[ident].base_cost;
 		cost = Math.pow(1.15, amount_champion(ident)) * cost;
+		var tank_count = amount_champion_type('tank');
+		cost *= 1/(1 + 0.1*tank_count);
+		return cost;
+	}
+
+	function cost_upgrade(ident){
+		var cost = retrieve_object(data.upgrade_map, ident).base_cost;
+		var mage_count = amount_champion_type('mage');
+		cost *= 1/(1 + 0.1*mage_count);
 		return cost;
 	}
 
 	function cost_item(ident){
 		var cost = retrieve_object(data.item_map, ident).base_cost;
 		cost = Math.pow(1.2, amount_item(ident)) * cost;
+		var assassin_count = amount_champion_type('assassin');
+		cost *= 1/(1 + 0.1*assassin_count);
 		return cost;
 	}
 
@@ -477,6 +494,7 @@ function ClickerSetup($scope, Menu){
 	function amount_champion_type(type){
 		return data.classes[type].champions.reduce(function(counter, champ){return counter+amount_champion(champ);}, 0);
 	}
+
 	function buy_champion(ident){
 		var costs = cost_champion(ident);
 		if(costs > state.pastries){
@@ -517,8 +535,27 @@ function ClickerSetup($scope, Menu){
 	function unlock_upgrade(ident){
 		retrieve_object(state.upgrades, ident, true)['unlocked'] = true;
 	}
-	function has_achievement(ident){
+	function has_upgrade(ident){
 		return (retrieve_object(state.upgrades, ident, false) || {unlocked : false}).unlocked;
+	}
+
+	function count_unlock(obj){
+		var count = 0;
+		for(var sub in obj){
+			if(sub['unlocked']) count += 1;
+		}
+		return count;
+	}	
+
+	function champion_skin(ident){
+		var upg = -1;
+		var skin = String.format('http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{0}_0.jpg', ident);
+		for(var upgrade in retrieve_object(state.upgrades, ['champion', ident])){
+			if(upgrade > upg && has_upgrade(['champion', ident, upgrade])){
+				upg = upgrade;
+				skin = retrieve_object(state.upgrades, ['champion', ident, upgrade]).skin;
+			}
+		}
 	}
 	
 /*
@@ -742,9 +779,23 @@ function ClickerSetup($scope, Menu){
  * Exporting the state
  */
 	function id(a){return a;}
+	function item_disp(item){
+		var disp = JSON.parse(JSON.stringify(item));
+		disp.display = function(){return true;};
+		disp.costs = cost_item.bind(this, item.identifier);
+		return disp;
+	}
+	function upgrade_disp(upgrade){
+		var disp = JSON.parse(JSON.stringify(upgrade));
+		disp.display = can_unlock_upgrade.bind(this, upgrade.identifier);
+		disp.costs = cost_upgrade.bind(this, upgrade.identifier);
+		return disp;
+	}
 	function champ_disp(id){
 		var disp = JSON.parse(JSON.stringify(data.champions.map[id]));
 		disp.display = function(){return true;};
+		disp.can_buy = function(){return disp.costs() <= state.pastries};
+		disp.champion_skin = champion_skin.bind(this, id);
 
 		disp.amount = amount_champion.bind(this, id);
 		disp.amount_match = match_champion.bind(this, id);
@@ -764,7 +815,8 @@ function ClickerSetup($scope, Menu){
 			icon_href : type.icon_href,
 			icon_x : type.icon_x,
 			icon_y : type.icon_y,
-			champions : type.champions.map(champ_disp)
+			champions : type.champions.map(champ_disp),
+			amount : amount_champion_type.bind(this, type)
 		}
 	}
 	function lanes_disp(){
@@ -804,8 +856,8 @@ function ClickerSetup($scope, Menu){
 	this.canLoad = canLoad;
 	this.start_empty = startEmpty;
 	this.to_display = {
-		upgrades : data.upgrades.map(id),
-		items : data.items.map(id),
+		upgrades : data.upgrades.map(upgrade_disp),
+		items : data.items.map(item_disp),
 		classes : {
 			tank: classes_disp(data.classes.tank),
 			fighter: classes_disp(data.classes.fighter),

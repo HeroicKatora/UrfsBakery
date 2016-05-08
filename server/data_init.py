@@ -149,12 +149,12 @@ if __name__ == "__main__":
     args = argparser.parse_known_args()[0]
 
     up = UpgradeReg('6.9.1')
-    up.register_class(ClassReg(tank, 'Tank', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 7*48))
-    up.register_class(ClassReg(fighter, 'Fighter', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 3*48))
-    up.register_class(ClassReg(mage, 'Mage', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 4*48))
-    up.register_class(ClassReg(marksman, 'Marksman', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 5*48))
-    up.register_class(ClassReg(assassin, 'Assassin', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 2*48))
-    up.register_class(ClassReg(support, 'Support', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 6*48))
+    up.register_class(ClassReg(tank, 'Tank', 'Owning more tanks will decrease the cost of other champions (due to their attractiveness, e.g. Taric)', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 7*48))
+    up.register_class(ClassReg(fighter, 'Fighter', 'More fighters will earn you more exp for defeating enemies', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 3*48))
+    up.register_class(ClassReg(mage, 'Mage', 'Mages magically minimize upgrade costs to mysterious levels', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 4*48))
+    up.register_class(ClassReg(marksman, 'Marksman', 'More ad, more right click power. Earn more pastries by clicking yourself', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 5*48))
+    up.register_class(ClassReg(assassin, 'Assassin', 'You need damage? You get damage. Owning more assassins reduces item costs', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 2*48))
+    up.register_class(ClassReg(support, 'Support', 'Everyone is happier with more pancakes and pastries', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 6*48))
 
     up.register_upgrade(PhE(['start'], 100, 'Everyone start slowly', 'assets/img/bakery.bmp', 'Some informal description', {}))
 
