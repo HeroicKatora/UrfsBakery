@@ -1,13 +1,16 @@
 <div>
 	<h1 class="section-header">Mastery Panel</h1>
-	<div>
+	<div class="inline-to-right">
 		<input type="text" id='select-name' placeholder='Your summoner name' ng-model='mastery_name' ng-default=""></input>
 		<select id='select-region' ng-model='mastery_region'
 			ng-options="region.name for region in Bakery.data.regions track by region.id"></select>
 		<button ng-click='Bakery.refresh_mastery(mastery_name, mastery_region.id)'>Refresh Mastery</button>
 	</div>
+	<div class="ruler"></div>
 	<div>
-		<div class="inline" ng-repeat="mastery in Bakery.state.mastery.data | orderBy:'-championPoints' track by $index" ng-init="{{champ=Bakery.data.champions.byNbr[mastery.championId];''}}" ng-if="Bakery.data.champions.byNbr[mastery.championId]">
+		<div class="inline" ng-repeat="mastery in Bakery.state.mastery.data | orderBy:'-championPoints' track by $index" ng-init="champ=Bakery.data.champions.byNbr[mastery.championId];''" ng-if="Bakery.data.champions.byNbr[mastery.championId]">
+			<div class="icon" ng-style="{'background': 'url(' + champ.imghref + ')', 'background-size': 'contain'}">
+			</div>
 			{{mastery}}{{champ}}
 		</div>
 	</div>

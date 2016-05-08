@@ -132,3 +132,12 @@
   vertical-align: top;
 }
 
+.inline-to-right {
+  text-align: right;
+}
+/*.inline-to-right::after {
+  content: '';
+  display:inline-block;
+  width:100%;
+}*/
+

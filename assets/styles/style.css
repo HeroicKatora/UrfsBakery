@@ -151,7 +151,7 @@ tr.overviewRow > td {
   z-index: 999;
 }
 
-#message-board > .message {
+#message-board .message {
   text-align: center;
 }
 
@@ -181,14 +181,29 @@ tr.overviewRow > td {
   opacity: 1;
 }
 
-button, input[type="button"] {
+input[type="text"] {
+  background-image: linear-gradient(to bottom, var(--light-dark) 30%, var(--moody-dark) 70%);
+  color: inherit;
+  border: var(--bright) inset 2px;
+  text-shadow: 0 0 0.2em black;
+  border-radius: 0.2em;
+}
+
+button, select, input[type="button"] {
   background-image: linear-gradient(to bottom, var(--light-dark) 30%, var(--moody-dark) 70%);
   color: inherit;
   border: var(--bright) solid 2px;
   text-shadow: 0 0 0.2em black;
-  border-radius: 1px;
+  border-radius: 0.2em;
+}
+
+option {
+  color: inherit;
+  text-shadow: 0 0 0.2em black;
+  background-color: var(--moody-dark);
 }
 
 button:hover, input[type="button"]:hover {
   background-image: linear-gradient(to bottom, var(--bright) 30%, var(--dimmed) 70%);
 }
+
