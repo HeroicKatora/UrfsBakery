@@ -449,7 +449,7 @@ function ClickerSetup($scope, Menu){
 	}
 
 	function amount_champion_type(type){
-		return data.champions[type].reduce(function(a,b){return a+b;}, 0);
+		return data.classes[type].champions.reduce(function(counter, champ){return counter+amount_champion(champ);}, 0);
 	}
 	function buy_champion(ident){
 		var costs = cost_champion(ident);
