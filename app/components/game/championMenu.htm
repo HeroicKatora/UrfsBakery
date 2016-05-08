@@ -3,14 +3,14 @@
 	<div class="ruler"></div>
 	<h1 class="section-header">Kitchen Staff</h1>
 	<div class="wrap-floating">
-		<div class="vertical-tab-selection" ng-init="view_tab = 'tank'">
+		<div class="vertical-tab-selection" ng-init="view_tab='tank';''">
 	        <div ng-repeat="(type, class) in Bakery.to_display.classes" ng-class="{'active': view_tab == type}" ng-click="$parent.view_tab = type" class="tab-item">
 	        	<div class="icon" ng-style="{'background': 'url(' + class.icon_href + ')', 'background-position': -class.icon_y + ' ' + -class.icon_x}", 'background-size': '48px 48px'></div>
 	        </div>
 		</div>
 		<div class="vertical-tab-content">
 			<div ng-repeat="(type, class) in Bakery.to_display.classes" ng-show="view_tab == type">
-				<h2 class="small-section-header">{{class.name}} champions:<span style="font-size: small;">{{class.descr}}</span></h2>
+				<h2 class="small-section-header">{{class.name}} champions:<span class="class-description">{{class.descr}}</span></h2>
 				<ng-include ng-repeat="champ in class.champions" src="'app/components/game/championBuy.htm'" ng-if="champ.display()">
 				</ng-include>
 				<div ng-if="!class.champions.length"><span>Currently no {{class.name}}s can be hired. Try another class.</span>

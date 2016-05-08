@@ -122,6 +122,10 @@
   overflow-x: hidden;
 }
 
+.inline {
+  display: inline-block;
+}
+
 .inline-top {
   display: inline-block;
   height: 100%;

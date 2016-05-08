@@ -1,1 +1,4 @@
-<div ng-if="Menu.messages.length">Messages: {{Menu.messages}}</div>
+<div ng-if="Menu.messages.length">
+	<p ng-repeat="message in Menu.messages track by $index" class="message" ng-bind="message">
+	</p>
+</div>
