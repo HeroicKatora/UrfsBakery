@@ -1,5 +1,8 @@
 <div>
 	<h1 class="section-header">Mastery Panel</h1>
+	<div>
+		<span>You get boni on champions you achieved champion mastery with.</span>
+	</div>
 	<div class="inline-to-right">
 		<input type="text" id='select-name' placeholder='Your summoner name' ng-model='mastery_name' ng-default=""></input>
 		<select id='select-region' ng-model='mastery_region'
@@ -7,11 +10,17 @@
 		<button ng-click='Bakery.refresh_mastery(mastery_name, mastery_region.id)'>Refresh Mastery</button>
 	</div>
 	<div class="ruler"></div>
-	<div>
+	<div ng-if="Bakery.state.mastery.data.length">
+		<span>Found the following champion mastery data (only displaying champions used in the game):</span><br>
 		<div class="inline" ng-repeat="mastery in Bakery.state.mastery.data | orderBy:'-championPoints' track by $index" ng-init="champ=Bakery.data.champions.byNbr[mastery.championId];''" ng-if="Bakery.data.champions.byNbr[mastery.championId]">
-			<div class="icon" ng-style="{'background': 'url(' + champ.imghref + ')', 'background-size': 'contain'}">
-			</div>
-			{{mastery}}{{champ}}
+			<ng-include src="'app/components/game/championPortraitFull.htm'">
+			</ng-include>
 		</div>
+	</div>
+	<div ng-if="!Bakery.state.mastery.data.length && !Bakery.state.mastery.last_refreshed">
+		<span>Refresh your masteries to see any updates.</span>
+	</div>
+	<div ng-if="!Bakery.state.mastery.data.length && Bakery.state.mastery.last_refreshed">
+		<span>Found no champion masteries. You should play more!</span>
 	</div>
 </div>

@@ -135,6 +135,10 @@
 .inline-to-right {
   text-align: right;
 }
+
+.centered {
+  text-align: center;
+}
 /*.inline-to-right::after {
   content: '';
   display:inline-block;
