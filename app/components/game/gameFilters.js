@@ -12,7 +12,7 @@ bakeryModule.filter('prettyNumber', function() {
 		if(Math.abs(number) < 1e3) return number.toFixed();
 		if(Math.abs(number) < 1e6) {
 			var lastPart = ("000" + (number % 1000).toFixed()).substr(-3);
-			return (number / 1000).toFixed() + ',' + lastPart;
+			return Math.floor(number / 1000).toFixed() + ',' + lastPart;
 		}
 		var negative = number < 0;
 		number = Math.abs(number);
