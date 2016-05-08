@@ -145,7 +145,8 @@ div[ng-click]:hover:not([disabled]), ng-include[ng-click]:hover:not([disabled]) 
 
 .splash {
   display: inline-block;
-  width: 3em;
+  height: 6em;
+  width: 3.2em;
 }
 
 .costs[currency]::after {
