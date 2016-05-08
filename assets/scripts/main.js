@@ -337,7 +337,7 @@ function ClickerSetup($scope, Menu){
 		state.last_tick = now_date;
 		updateGuiState();
 	};
-	function manual_bake(){
+	function manual_bake(event){
 		var amount = 1;
 		var marksman_count = amount_champion_type('marksman');
 		amount *= (1 + 0.5*marksman_count);
@@ -356,6 +356,7 @@ function ClickerSetup($scope, Menu){
 		if(baked >= 1e18) unlock_achievement(['user', 'clicking', '7']);
 		if(baked >= 1e21) unlock_achievement(['user', 'clicking', '8']);
 		if(baked >= 1e24) unlock_achievement(['user', 'clicking', '9']);
+		Menu.spawnParticle(event.pageX, event.pageY, 'app/components/game/particleClick.htm');
 		state.pastries += amount;
 	};
 
@@ -364,6 +365,10 @@ function ClickerSetup($scope, Menu){
 	 */
 	function pps_champion(ident){
 		var pps = data.champions.map[ident].base_production;
+		var champ_amou = amount_champion(ident);
+		var champ_match = state.match.champions[ident] || 0;
+		var champ_fight = state.match.in_fight[ident] || 0;
+		pps *= (champ_amou-champ_match) + (champ_match - champ_fight) * 0.3 + champ_fight * 0.1;
 		return pps;
 	}
 
@@ -371,10 +376,6 @@ function ClickerSetup($scope, Menu){
 		var pps = 0;
 		for(var champid in data.champions.map){
 			var pps_champ = pps_champion(champid);
-			var champ_amou = amount_champion(champid);
-			var champ_match = state.match.champions[champid] || 0;
-			var champ_fight = state.match.in_fight[champid] || 0;
-			pps_champ *= (champ_amou-champ_match) + (champ_match - champ_fight) * 0.3 + champ_fight * 0.1;
 			pps += pps_champ;
 		}
 		var support_count = amount_champion_type('support');
@@ -605,6 +606,7 @@ function ClickerSetup($scope, Menu){
 				skin = retrieve_object(state.upgrades, ['champion', ident, upgrade]).skin;
 			}
 		}
+		return skin;
 	}
 	
 /*
@@ -907,6 +909,7 @@ function ClickerSetup($scope, Menu){
 		disp.amount_match = match_champion.bind(this, id);
 		disp.amount_fight = fight_champion.bind(this, id);
 		disp.level = champion_level.bind(this, id);
+		disp.totalpps = pps_champion.bind(this, id);
 
 		disp.costs = cost_champion.bind(this, id);
 		disp.buy = buy_champion.bind(this, id);

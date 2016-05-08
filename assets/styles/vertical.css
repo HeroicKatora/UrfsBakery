@@ -1,4 +1,7 @@
 @media not all and (min-aspect-ratio: 1/1) {
+#bakery-header {
+  width: 100%;
+}
 .view-aligned-flex {
 	flex-direction: column;
 }

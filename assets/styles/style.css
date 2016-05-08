@@ -37,6 +37,39 @@ html, body {
   background-position: center center;
 }
 
+#bakery-header {
+  margin-top: 0.5em;
+}
+
+#logo-wrapper {
+  min-width: 30vw;
+}
+#logo {
+  background: url(../img/urf.png) no-repeat;
+  background-position: 20% 0%;
+  background-size: 90%;
+}
+
+#bake {
+  background-size: cover;
+}
+
+#menu-close {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+}
+
+#message-board {
+  width: 200px;
+  z-index: 999;
+}
+
+#message-board .message {
+  text-align: center;
+}
+
+
 .headline {
   font-family: 'Merriweather';
 }
@@ -112,7 +145,8 @@ div[ng-click]:hover:not([disabled]), ng-include[ng-click]:hover:not([disabled]) 
 
 .splash {
   display: inline-block;
-  width: 3em;
+  height: 6em;
+  width: 3.2em;
 }
 
 .costs[currency]::after {
@@ -138,21 +172,6 @@ tr.overviewRow > td {
 }
 .class-description {
   font-size: x-small;
-}
-
-#menu-close {
-  position: absolute;
-  right: 3px;
-  top: 3px;
-}
-
-#message-board {
-  width: 200px;
-  z-index: 999;
-}
-
-#message-board > .message {
-  text-align: center;
 }
 
 .message.ng-animate {
@@ -181,12 +200,28 @@ tr.overviewRow > td {
   opacity: 1;
 }
 
-button, input[type="button"] {
+input[type="text"] {
+  background-image: linear-gradient(to bottom, var(--light-dark) 30%, var(--moody-dark) 70%);
+  color: inherit;
+  border: var(--bright) inset 2px;
+  text-shadow: 0 0 0.2em black;
+  border-radius: 0.2em;
+  font-size: inherit;
+}
+
+button, select, input[type="button"] {
   background-image: linear-gradient(to bottom, var(--light-dark) 30%, var(--moody-dark) 70%);
   color: inherit;
   border: var(--bright) solid 2px;
   text-shadow: 0 0 0.2em black;
-  border-radius: 1px;
+  border-radius: 0.2em;
+  font-size: inherit;
+}
+
+option {
+  color: inherit;
+  text-shadow: 0 0 0.2em black;
+  background-color: var(--moody-dark);
 }
 
 button:hover, input[type="button"]:hover {
@@ -198,3 +233,8 @@ button:hover, input[type="button"]:hover {
 	width: 6%;
 	position: absolute;
 }
+
+.champion-mastery {
+  width: 6em;
+}
+

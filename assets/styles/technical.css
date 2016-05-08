@@ -4,7 +4,16 @@
 
 .box {
   display: flex;
+}
+.box:not(.horizontal) {
   flex-flow: column;
+}
+.box.horizontal {
+  flex-flow: row;
+}
+
+.wrap-content {
+  display: table;
 }
 
 .view-aligned-flex {
@@ -138,3 +147,37 @@
   vertical-align: top;
 }
 
+.inline-to-right {
+  text-align: right;
+}
+
+.centered {
+  text-align: center;
+}
+
+.aspect-wrapper {
+  position: relative;
+}
+
+.aspect-content {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.particle {
+  position: fixed;
+  z-index: 100;
+}
+
+.unclickable {
+  pointer-events: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
