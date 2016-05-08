@@ -15,7 +15,7 @@
 		<div id="bakery-menu" class="anchored-bot centered-shrink" ng-hide="Menu.menuPath == ''">
 			<div class="sheet fill-parent">
 				<div style="height: 100%; overflow: auto;">
-					<div style="position: absolute; right: 0; top: 0;">
+					<div id="menu-close">
 						<button class="close-button" ng-click="Menu.openMenu('')">Close</button>
 					</div>
 					<ng-include src="Menu.menuPath">

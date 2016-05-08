@@ -8,6 +8,7 @@ html, body {
   --moody-dark: rgb(21, 44, 52);
   --light-dark: rgb(42, 88, 104);
   --bright: rgb(140, 227, 255);
+  --dimmed: rgb(100, 180, 220);
   --error: #f03;
 }
 
@@ -139,6 +140,12 @@ tr.overviewRow > td {
   font-size: x-small;
 }
 
+#menu-close {
+  position: absolute;
+  right: 3px;
+  top: 3px;
+}
+
 #message-board {
   width: 200px;
   z-index: 999;
@@ -172,4 +179,16 @@ tr.overviewRow > td {
 }
 .message.ng-leave-prepare {
   opacity: 1;
+}
+
+button, input[type="button"] {
+  background-image: linear-gradient(to bottom, var(--light-dark) 30%, var(--moody-dark) 70%);
+  color: inherit;
+  border: var(--bright) solid 2px;
+  text-shadow: 0 0 0.2em black;
+  border-radius: 1px;
+}
+
+button:hover, input[type="button"]:hover {
+  background-image: linear-gradient(to bottom, var(--bright) 30%, var(--dimmed) 70%);
 }
