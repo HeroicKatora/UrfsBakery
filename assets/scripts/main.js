@@ -80,6 +80,11 @@ data.upgrades.forEach(function(upgrade){
 data.champions.all = ['tank', 'fighter', 'mage', 'marksman', 'assassin', 'support'].reduce(function(list, type){
 	return list.concat(data.classes[type].champions);
 }, []);
+data.champions.byNbr = [];
+data.champions.all.forEach(function(champName){
+	var champ = data.champions.map[champName];
+	data.champions.byNbr[champ.numeric_id] = champ;
+});
 
 data.buffs = {'baron':{
 	identifier : 'baron',
@@ -126,7 +131,10 @@ function ClickerSetup($scope, Menu){
 		state.max_pastries = 0;
 		state.last_tick;
 		state.version = ClickerVersion;
-		state.mastery = {};
+		state.mastery = {
+			last_refreshed: null,
+			data: []
+		};
 		state.champions = {};
 		for(var champ in data.champions.map){
 			state.champions[champ] = {amount: 0, experience: 0};
@@ -181,7 +189,12 @@ function ClickerSetup($scope, Menu){
 	function refresh_mastery(name, region){
 		console.log('Refreshing mastery for '+name+' in region '+region);
 		httpGetAsync(String.format(masteryurl, name, region), function(res){
-			state.mastery = JSON.parse(res);
+			var update = JSON.parse(res);
+			state.mastery.last_refreshed = new Date().getTime();
+			state.mastery.data.length = 0; // Clear
+			for(var idx in update) {
+				state.mastery.data[idx] = update[idx];
+			}
 			state.summoner = name;
 			state.region = region;
 			console.log('Refreshed mastery data');
@@ -226,6 +239,7 @@ function ClickerSetup($scope, Menu){
 		that.save_time = new Date().getTime();
 		localStorage.setItem("urfclicker", JSON.stringify(state));
 		console.log("Game saved");
+		Menu.addMessage("Saved");
 	};
 	function canLoad(){
 		var stored = localStorage.getItem("urfclicker");
