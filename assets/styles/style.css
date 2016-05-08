@@ -132,6 +132,13 @@ tr.overviewRow > td {
   white-space: nowrap;
 }
 
+.class-description::before {
+  content: "   ";
+}
+.class-description {
+  font-size: x-small;
+}
+
 #message-board {
   width: 200px;
   z-index: 999;
