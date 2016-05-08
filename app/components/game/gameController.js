@@ -10,8 +10,26 @@ bakeryModule
 		'match' : 'app/components/game/matchMenu.htm',
 		'' : '',
 	}
+	var particleIndex = 0;
 	var timeoutQueue = [];
 	return {
+		particles: [],
+		spawnParticle: function(x, y, templatePath, timeOnScreen) {
+			if(!timeOnScreen || timeOnScreen < 0) timeOnScreen = 2000;
+			var ours = particleIndex++ % 1000;
+			var particles = this.particles;
+			if(particles[ours] !== undefined) {
+				return; // System Overload...
+			}
+			particles[ours] = {
+				x: x,
+				y: y,
+				path: templatePath
+			};
+			$timeout(function() {
+				particles[ours] = undefined;
+			}, timeOnScreen);
+		},
 		messages: [],
 		addMessage: function(message) {
 			while(this.messages.length > 4) {

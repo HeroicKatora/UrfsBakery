@@ -140,6 +140,11 @@ tr.overviewRow > td {
   font-size: x-small;
 }
 
+#bakery-header {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
 #menu-close {
   position: absolute;
   right: 3px;

@@ -5,7 +5,7 @@
 		<tr class="overviewRow" ng-repeat="(type, class) in Bakery.to_display.classes">
 			<td class="icon" ng-style="{'background': 'url(' + class.icon_href + ')', 'background-position': -class.icon_y + ' ' + -class.icon_x}", 'background-size': '48px 48px'>
 			</td>
-			<td ng-repeat="champ in class.champions | orderBy:'-amount()'" ng-if="champ.display()">
+			<td ng-repeat="champ in class.champions | orderBy:['-amount()','costs()']" ng-if="champ.display()">
 				<div class="anchor icon">
 					<div class="icon" ng-style="{'background': 'url(' + champ.imghref + ')', 'background-size': 'contain', 'opacity': champ.amount() ? '1' : '0.5'}">
 					</div>

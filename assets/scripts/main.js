@@ -328,13 +328,13 @@ function ClickerSetup($scope, Menu){
 		state.last_tick = now_date;
 		updateGuiState();
 	};
-	function manual_bake(){
+	function manual_bake(event){
 		var amount = 1;
 		var marksman_count = amount_champion_type('marksman');
 		amount *= (1 + 0.5*marksman_count);
 		increment_count(state.stats, ['manual_bake'], amount);
 	
-		Menu.addMessage('+'+amount);
+		Menu.spawnParticle(event.pageX, event.pageY, 'app/components/game/particleClick.htm');
 		state.pastries += amount;
 	};
 

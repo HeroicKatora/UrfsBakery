@@ -1,10 +1,7 @@
 <div class="box fill-parent">
 	<div id="bakery-header" class="centered-shrink row filler">
-		<button ng-click="Bakery.manual_bake()" id="bake">Bake</button>
-		<div class="entry-text" id="pastries">Pastries: <span ng-cloak>{{(Bakery.state.pastries || 0) | prettyNumber}}</span></div>
-		<div class="entry-text" id="pps">Pastry production: <span ng-cloak>{{Bakery.pastries_per_second() | prettyNumber:2}}</span></div>
-		<button ng-click="Menu.openMenu('mastery')">Update mastery data</button>
-		<button ng-click="Menu.openMenu('options')">Options</button>
+		<ng-include src="'app/components/game/gameHeader.htm'">
+		</ng-include>
 	</div>
 	<div id="bakery-main" class="row content anchor">
 		<div class="view-aligned-flex sheet">
@@ -23,7 +20,9 @@
 				</div>
 			</div>
 		</div>
-		<div  id="message-board" class="anchored-bot centered-shrink" ng-include="'app/components/game/messageBoard.htm'">
+		<div id="message-board" class="anchored-bot centered-shrink" ng-include="'app/components/game/messageBoard.htm'">
 		</div>
 	</div>
+	<ng-include ng-repeat="particle in Menu.particles track by $index" src="particle.path" class="particle unclickable" ng-style="{'top': particle.y, 'left': particle.x}">
+	</ng-include>
 </div>

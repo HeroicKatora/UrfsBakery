@@ -1,0 +1,17 @@
+<div>
+	<div class="box horizontal">
+		<div class="row filler">
+			<button ng-click="Menu.openMenu('options')">Options</button><br>
+			<button ng-click="Menu.openMenu('mastery')">Mastery</button>
+		</div>
+		<div class="row content">
+			<div class="inline" id="pastries"><span ng-cloak>Pastries: {{(Bakery.state.pastries || 0) | prettyNumber}}</span></div>
+			<button ng-click="Bakery.manual_bake($event)" id="bake">Bake</button>
+			<div class="inline" id="pps"><span ng-cloak>Pastry production: {{Bakery.pastries_per_second() | prettyNumber:2}}</span></div>
+		</div>
+		<div class="row filler">
+			<button ng-click="Menu.openMenu('mastery')">Stats</button><br>
+			<button ng-click="Menu.openMenu('options')">Info</button>
+		</div>
+	</div>
+</div>
