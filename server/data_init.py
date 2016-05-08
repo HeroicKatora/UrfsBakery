@@ -1,13 +1,15 @@
 import json
-import riotapi as rp
 from collections import namedtuple, defaultdict
 from argparse import ArgumentParser
+import urllib3, certifi
 
 
 PurchaseElement = namedtuple('Upgrade', 'identifier base_cost name imghref description info')
 PhE = PurchaseElement
 ChampUpgrade = namedtuple('ChampUpgrade', 'base_cost name description skin')
 ChU = ChampUpgrade
+ItemUpgrade = namedtuple('ItemUpgrade', 'base_hp base_attack base_armor base_mr')
+ItU = ItemUpgrade
 
 regions = [{'id' :'br','name' : 'Brazil'},
 {'id' :'eune','name' : 'Europe North/East'},
@@ -32,8 +34,8 @@ class ChampReg:
         self.portrait = 'http://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{name}.png'.format(version = self.upref.ddragonversion, name=name)
         self.upgrade_portrait = 'http://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{name}.png'
         self.skin = 'http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{name}_{ind}.jpg'
-        extra_info = {'base_production': base_production, 'ch_class': ch_class, 'base_hp' : hp,
-                        'base_attack' : attack, 'base_armor' : armor, 'base_mr' : mr};
+        extra_info = {'base_production': base_production, 'ch_class': ch_class, 'numeric_id': upgradereg.champion_map[name]['id'],
+                    'base_hp' : hp, 'base_attack' : attack, 'base_armor' : armor, 'base_mr' : mr};
         self.upref.register_champion(PurchaseElement(name, cost, name, self.portrait, description, extra_info), ch_class)
 
     def register_upgrade(self, champ_upgrade):
@@ -51,7 +53,7 @@ class ChampReg:
     def __exit__(self, stat, typ, exc):
         self.upgrades.sort(key=lambda t:t.base_cost)
         for ind, up in enumerate(self.upgrades):
-            ref_up = PurchaseElement([self.name, ind], up.base_cost, up.name, self.mk_portrait(ind), up.description, {'skin': self.mk_skin(up.skin)})
+            ref_up = PurchaseElement(['champion', self.name, ind], up.base_cost, up.name, self.mk_portrait(ind), up.description, {'skin': self.mk_skin(up.skin)})
             self.upref.register_upgrade(ref_up)
 
 
@@ -85,6 +87,11 @@ class ClassReg:
 class UpgradeReg:
     def __init__(self, ddragonversion):
         self.ddragonversion = ddragonversion
+        self.http = urllib3.PoolManager()
+        champ_req = self.http.request('GET', 'http://ddragon.leagueoflegends.com/cdn/{version}/data/en_US/champion.json'.format(version=self.ddragonversion))
+        item_req = self.http.request('GET', 'http://ddragon.leagueoflegends.com/cdn/{version}/data/en_US/item.json'.format(version=self.ddragonversion))
+        self.champion_map = json.loads(champ_req.data.decode('utf-8'))['data']
+        self.item_map = json.loads(item_req.data.decode('utf-8'))['data']
         self.items = []
         self.upgrades = []
         self.champions = {}
@@ -114,13 +121,19 @@ class UpgradeReg:
         d.pop('info')
         return d
 
+    def itemFromId(self, itemId, cost, description):
+        id_as = str(itemId)
+        imghref = 'https://ddragon.leagueoflegends.com/cdn/{version}/img/item/{itemId}.png'.format(version=self.ddragonversion, itemId=itemId);
+        return PhE([id_as], cost, self.item_map[id_as]['name'], imghref, description, {})
+
     def register_class(self, classreg):
         self.classes[classreg.identifier] = classreg
 
     def register_upgrade(self, element):
         self.upgrades.append(element)
 
-    def register_item(self, element):
+    def register_item(self, element, itemdto):
+        element.info.update(itemdto._asdict())
         self.items.append(element)
 
     def register_champion(self, champ_element, ch_class):
@@ -142,7 +155,10 @@ if __name__ == "__main__":
     up.register_class(ClassReg(marksman, 'Marksman', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 5*48))
     up.register_class(ClassReg(assassin, 'Assassin', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 2*48))
     up.register_class(ClassReg(support, 'Support', '', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 6*48))
+
     up.register_upgrade(PhE(['start'], 100, 'Everyone start slowly', 'assets/img/bakery.bmp', 'Some informal description', {}))
+
+    up.register_item(up.itemFromId(1055, 120, 'A very basic item for everyday use'), ItU(20, 10, 5, 5))
     with up.for_champion('Pantheon', 100, 4, 'The best baker on summoners rift', fighter, 400, 60, 20, 40) as ch_reg:
         ch_reg.register_upgrade(ChU(140, 'Weat flavoured spear', 'After the fight, his enemies smell like bread. Terrifying.', '1'))
     with open(args.filename, 'w') as ofile:

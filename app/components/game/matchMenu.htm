@@ -1,3 +1,31 @@
 <div>
 	<h1 class="section-header">Match</h1>
+	<div id="match-fight">
+		<div ng-show="Bakery.show_fight()">
+			<h2 class="section-header">Champions</h2>
+			<div ng-repeat="champ in Bakery.state.match.fight.friendlies">{{champ}}</div>
+			<h2 class="section-header">Enemies</h2>
+			<div ng-repeat="enemy in Bakery.state.match.fight.enemies">{{enemy}}</div>
+		</div>
+		<div ng-show="Bakery.show_reward()">
+			Your reward is {{Bakery.state.match.reward}}, click button to collect
+			<button ng-click="Bakery.collect_rewards()">Collect game rewards</button>
+		</div>
+		<div ng-show="Bakery.show_start_fight()">
+			<h2 class="section-header">Select a lane to fight</h2>
+			<button ng-click="lane.start_fight()" ng-repeat="lane in Bakery.to_display.lanes" ng-enable="lane.can_fight()">Fight for {{lane.name}}</button>
+		</div>
+		<div ng-show="Bakery.show_start_match()">
+			<h2 class="section-header">Search for another match</h2>
+			<button ng-click="Bakery.start_match()">Play</button>
+		</div>
+	</div>
+	<div id="match-info">
+		<div id="match-champions">
+			<h2 class="section-header">Champions in fight</h2>
+		</div>
+		<div id="match-items">
+			<h2 class="section-header">Items</h2>
+		</div>
+	</div>
 </div>

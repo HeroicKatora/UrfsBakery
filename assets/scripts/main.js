@@ -133,25 +133,24 @@ function ClickerSetup($scope, Menu){
 		}
 		state.upgrades = {}; 
 		state.items = {};
-		state.match = {
-			is_in_game : false,
-			champions : {},
-			in_fight : {},
-			lanes : {
-				top : 0,
-				mid : 0,
-				bot : 0,
-				base : 0,
-			},
-			is_fighting : false,
-			fight : {
-				lane : null,
-				friendlies : [],
-				enemies : [],
-				objective : null
-			},
-			rewards : null
+		var match = retrieve_object(state, ['match']);
+		match.is_in_game = false;
+		match.champions = {};
+		match.in_fight = {};
+		match.lanes = {
+			top : 0,
+			mid : 0,
+			bot : 0,
+			base : 0,
 		};
+		match.is_fighting = false;
+		match.fight = {
+			lane : null,
+			friendlies : [],
+			enemies : [],
+			objective : null
+		};
+		match.rewards = null;
 		state.buffs = {};
 		state.achievements = {};
 		state.rank = 0;
@@ -377,37 +376,39 @@ function ClickerSetup($scope, Menu){
 				if(push >= 7){
 					win_match();
 				}
+			}else{
+				match.fight.friendlies.forEach(function(champ){
+					var target = match.fight.enemies[Math.floor(Math.random()*match.fight.enemies.length)];
+					console.log(target, 'attacked by', champ);
+					var damage = damage_of_entity(champ);
+					var ph_dmg = damage.physical;
+					var mg_dmg = damage.magical;
+					damage_entity_physical(target, ph_dmg);
+					damage_entity_magic(target, mg_dmg);
+				});
+				match.fight.enemies.forEach(function(enemy){
+					var target = match.fight.friendlies[Math.floor(Math.random()*match.fight.friendlies.length)];
+					console.log(target, 'attacked by', enemy);
+					var damage = damage_of_entity(enemy);
+					var ph_dmg = damage.physical;
+					var mg_dmg = damage.magical;
+					damage_entity_physical(target, ph_dmg);
+					damage_entity_magic(target, mg_dmg);
+				});
+				console.log('Filtering out dead fighters');
+				match.fight.friendlies = match.fight.friendlies.filter(lives_entity);
+				match.fight.enemies = match.fight.enemies.filter(function(enemy){
+					if(!lives_entity(enemy)){
+						var exp_bonus = enemy.experience;
+						match.fight.friendlies.forEach(function(ch){
+							var ident = ch.champ_id;
+							state.champions[ident].experience += exp_bonus / match.fight.friendlies.length;
+						});
+						return false;
+					}
+					return true;
+				});
 			}
-			match.fight.friendlies.forEach(function(champ){
-				var target = match.fight.enemies[Math.floor(Math.random()*match.fight.enemies.length)];
-				console.log(target, 'attacked by', champ);
-				var damage = damage_of_entity(champ);
-				var ph_dmg = damage.physical;
-				var mg_dmg = damage.magical;
-				damage_entity_physical(target, ph_dmg);
-				damage_entity_magic(target, mg_dmg);
-			});
-			match.fight.enemies.forEach(function(enemy){
-				var target = match.fight.friendlies[Math.floor(Math.random()*match.fight.friendlies.length)];
-				console.log(target, 'attacked by', enemy);
-				var damage = damage_of_entity(enemy);
-				var ph_dmg = damage.physical;
-				var mg_dmg = damage.magical;
-				damage_entity_physical(target, ph_dmg);
-				damage_entity_magic(target, mg_dmg);
-			});
-			match.fight.friendlies = match.fight.friendlies.filter(lives_entity);
-			match.fight.enemies = match.fight.enemies.filter(function(enemy){
-				if(!lives_entity(enemy)){
-					var exp_bonus = enemy.experience;
-					match.fight.friendlies.forEach(function(ch){
-						var ident = ch.champ_id;
-						state.champions[ident].experience += exp_bonus / match.fight.friendlies.length;
-					});
-					return false;
-				}
-				return true;
-			});
 		}
 	};
 
@@ -478,6 +479,15 @@ function ClickerSetup($scope, Menu){
 		return (retrieve_object(state.achievements, ident, false) || {unlocked : false}).unlocked;
 	}
 
+	function can_unlock_upgrade(ident){
+		if(!ident) return false;
+		var category = ident[0];
+		if(category == 'champion'){
+		}else if(category == 'type'){
+		}else if(category == 'bakery'){
+		}
+	}
+
 	function unlock_upgrade(ident){
 		retrieve_object(state.upgrades, ident, true)['unlocked'] = true;
 	}
@@ -512,7 +522,7 @@ function ClickerSetup($scope, Menu){
 	}
 
 	function champion_exp(champ){
-		var champion_id = data.champions.map[champ].id;
+		var champion_id = data.champions.map[champ].numeric_id;
 		return (state.mastery[champion_id] || 0) + (state.champions[champ].experience || 0);
 	};
 	function champion_level(id){
@@ -548,12 +558,15 @@ function ClickerSetup($scope, Menu){
 		var match = state.match;
 		if(match.is_fighting){
 			console.log('There is already a fight happening');
+			return;
 		}
 		if(!lane){
 			console.log("Can only fight on a lane");
+			return;
 		}
 		if(!can_start_fight(match, lane)){
 			console.log(String.format('You can\'t attack at {0} yet, clear other objectives first', lane));
+			return;
 		}
 		for(var id in match.champions){
 			var num = match.champions[id];
@@ -594,7 +607,7 @@ function ClickerSetup($scope, Menu){
 			var base_armor = buff.base_armor * Math.pow(1.05, slay_count);
 			var base_mr = buff.base_magic_res * Math.pow(1.10, slay_count);
 			var base_exp = buff.base_exp * (1 + slay_count/4);
-			match.fight.objective = mk_enemy(buff.name, buff.type, base_hp, base_attack, base_armor, base_magic_res, base_exp);
+			match.fight.objective = mk_enemy(buff.name, buff.type, base_hp, base_attack, base_armor, base_mr, base_exp);
 			match.fight.enemies.push(match.objective);
 		}else{
 			var push = match.lanes[lane] + (lane == 'base'?4:0);
@@ -677,7 +690,7 @@ function ClickerSetup($scope, Menu){
 			return;
 		}
 		state.pastries += state.match.rewards.pastries;
-		state.match.rewards = null;
+		state.match.rewards = undefined;
 	}
 
 	function start_match(){
@@ -693,7 +706,10 @@ function ClickerSetup($scope, Menu){
 	function champ_disp(id){
 		var disp = JSON.parse(JSON.stringify(data.champions.map[id]));
 		disp.display = function(){return true;};
+
 		disp.amount = amount_champion.bind(this, id);
+		disp.level = champion_level.bind(this, id);
+
 		disp.costs = cost_champion.bind(this, id);
 		disp.buy = buy_champion.bind(this, id);
 		disp.move_match = move_match.bind(this, id);
@@ -710,6 +726,18 @@ function ClickerSetup($scope, Menu){
 			champions : type.champions.map(champ_disp)
 		}
 	}
+	function lanes_disp(){
+		var lanes = {'top':{name:'Top lane'}, 
+					'mid':{name:'Mid lane'}, 
+					'bot':{name:'Bot lane'}, 
+					'base':{name:'Base structures'}, 
+					'buff_baron':{name:'Baron buff'}};
+		for(var lane in lanes){
+			lanes[lane].can_fight = can_start_fight.bind(this, lane);
+			lanes[lane].start_fight = start_fight.bind(this, lane);
+		}
+		return lanes;
+	}
  	initState();
 	this.data = data;
 	this.refresh_mastery = refresh_mastery;
@@ -722,6 +750,11 @@ function ClickerSetup($scope, Menu){
 	this.end_fight = end_fight;
 	this.start_match = start_match;
 	this.collect_rewards = collect_rewards;
+	this.show_fight = function(){return state.match.is_fighting;};
+	this.show_reward = function(){return state.match.rewards != undefined;};
+	this.show_start_match = function(){return !state.match.is_in_game && state.match.rewards == undefined;};
+	this.show_start_fight = function(){return state.match.rewards == undefined && state.match.is_in_game && !state.match.is_fighting;};
+	this.show_end_fight = function(){return state.match.is_fighting;};
 
 	this.load = load;
 	this.save = save;
@@ -739,7 +772,8 @@ function ClickerSetup($scope, Menu){
 			marksman: classes_disp(data.classes.marksman),
 			assassin: classes_disp(data.classes.assassin),
 			support: classes_disp(data.classes.support)
-		}
+		},
+		lanes : lanes_disp()
 	};
 	if(!canLoad() || !startSavedData()){
 		console.log('Could not load saved data, maybe this is the first play through');
