@@ -9,7 +9,11 @@ bakeryModule.filter('prettyNumber', function() {
 		5 : 'Quadrillion'
 	}
 	return function (number){
-		if(Math.abs(number) < 1e6) return number.toFixed();
+		if(Math.abs(number) < 1e3) return number.toFixed();
+		if(Math.abs(number) < 1e6) {
+			var lastPart = ("000" + (number % 1000).toFixed()).substr(-3);
+			return (number / 1000).toFixed() + ',' + lastPart;
+		}
 		var negative = number < 0;
 		number = Math.abs(number);
 		var scale = Math.floor(Math.log(number) / Math.log(10)  / 3);
