@@ -9,7 +9,8 @@
 		<div class="vertical-tab-content">
 			<div ng-repeat="(type, class) in Bakery.to_display.classes" ng-show="view_tab == type">
 				<h2 class="small-section-header">{{class.name}} champions:</h2>
-				<div ng-repeat="champ in class.champions" ng-click="champ.buy()" ng-disabled="champ.costs() > Bakery.state.pastries">{{champ.name}}: {{champ.amount() | prettyNumber}} Costs: {{champ.costs() | prettyNumber}}</div>
+				<ng-include ng-repeat="champ in class.champions" src="'app/components/game/championBuy.htm'">
+				</ng-include>
 			</div>
 		</div>
 	</div>

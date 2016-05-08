@@ -25,6 +25,7 @@
 }
 
 .row.content {
+  position: relative;
   flex: 1 1 auto;
 }
 
@@ -89,13 +90,21 @@
   margin: 6px 0px;
 }
 
-.vertical-tab-selection, .vertical-tab-content {
+.vertical-tab-selection {
   float: left;
   padding-left: 10px;
 }
 
+.vertical-tab-content {
+  padding-left: 10px;
+  width:auto;
+  overflow:hidden;
+}
+
 .tab-item {
   padding-right: 10px;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 
 .wrap-floating {

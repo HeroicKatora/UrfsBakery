@@ -1,0 +1,16 @@
+<div ng-click="champ.buy()" ng-disabled="champ.costs() > Bakery.state.pastries">
+	<div class="box" style="flex-flow: row; padding: 5px;">
+		<div class="row filler icon" ng-style="{'background': 'url(' + champ.imghref + ')', 'background-size': 'contain'}">
+		</div>
+		<div class="row filler">
+		</div>
+		<div class="row content">
+			<div>
+				<span class="emphazise-header">{{champ.name}}</span><small>{{champ.description}}</small>
+			</div>
+			<small style="padding-left: 5px" class="costs">{{champ.costs() | prettyNumber}}</small>
+			<div class="emphazise-header" style="position: absolute; right: 0; bottom: 0;">{{champ.amount() | prettyNumber}}
+			</div>
+		</div>
+	</div>
+</div>
