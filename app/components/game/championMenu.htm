@@ -3,7 +3,7 @@
 	<div class="ruler"></div>
 	<h1 class="section-header">Kitchen Staff</h1>
 	<div class="wrap-floating">
-		<div class="vertical-tab-selection" ng-init="view_tab = 'tank'">
+		<div class="vertical-tab-selection" ng-init="view_tab='tank';''">
 	        <div ng-repeat="(type, class) in Bakery.to_display.classes" ng-class="{'active': view_tab == type}" ng-click="$parent.view_tab = type" class="tab-item">
 	        	<div class="icon" ng-style="{'background': 'url(' + class.icon_href + ')', 'background-position': -class.icon_y + ' ' + -class.icon_x}", 'background-size': '48px 48px'></div>
 	        </div>

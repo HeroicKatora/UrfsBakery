@@ -7,6 +7,8 @@
 		<button ng-click='Bakery.refresh_mastery(mastery_name, mastery_region.id)'>Refresh Mastery</button>
 	</div>
 	<div>
-		Mastery data: {{Bakery.state.mastery}}
+		<div class="inline" ng-repeat="mastery in Bakery.state.mastery.data | orderBy:'-championPoints' track by $index" ng-init="{{champ=Bakery.data.champions.byNbr[mastery.championId];''}}" ng-if="Bakery.data.champions.byNbr[mastery.championId]">
+			{{mastery}}{{champ}}
+		</div>
 	</div>
 </div>
