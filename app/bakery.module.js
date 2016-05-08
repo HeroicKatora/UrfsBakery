@@ -1,6 +1,6 @@
 /* Setup, load and config angular */
 "use strict";
-var bakeryModule = angular.module('bakery', []);
+var bakeryModule = angular.module('bakery', ['ngAnimate']);
 
 bakeryModule.run(['Game', 'Menu', '$rootScope', function(Game, Menu, $scope){
 	$scope.pageTitle = 'example title';
