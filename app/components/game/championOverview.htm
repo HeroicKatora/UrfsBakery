@@ -5,13 +5,11 @@
 		<tr class="overviewRow" ng-repeat="(type, class) in Bakery.to_display.classes">
 			<td class="icon" ng-style="{'background': 'url(' + class.icon_href + ')', 'background-position': -class.icon_y + ' ' + -class.icon_x}", 'background-size': '48px 48px'>
 			</td>
-			<td ng-if="!class.champions.length"><span>No {{class.name}}s work for you, yet. You should hire some.</span>
-			</td>
-			<td ng-repeat="champ in class.champions | orderBy:'amount()'" ng-if="champ.display()">
+			<td ng-repeat="champ in class.champions | orderBy:'-amount()'" ng-if="champ.display()">
 				<div class="anchor icon">
-					<div class="icon" ng-style="{'background': 'url(' + champ.imghref + ')', 'background-size': 'contain'}">
+					<div class="icon" ng-style="{'background': 'url(' + champ.imghref + ')', 'background-size': 'contain', 'opacity': champ.amount() ? '1' : '0.5'}">
 					</div>
-					<div class="anchored-bot-right"><small>{{champ.amount() | prettyNumber}}</small>
+					<div ng-if="champ.amount() > 0" class="anchored-bot-right"><small>{{champ.amount() | prettyNumber}}</small>
 					</div>
 				</div>
 			</td>

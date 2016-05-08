@@ -34,9 +34,10 @@ class ChampReg:
         self.portrait = 'http://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{name}.png'.format(version = self.upref.ddragonversion, name=name)
         self.upgrade_portrait = 'http://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{name}.png'
         self.skin = 'http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{name}_{ind}.jpg'
+        screenname = upgradereg.champion_map[name]['name']
         extra_info = {'base_production': base_production, 'ch_class': ch_class, 'numeric_id': upgradereg.champion_map[name]['key'],
                     'base_hp' : hp, 'base_attack' : attack, 'base_armor' : armor, 'base_mr' : mr};
-        self.upref.register_champion(PurchaseElement(name, cost, name, self.portrait, description, extra_info), ch_class)
+        self.upref.register_champion(PurchaseElement(name, cost, screenname, self.portrait, description, extra_info), ch_class)
 
     def register_upgrade(self, champ_upgrade):
         self.upgrades.append(champ_upgrade)
@@ -159,8 +160,27 @@ if __name__ == "__main__":
     up.register_upgrade(PhE(['start'], 100, 'Everyone start slowly', 'assets/img/bakery.bmp', 'Some informal description', {}))
 
     up.register_item(up.itemFromId(1055, 120, 'A very basic item for everyday use'), ItU(20, 10, 5, 5))
-    with up.for_champion('Pantheon', 100, 4, 'The best baker on summoners rift', fighter, 400, 60, 20, 40) as ch_reg:
+    # Tanks
+    with up.for_champion('TahmKench', 1000, 2, 'His taste just makes him more qualified', tank, 400, 50, 30, 50) as ch_reg:
+        pass
+    # Fighters
+    with up.for_champion('Pantheon', 100, 0.4, 'The best baker on summoners rift', fighter, 400, 60, 20, 40) as ch_reg:
         ch_reg.register_upgrade(ChU(140, 'Weat flavoured spear', 'After the fight, his enemies smell like bread. Terrifying.', '1'))
+    with up.for_champion('Jax', 400, 10, 'Who wants a piece of the cake?', fighter, 380, 63, 27, 33) as ch_reg:
+        pass
+    # Mages
+    with up.for_champion('Gragas', 200, 1, 'His booze-infused cookies are the best!', mage, 400, 50, 30, 50) as ch_reg:
+        pass
+    # Marksman
+    with up.for_champion('Kalista', 2000, 13, 'She\'s surprisingly good in the kitchen', marksman, 330, 65, 30, 30) as ch_reg:
+        pass
+    # Assassin
+    with up.for_champion('MasterYi', 99, 0.2, 'Wuju style - helpful in every situation', assassin, 320, 70, 30, 30):
+        pass
+    # Support
+    with up.for_champion('Lulu', 2000, 13, 'One word: Cupcakes!', support, 350, 40, 30, 30) as ch_reg:
+        pass
+
     with open(args.filename, 'w') as ofile:
         up.write(ofile)
         ofile.write('data.regions = ')
