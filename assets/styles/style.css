@@ -207,3 +207,7 @@ button:hover, input[type="button"]:hover {
   background-image: linear-gradient(to bottom, var(--bright) 30%, var(--dimmed) 70%);
 }
 
+.champion-mastery {
+  width: 6em;
+}
+

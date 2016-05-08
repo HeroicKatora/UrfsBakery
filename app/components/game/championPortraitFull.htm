@@ -1,16 +1,21 @@
-<div class="inline centered">
-	<style type="text/css">
-	.championPortrait {
-		background-clip: padding-box, content-box;
-		background-size: contain, contain;
-		background-repeat: no-repeat, no-repeat;
-		width: 78px;
-		height: 141px;
-		padding: 11px 4px 60px;
-		background-origin: padding-box, content-box;
-	}
-	</style>
-	<div class="inline championPortrait" ng-style="{'background-image': 'url(assets/img/mastery_border' + mastery.championLevel + '.png), url(' + champ.imghref + ')'}">
+<div class="centered">
+	<div class="aspect-wrapper">
+		<div style="padding-bottom: 180.769%"></div>
+		<div class="aspect-content">
+			<style type="text/css">
+			.championPortrait {
+				width: 100%;
+				height: 100%;
+				background-clip: content-box, content-box;
+				background-size: 100% 100%, 89.7435% 50.3%;
+				background-repeat: no-repeat, no-repeat;
+				background-position: 0 0, center 15.608%;
+				background-origin: content-box, content-box;
+			}
+			</style>
+			<div class="inline championPortrait" ng-style="{'background-image': 'url(assets/img/mastery_border' + mastery.championLevel + '.png), url(' + champ.imghref + ')'}">
+			</div>
+		</div>
 	</div><br>
 	<span>{{champ.name}}</span>
 </div>
