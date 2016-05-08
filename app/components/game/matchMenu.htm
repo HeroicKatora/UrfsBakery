@@ -37,11 +37,19 @@
 	<div id="match-info">
 		<div id="match-champions">
 			<h2 class="section-header">Champions picked for match</h2>
-			<div ng-repeat="(class,info) in Bakery.to_display.classes">
-				<div>
-					{{info.name}}
-					<div ng-repeat="champ in info.champions">
-						{{champ.amount_match()}} / {{champ.amount()}}
+			<div class="wrap-floating">
+				<div class="vertical-tab-selection" ng-init="view_tab = 'tank'">
+					<div ng-repeat="(type, class) in Bakery.to_display.classes" ng-class="{'active': view_tab == type}" ng-click="$parent.view_tab = type" class="tab-item">
+						<div class="icon" ng-style="{'background': 'url(' + class.icon_href + ')', 'background-position': -class.icon_y + ' ' + -class.icon_x}", 'background-size': '48px 48px'></div>
+					</div>
+				</div>
+				<div class="vertical-tab-content">
+					<div ng-repeat="(type, class) in Bakery.to_display.classes" ng-show="view_tab == type">
+						<h2 class="small-section-header">{{class.name}} champions:<span style="font-size: small;">{{class.descr}}</span></h2>
+						<ng-include ng-repeat="champ in class.champions" src="'app/components/game/championMatch.htm'" ng-if="champ.amount() > 0">
+						</ng-include>
+						<div ng-if="!class.champions.length"><span>No champion of this class is currently working for you. Try another one</span>
+						</div>
 					</div>
 				</div>
 			</div>

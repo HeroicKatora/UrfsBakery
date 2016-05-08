@@ -37,7 +37,7 @@ if (!String.format) {
  */
 function update_object(obj1, obj2){
 	for(var prop in obj2){
-		if(typeof obj1[prop] == 'Object' && typeof obj2[prop] == 'Object'){
+		if((typeof obj1[prop] == typeof {}) && (typeof obj2[prop] == typeof {})){
 			update_object(obj1[prop], obj2[prop]);
 		}else{
 			obj1[prop] = obj2[prop];
@@ -73,6 +73,14 @@ function store_object(object_base, path, data){
 function increment_count(object_base, path, amount = 1){
 	var count = retrieve_object(object_base, path, false) || 0;
 	store_object(object_base, path, count + amount);
+}
+function count_object(object_base, fn){
+	var count = 0;
+	for(var sub in object_base){
+		if(fn(sub))
+			count += 1;
+	}
+	return count;
 }
 
 data.item_map = data.upgrade_map = {};
@@ -138,7 +146,7 @@ function ClickerSetup($scope, Menu){
 		state.last_tick;
 		state.version = ClickerVersion;
 		state.mastery = {
-			last_refreshed: null,
+			last_refreshed: undefined,
 			data: []
 		};
 		state.champions = {};
@@ -159,12 +167,12 @@ function ClickerSetup($scope, Menu){
 		};
 		match.is_fighting = false;
 		match.fight = {
-			lane : null,
+			lane : undefined,
 			friendlies : [],
 			enemies : [],
-			objective : null
+			objective : undefined 
 		};
-		match.rewards = null;
+		match.rewards = undefined;
 		state.buffs = {};
 		state.achievements = {};
 		state.rank = 0;
@@ -180,7 +188,7 @@ function ClickerSetup($scope, Menu){
 			base : 0
 		};
 		state.match.is_fighting = false;
-		state.match.rewards = null;
+		state.match.rewards = undefined;
 	};
 
 	var startEmpty = function(){
@@ -204,6 +212,7 @@ function ClickerSetup($scope, Menu){
 			state.summoner = name;
 			state.region = region;
 			console.log('Refreshed mastery data');
+			Menu.addMessage('Refreshed mastery data');
 		}, function(error){
 			alert('Failed to connect to mastery server (Your mastery data can be refreshed at any time).\nWe are sorry, feel free to send a bug report!')
 		});
@@ -211,6 +220,7 @@ function ClickerSetup($scope, Menu){
 	var startSavedData = function(){
 		if(!load()){
 			console.log("Couldn't load game data");
+			Menu.addMessage('Loading has failed. Sorry!');
 			return false;
 		}
 		if(!that.started){
@@ -307,7 +317,8 @@ function ClickerSetup($scope, Menu){
 		var time_passed = now_date - state.last_tick;
 		if(time_passed > grace_period){
 			console.log('Made a jump in time, maybe suspended pc, load of an old save etc.');
-			console.log(String.format('Missed {0} milliseconds', now_date - state.last_tick ))
+			console.log(String.format('Missed {0} milliseconds', now_date - state.last_tick ));
+			Menu.addMessage(String.format('Skipped {0} seconds of game time', ((now_date - state.last_tick)/1000).toFixed(3)));
 			time_passed = grace_period;
 		}
 		if(time_passed > 0){
@@ -322,6 +333,8 @@ function ClickerSetup($scope, Menu){
 		var marksman_count = amount_champion_type('marksman');
 		amount *= (1 + 0.5*marksman_count);
 		increment_count(state.stats, ['manual_bake'], amount);
+	
+		Menu.addMessage('+'+amount);
 		state.pastries += amount;
 	};
 
@@ -393,8 +406,10 @@ function ClickerSetup($scope, Menu){
 				console.log('Fight is over');
 				if(push < 0){
 					console.log('You lost');
+					Menu.addMessage('You just lost a fight');
 				}else{
 					console.log('You won');
+					Menu.addMessage('You just won a fight');
 				}
 				if(push >= 7){
 					win_match();
@@ -540,11 +555,7 @@ function ClickerSetup($scope, Menu){
 	}
 
 	function count_unlock(obj){
-		var count = 0;
-		for(var sub in obj){
-			if(sub['unlocked']) count += 1;
-		}
-		return count;
+		return count_object(obj, function(sub){return sub['unlocked'];});
 	}	
 
 	function champion_skin(ident){
@@ -572,13 +583,14 @@ function ClickerSetup($scope, Menu){
 	function move_bake(ident){
 		var error = null;
 		if(!state.match.champions[ident]){
-			error = "You don't have this champion in a match";
+			error = "This champion does not participate in the match";
 		}
 		if(state.match.champions[ident] <= (state.match.in_fight[ident] || 0)){
-			error = "You champion is completely busy fighting at the moment";
+			error = "Your champion is completely busy fighting at the moment";
 		}
 		if(error){
 			console.log(error);
+			Menu.addMessage(error);
 			return error;
 		}
 		state.match.champions[ident] -= 1;
@@ -625,16 +637,18 @@ function ClickerSetup($scope, Menu){
 	}
 	function start_fight(lane){
 		var match = state.match;
+		if(!count_object(match.champions, function(_,c){return c;})){
+			Menu.addMessage('You need at least one champion in the match to start a fight. Add one in the menu below.');
+			return;
+		}
 		if(match.is_fighting){
 			console.log('There is already a fight happening');
 			return;
 		}
-		if(!lane){
-			console.log("Can only fight on a lane");
-			return;
-		}
 		if(!can_start_fight(match, lane)){
-			console.log(String.format('You can\'t attack at {0} yet, clear other objectives first', lane));
+			var error = String.format('You can\'t attack at {0} yet, clear other objectives first', lane);
+			console.log(error);
+			Menu.addMessage(error);
 			return;
 		}
 		for(var id in match.champions){
@@ -759,6 +773,7 @@ function ClickerSetup($scope, Menu){
 		state.match.lanes = {top:0,mid:0,bot:0,base:0};
 		state.match.rewards = {pastries: 10000};
 		state.match.is_in_game = false;
+		Menu.addMessage('You won a Match, collect your reward now!');
 	}
 
 	function collect_rewards(){
@@ -871,6 +886,8 @@ function ClickerSetup($scope, Menu){
 	if(!canLoad() || !startSavedData()){
 		console.log('Could not load saved data, maybe this is the first play through');
 		startEmpty();
+	}else{
+		Menu.addMessage('Loaded saved data automatically');
 	}
 };
 
@@ -888,6 +905,6 @@ function httpGetAsync(theUrl, callback, error_callback=null)
 	try{
     	xmlHttp.send(null);
 	}catch(err){
-		alert('To work correctly, you need to allow access to t-tides.net. This is were the actual data is fetched, since as we hosted the website on github we need some dynamic system.');
+		alert('To work correctly, you need to allow access to t-tides.net. This is where the actual data is fetched, since as we hosted the website on github we need some dynamic system.');
 	}
 }
