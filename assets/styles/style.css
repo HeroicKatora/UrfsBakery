@@ -205,6 +205,7 @@ input[type="text"] {
   border: var(--bright) inset 2px;
   text-shadow: 0 0 0.2em black;
   border-radius: 0.2em;
+  font-size: inherit;
 }
 
 button, select, input[type="button"] {
@@ -213,6 +214,7 @@ button, select, input[type="button"] {
   border: var(--bright) solid 2px;
   text-shadow: 0 0 0.2em black;
   border-radius: 0.2em;
+  font-size: inherit;
 }
 
 option {
