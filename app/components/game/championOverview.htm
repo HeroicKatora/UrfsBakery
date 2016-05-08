@@ -6,7 +6,7 @@
 			</td>
 			<td ng-if="!class.champions.length"><span>No {{class.name}}s work for you, yet. You should hire some.</span>
 			</td>
-			<td ng-repeat="champ in class.champions">
+			<td ng-repeat="champ in class.champions | orderBy:'amount()'" ng-if="champ.display()">
 				<div class="anchor icon">
 					<div class="icon" ng-style="{'background': 'url(' + champ.imghref + ')', 'background-size': 'contain'}">
 					</div>
