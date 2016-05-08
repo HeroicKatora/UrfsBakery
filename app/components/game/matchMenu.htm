@@ -2,10 +2,24 @@
 	<h1 class="section-header">Match</h1>
 	<div id="match-fight">
 		<div ng-show="Bakery.show_fight()">
-			<h2 class="section-header">Champions</h2>
-			<div ng-repeat="champ in Bakery.state.match.fight.friendlies">{{champ}}</div>
-			<h2 class="section-header">Enemies</h2>
-			<div ng-repeat="enemy in Bakery.state.match.fight.enemies">{{enemy}}</div>
+			<div class="box" style="width: 100%; float: left">
+				<div style="float: left; width: 45%;">
+					<h2 class="section-header">Your team</h2>
+					<div ng-repeat="champ in Bakery.state.match.fight.friendlies" style="text-align: left">
+						<div ng-style="{ 'width': champ.hp/champ.max_hp*100 + '%' }" style="background-color: #00F000">
+							{{champ.champ_id}}
+						</div>
+					</div>
+				</div>
+				<div style="float: right; width: 45%;">
+					<h2 class="section-header">Enemy team</h2>
+					<div ng-repeat="enemy in Bakery.state.match.fight.enemies" style="text-align: right;">
+						<div ng-style="{'width': enemy.hp/enemy.max_hp*100 + '%'}" style="background-color: #00F000">
+							{{enemy.name}}
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 		<div ng-show="Bakery.show_reward()">
 			Your reward is {{Bakery.state.match.reward}}, click button to collect
@@ -22,10 +36,23 @@
 	</div>
 	<div id="match-info">
 		<div id="match-champions">
-			<h2 class="section-header">Champions in fight</h2>
+			<h2 class="section-header">Champions picked for match</h2>
+			<div ng-repeat="(class,info) in Bakery.to_display.classes">
+				<div>
+					{{info.name}}
+					<div ng-repeat="champ in info.champions">
+						{{champ.amount_match()}} / {{champ.amount()}}
+					</div>
+				</div>
+			</div>
 		</div>
 		<div id="match-items">
 			<h2 class="section-header">Items</h2>
+			<div>
+				<div ng-repeat="item in Bakery.to_display.items">
+					{{item}}
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

@@ -12,6 +12,12 @@ if(!Date.now){
 }
 
 var masteryurl = 'http://t-tides.net:8000/mastery?playername={0}&region={1}';
+var debug_grain = 3;
+
+function dlog(min_grain){
+	if(debug_grain > min_grain)
+		console.log.apply(console, arguments);
+}
 
 //https://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format/4673436#4673436
 if (!String.format) {
@@ -377,25 +383,25 @@ function ClickerSetup($scope, Menu){
 					win_match();
 				}
 			}else{
+				var fightspeed = 1/100;
 				match.fight.friendlies.forEach(function(champ){
 					var target = match.fight.enemies[Math.floor(Math.random()*match.fight.enemies.length)];
-					console.log(target, 'attacked by', champ);
-					var damage = damage_of_entity(champ);
-					var ph_dmg = damage.physical;
-					var mg_dmg = damage.magical;
+					dlog(2, target, 'attacked by', champ);
+					var damage = damage_of_entity(champ) ;
+					var ph_dmg = damage.physical * fightspeed;
+					var mg_dmg = damage.magical * fightspeed;
 					damage_entity_physical(target, ph_dmg);
 					damage_entity_magic(target, mg_dmg);
 				});
 				match.fight.enemies.forEach(function(enemy){
 					var target = match.fight.friendlies[Math.floor(Math.random()*match.fight.friendlies.length)];
-					console.log(target, 'attacked by', enemy);
-					var damage = damage_of_entity(enemy);
-					var ph_dmg = damage.physical;
-					var mg_dmg = damage.magical;
+					dlog(2, target, 'attacked by', enemy);
+					var damage = damage_of_entity(enemy) ;
+					var ph_dmg = damage.physical * fightspeed;
+					var mg_dmg = damage.magical * fightspeed;
 					damage_entity_physical(target, ph_dmg);
 					damage_entity_magic(target, mg_dmg);
 				});
-				console.log('Filtering out dead fighters');
 				match.fight.friendlies = match.fight.friendlies.filter(lives_entity);
 				match.fight.enemies = match.fight.enemies.filter(function(enemy){
 					if(!lives_entity(enemy)){
@@ -442,6 +448,12 @@ function ClickerSetup($scope, Menu){
 
 	function amount_champion(ident){
 		return state.champions[ident].amount;
+	}
+	function match_champion(ident){
+		return state.match.champions[ident] || 0;
+	}
+	function fight_champion(ident){
+		return state.match.in_fight[ident] || 0;
 	}
 
 	function amount_item(ident){
@@ -527,18 +539,24 @@ function ClickerSetup($scope, Menu){
 	};
 	function champion_level(id){
 		var xp = champion_exp(id);
-		return Math.floor(Math.log(4, xp + 1))
+		if(xp < 1800) return 1;
+		if(xp < 6000) return 2;
+		if(xp < 12600) return 3;
+		if(xp < 21600) return 4;
+		if(xp < 33000) return 5;
+		if(xp < 46800) return 6;
+		return Math.floor(Math.log(xp/46800)/Math.log(1.25))
 	};
-	function mk_champion_hp(amount, id, level){
+	function mk_champion_hp(id){
 		return data.champions.map[id].base_hp;
 	};
-	function mk_champion_attack(amount, id, level){
+	function mk_champion_attack(id){
 		return data.champions.map[id].base_attack;
 	};
-	function mk_champion_armor(amount, id, level){
+	function mk_champion_armor(id){
 		return data.champions.map[id].base_armor;
 	};
-	function mk_champion_mr(amount, id, level){
+	function mk_champion_mr(id){
 		return data.champions.map[id].base_mr;
 	}
 	var champion_type = {'tank': fighter_type.hybrid,
@@ -578,10 +596,16 @@ function ClickerSetup($scope, Menu){
 			}
 			champ.friendly = true;
 			champ.type = champion_type[data.champions.map[id].ch_class];
-			champ.max_hp = champ.hp = mk_champion_hp(num, id, level);
-			champ.attack = mk_champion_attack(num, id, level);
-			champ.armor = mk_champion_armor(num, id, level);
-			champ.magic_res = mk_champion_mr(num, id, level);
+			var hp = mk_champion_hp(id);
+			var att = mk_champion_attack(id);
+			var armor =  mk_champion_armor(id);
+			var mr =  mk_champion_mr(id);
+			var level_bonus = (1 + 0.3 * (level-1) * (level-1));
+			var num_bonus = Math.sqrt(num);
+			champ.max_hp = champ.hp = hp * level_bonus * num_bonus;
+			champ.attack = att * level_bonus * num_bonus;
+			champ.armor = armor * level_bonus * num_bonus;
+			champ.magic_res = mr * level_bonus * num_bonus;
 			match.fight.friendlies.push(champ);
 			match.in_fight[id] = num;
 		}
@@ -657,6 +681,7 @@ function ClickerSetup($scope, Menu){
 		var match = state.match;
 		var wonFight = match.fight.objective.hp <= 0;
 		var push = 0;
+		var lane = match.fight.lane;
 		if(wonFight){
 			if(String(lane).startsWith('buff_')){ 
 				var buffname = lane.substring(5);
@@ -708,6 +733,8 @@ function ClickerSetup($scope, Menu){
 		disp.display = function(){return true;};
 
 		disp.amount = amount_champion.bind(this, id);
+		disp.amount_match = match_champion.bind(this, id);
+		disp.amount_fight = fight_champion.bind(this, id);
 		disp.level = champion_level.bind(this, id);
 
 		disp.costs = cost_champion.bind(this, id);
