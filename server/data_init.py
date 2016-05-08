@@ -34,7 +34,7 @@ class ChampReg:
         self.portrait = 'http://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{name}.png'.format(version = self.upref.ddragonversion, name=name)
         self.upgrade_portrait = 'http://ddragon.leagueoflegends.com/cdn/{version}/img/champion/{name}.png'
         self.skin = 'http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{name}_{ind}.jpg'
-        extra_info = {'base_production': base_production, 'ch_class': ch_class, 'numeric_id': upgradereg.champion_map[name]['id'],
+        extra_info = {'base_production': base_production, 'ch_class': ch_class, 'numeric_id': upgradereg.champion_map[name]['key'],
                     'base_hp' : hp, 'base_attack' : attack, 'base_armor' : armor, 'base_mr' : mr};
         self.upref.register_champion(PurchaseElement(name, cost, name, self.portrait, description, extra_info), ch_class)
 
