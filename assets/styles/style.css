@@ -103,11 +103,22 @@ div[ng-click]:hover, ng-include[ng-click]:hover {
 }
 
 .icon {
-  height: 3em;
-  width: 3em;
+  height: 48px;
+  width: 48px;
+  display: inline-block;
 }
 
 .costs::after {
   content: ' pasteries';
+}
+
+.overviewRow {
+  height: 3em;
+  margin: 5px 0;
+  overflow: hidden;
+}
+
+tr.overviewRow > td {
+  white-space: nowrap;
 }
 
