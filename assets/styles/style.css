@@ -26,7 +26,7 @@ html, body {
 
 #bakery-menu {
   width: 80%;
-  height: 80%;
+  height: 70vh;
   z-index: 2;
 }
 
@@ -63,6 +63,7 @@ html, body {
   position: absolute;
   right: 3px;
   top: 3px;
+  z-index: 1;
 }
 
 #message-board {

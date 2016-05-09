@@ -368,7 +368,7 @@ function ClickerSetup($scope, Menu){
 		if(baked >= 1e18) unlock_achievement(['user', 'clicking', '7']);
 		if(baked >= 1e21) unlock_achievement(['user', 'clicking', '8']);
 		if(baked >= 1e24) unlock_achievement(['user', 'clicking', '9']);
-		Menu.spawnParticle(event.pageX, event.pageY, 'app/components/game/particleClick.htm');
+		Menu.spawnParticle(event.pageX, event.pageY, 'app/components/game/particleClick.htm', {pastries: amount});
 		state.pastries += amount;
 	};
 

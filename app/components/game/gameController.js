@@ -15,7 +15,7 @@ bakeryModule
 	var timeoutQueue = [];
 	return {
 		particles: [],
-		spawnParticle: function(x, y, templatePath, timeOnScreen) {
+		spawnParticle: function(x, y, templatePath, particleInfo, timeOnScreen) {
 			if(!timeOnScreen || timeOnScreen < 0) timeOnScreen = 2000;
 			var ours = particleIndex++ % 1000;
 			var particles = this.particles;
@@ -25,7 +25,8 @@ bakeryModule
 			particles[ours] = {
 				x: x,
 				y: y,
-				path: templatePath
+				path: templatePath,
+				info: particleInfo
 			};
 			$timeout(function() {
 				particles[ours] = undefined;
