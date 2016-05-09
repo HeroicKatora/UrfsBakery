@@ -1,8 +1,12 @@
 <div>
 	<h1 class="section-header">Kitchen Upgrades</h1>
 	<div style="max-height: 500px; overflow-y: auto;">
+		<div class="repeat-anchor"></div>
 		<ng-include ng-repeat="upgrade in Bakery.to_display.upgrades" src="'app/components/game/upgradeBuy.htm'" ng-if="upgrade.display()" style="max-width: 35%">
 		</ng-include>
+		<div class="repeat-fallback centered">
+			<span>No updates available</span>
+		</div>
 	</div>
 	<div class="ruler"></div>
 	<h1 class="section-header">Kitchen Staff</h1>
@@ -16,9 +20,10 @@
 			<div ng-repeat="(type, class) in Bakery.to_display.classes" ng-show="view_tab == type">
 				<h2 class="small-section-header">{{class.name}} champions:<span class="class-description">{{class.descr}}</span></h2>
 				<div>
+					<div class="repeat-anchor"></div>
 					<ng-include ng-repeat="champ in class.champions" src="'app/components/game/championBuy.htm'" ng-if="champ.display()">
 					</ng-include>
-					<div ng-if="!class.champions.length"><span>Currently no {{class.name}}s can be hired. Try another class.</span>
+					<div class="repeat-fallback"><span>Currently no {{class.name}}s can be hired. Try another class.</span>
 					</div>
 				</div>
 			</div>
