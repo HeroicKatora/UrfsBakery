@@ -63,6 +63,7 @@ html, body {
   position: absolute;
   right: 3px;
   top: 3px;
+  z-index: 1;
 }
 
 #message-board {
