@@ -7,7 +7,7 @@
 			</td>
 			<td ng-repeat="champ in class.champions | orderBy:['-amount()','costs()']" ng-if="champ.display()">
 				<div class="anchor icon">
-					<div class="icon" ng-style="{'background': 'url(' + champ.imghref + ')', 'background-size': 'contain', 'opacity': champ.amount() ? '1' : '0.5'}">
+					<div class="icon" ng-style="{'background': 'url(' + champ.imghref + ')', 'background-size': 'contain', 'opacity': champ.amount() ? '1' : '0.5'}" ng-class="{'glow': champ.can_buy()}">
 					</div>
 					<div ng-if="champ.amount() > 0" class="anchored-bot-right"><small>{{champ.amount() | prettyNumber}}</small>
 					</div>

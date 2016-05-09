@@ -49,7 +49,12 @@ html, body {
   background-position: 20% 0%;
   background-size: 90%;
 }
-
+#logo:hover{
+  -ms-filter: "progid:DXImageTransform.Microsoft.Dropshadow(OffX=0, OffY=0, Color='#fff')";
+  filter: url(shadow.svg#drop-shadow);
+  -webkit-filter: drop-shadow(0px 0px 5px rgba(255,255,255,0.5));
+  filter: drop-shadow(0px 0px 5px rgba(255,255,255,0.5));
+}
 #bake {
   background-size: cover;
 }
@@ -69,6 +74,11 @@ html, body {
   text-align: center;
 }
 
+#pastries, #pps {
+  font-size: 1.5em;
+  font-weight: bold;
+  text-shadow: 0 0 2px black;
+}
 
 .headline {
   font-family: 'Merriweather';
@@ -236,5 +246,37 @@ button:hover, input[type="button"]:hover {
 
 .champion-mastery {
   width: 6em;
+}
+
+.particle.ng-animate {
+  -webkit-transition: 2.5s ease-in transform, 0.5s ease-in-out opacity;
+  -moz-transition: 2.5s ease-in transform, 0.5s ease-in-out opacity;
+  -ms-transition: 2.5s ease-in transform, 0.5s ease-in-out opacity;
+  -o-transition: 2.5s ease-in transform, 0.5s ease-in-out opacity;
+  transition: 2.5s ease-in transform, 0.5s ease-in-out opacity;
+}
+.particle {
+  transform: translateY(-1000%);
+}
+.particle.ng-enter {
+  opacity: 0;
+  transform: translateY(0);
+}
+.particle.ng-enter.ng-enter-active {
+  opacity: 1;
+  transform: translateY(-1000%);
+}
+.particle.ng-enter-prepare {
+  opacity: 0;
+  transform: translateY(0);
+}
+.particle.ng-leave {
+  opacity: 1;
+}
+.particle.ng-leave.ng-leave-active {
+  opacity: 0;
+}
+.particle.ng-leave-prepare {
+  opacity: 1;
 }
 

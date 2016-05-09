@@ -3,16 +3,16 @@
 		<button ng-click="Menu.openMenu('options')">Options</button><br>
 		<button ng-click="Menu.openMenu('mastery')">Mastery</button>
 	</div>
-	<div class="row content box horizontal">
-		<div class="row filler inline" id="pastries"><span ng-cloak class="costs" style="position: absolute; top: 20%; left: 0;">{{(Bakery.state.pastries || 0) | prettyNumber}}</span></div>
-		<div class="row content anchor">
+	<div class="row content">
+		<div class="anchor">
 			<div class="aspect-wrapper" id="logo-wrapper">
 				<div style="padding-bottom: 50%"></div>
 				<div class="aspect-content" id="logo" ng-click="Bakery.manual_bake($event)">
 				</div>
 			</div>
 		</div>
-		<div class="row filler inline" id="pps"><span ng-cloak style="position: absolute; top: 20%; right: 0;">{{Bakery.pastries_per_second() | prettyNumber:2}} / second</span></div>
+		<div id="pastries"><span ng-cloak class="costs" style="position: absolute; top: 20%; left: 0;">{{(Bakery.state.pastries || 0) | prettyNumber}}</span></div>
+		<div id="pps"><span ng-cloak style="position: absolute; top: 20%; right: 0;">{{Bakery.pastries_per_second() | prettyNumber:2}}<br> / second</span></div>
 	</div>
 	<div class="row filler" style="width: 100px; text-align: right; font-size: 1.4em">
 		<button ng-click="Menu.openMenu('stats')">Stats</button><br>

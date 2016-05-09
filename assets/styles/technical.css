@@ -181,3 +181,10 @@
   -ms-user-select: none;
   user-select: none;
 }
+
+.glow {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Dropshadow(OffX=0, OffY=0, Color='#fff')";
+  filter: url(shadow.svg#drop-shadow);
+  -webkit-filter: drop-shadow(0px 0px 3px rgba(255,255,255,0.5));
+  filter: drop-shadow(0px 0px 3px rgba(255,255,255,0.5));
+}
