@@ -343,7 +343,6 @@ function ClickerSetup($scope, Menu){
 		amount *= (1 + 0.5*marksman_count);
 		increment_count(state.stats, ['manual_bake'], amount);
 	
-		Menu.addMessage('+'+amount);
 		increment_count(state.stats, ['user', 'clicking'], amount);
 		var baked = retrieve_object(state.stats, ['user', 'clicking']);
 		if(baked >= 1e0) unlock_achievement(['user', 'clicking', '0']);
