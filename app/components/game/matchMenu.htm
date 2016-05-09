@@ -23,8 +23,8 @@
 	</div>
 	<div id="match-in-game" style="width: 100%; height: 80%; position: relative" ng-show="Bakery.show_cancel_match()">
 		<div ng-show="Bakery.show_fight()">
-			<div class="box" style="width: 100%; float: left">
-				<div style="float: left; width: 45%;">
+			<div class="box horizontal" style="width: 100%">
+				<div class="row content">
 					<h2 class="section-header">Your team</h2>
 					<div ng-repeat="champ in Bakery.state.match.fight.friendlies" style="text-align: left">
 						<div ng-style="{ 'width': champ.hp/champ.max_hp*100 + '%' }" style="background-color: #00F000">
@@ -32,7 +32,7 @@
 						</div>
 					</div>
 				</div>
-				<div style="float: right; width: 45%;">
+				<div class="row content">
 					<h2 class="section-header">Enemy team</h2>
 					<div ng-repeat="enemy in Bakery.state.match.fight.enemies" style="text-align: right;">
 						<div ng-style="{'width': enemy.hp/enemy.max_hp*100 + '%'}" style="background-color: #00F000">
@@ -42,11 +42,11 @@
 				</div>
 			</div>
 		</div>
-		<div ng-show="Bakery.show_start_fight()" style="width: 50%">
+		<div class="centered-shrink" ng-show="Bakery.show_start_fight()" style="width: 50%">
 			<h2 class="section-header">Select a lane to fight</h2>
 			<ng-include src="'app/components/game/matchMap.htm'" ng-init="allow_start=true"></ng-include>
 		</div>
-		<div>
+		<div class="centered">
 			<button ng-click="Bakery.cancel_match()">Cancel current match</button>
 		</div>
 	</div>
