@@ -352,7 +352,7 @@ function ClickerSetup($scope, Menu){
 		var marksman_count = amount_champion_type('marksman');
 		amount *= (1 + 0.5*marksman_count);
 		var clicking_amount = count_unlock(retrieve_object(state.upgrades, ['user', 'clicking']));
-		amount += pastries_per_second() * 0.05 * clicking_amount;
+		amount += calculate_pps() * 0.05 * clicking_amount;
 
 		increment_count(state.stats, ['manual_bake'], amount);
 	
@@ -905,8 +905,8 @@ function ClickerSetup($scope, Menu){
 	function win_match(){
 		state.rank += 1;
 		state.match.lanes = {top:0,mid:0,bot:0,base:0};
-		var min_pastries = pastries_per_second() * 1e2;
-		var max_pastries = pastries_per_second() * 1e6;
+		var min_pastries = calculate_pps() * 1e2;
+		var max_pastries = calculate_pps() * 1e6;
 		var pastries = state.pastries * 0.1;
 		state.match.rewards = {pastries: Math.max(min_pastries, Math.min(max_pastries, pastries))};
 		state.match.is_in_game = false;
