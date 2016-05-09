@@ -23,6 +23,8 @@
 		<div id="message-board" class="anchored-bot centered-shrink" ng-include="'app/components/game/messageBoard.htm'">
 		</div>
 	</div>
-	<ng-include ng-repeat="particle in Menu.particles track by $index" src="particle.path" class="particle unclickable" ng-style="{'top': particle.y, 'left': particle.x}">
-	</ng-include>
+	<div ng-repeat="particle in Menu.particles track by $index" class="particle unclickable" ng-style="{'top': particle.y, 'left': particle.x}">
+		<ng-include src="particle.path">
+		</ng-include>
+	</div>
 </div>
