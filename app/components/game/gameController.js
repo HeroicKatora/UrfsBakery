@@ -8,6 +8,7 @@ bakeryModule
 		'mastery' : 'app/components/game/masteryMenu.htm',
 		'options' : 'app/components/game/optionsMenu.htm',
 		'match' : 'app/components/game/matchMenu.htm',
+		'info' : 'app/components/game/infoMenu.htm',
 		'' : '',
 	}
 	var particleIndex = 0;
