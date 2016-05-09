@@ -90,6 +90,12 @@
   right: 0;
 }
 
+.anchored-top-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 .anchored-bot-left {
  position: absolute;
  bottom: 0;
@@ -155,6 +161,10 @@
   text-align: center;
 }
 
+.align-right {
+  text-align: right;
+}
+
 .aspect-wrapper {
   position: relative;
 }
@@ -180,4 +190,18 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+.glow {
+  -ms-filter: "progid:DXImageTransform.Microsoft.Dropshadow(OffX=0, OffY=0, Color='#fff')";
+  filter: url(shadow.svg#drop-shadow);
+  -webkit-filter: drop-shadow(0px 0px 3px rgba(255,255,255,0.5));
+  filter: drop-shadow(0px 0px 3px rgba(255,255,255,0.5));
+}
+
+.repeat-anchor, .repeat-fallback {
+  display: none;
+}
+.repeat-anchor + .repeat-fallback {
+  display: initial;
 }

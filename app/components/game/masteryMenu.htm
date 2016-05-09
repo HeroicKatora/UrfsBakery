@@ -10,12 +10,10 @@
 		<button ng-click='Bakery.refresh_mastery(mastery_name, mastery_region.id)'>Refresh Mastery</button>
 	</div>
 	<div class="ruler"></div>
-	<div ng-if="Bakery.state.mastery.data.length">
-		<span>Found the following champion mastery data (only displaying champions used in the game):</span><br>
-		<div class="inline champion-mastery" ng-repeat="mastery in Bakery.state.mastery.data | orderBy:'-championPoints' track by $index" ng-init="champ=Bakery.data.champions.byNbr[mastery.championId];''" ng-if="Bakery.data.champions.byNbr[mastery.championId]">
-			<ng-include src="'app/components/game/championPortraitFull.htm'">
-			</ng-include>
-		</div>
+	<span ng-if="Bakery.state.mastery.data.length">Found the following champion mastery data (only displaying champions used in the game):</span><br>
+	<div class="inline champion-mastery" ng-repeat="mastery in Bakery.state.mastery.data | orderBy:'-championPoints' track by $index" ng-init="champ=Bakery.data.champions.byNbr[mastery.championId];''" ng-if="Bakery.data.champions.byNbr[mastery.championId]">
+		<ng-include src="'app/components/game/championPortraitFull.htm'">
+		</ng-include>
 	</div>
 	<div ng-if="!Bakery.state.mastery.data.length && !Bakery.state.mastery.last_refreshed">
 		<span>Refresh your masteries to see any updates.</span>

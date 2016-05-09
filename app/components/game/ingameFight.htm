@@ -1,0 +1,37 @@
+<div class="box horizontal" style="width: 100%">
+	<div class="row content">
+		<h2 class="section-header">Your team</h2>
+		<table style="width: 100%">
+			<tr ng-repeat="champ in Bakery.state.match.fight.friendlies" style="text-align: left">
+				<td class="icon" ng-style="{'background': 'url(' + champ.icon_href + ') no-repeat 0% 0%/contain'}" style="display: table-cell">
+				</td>
+				<td>
+					<div style="border: 2px solid black">
+						<span ng-style="{ 'width': champ.hp/champ.max_hp*100 + '%' }" style="display: inline-block; background-color: #00F000; color: #000000">
+						{{champ.champ_id}}
+						</span>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="row content">
+		<h2 class="section-header">Enemy team</h2>
+		<table style="width: 100%">
+			<tr ng-repeat="enemy in Bakery.state.match.fight.enemies" style="text-align: right;">
+				<td>
+					<div class="align-right" style="border: 2px solid black;">
+						<span ng-style="{'width': enemy.hp/enemy.max_hp*100 + '%'}" style="display: inline-block; background-color: #00F000; color: #000000">
+						{{enemy.name}}
+						</span>
+					</div>
+				</td>
+				<td class="icon" ng-style="{'background': 'url(' + enemy.icon_href + ') no-repeat 0% 0%/contain'}" style="display: table-cell">
+				</td>
+			</tr>
+		</table>
+		<div >
+			
+		</div>
+	</div>
+</div>

@@ -1,8 +1,6 @@
 <div>
 	<div class="box horizontal" style="padding: 5px;">
-		<div class="row filler icon anchor" ng-style="{'background': 'url(' + champ.imghref + ')', 'background-size': 'contain'}">
-			<button class="box anchored-bot-left" ng-click="champ.move_match()" ng-disabled="!champ.can_move_match()">+</button>
-			<button class="box anchored-bot-right" ng-click="champ.move_bake()" ng-disabled="!champ.can_move_bake()">-</button>
+		<div class="row filler splash" ng-style="{'background': 'url(' + champ.champion_skin() + ') center center/contain no-repeat'}">
 		</div>
 		<div class="row filler">
 		</div>
@@ -22,7 +20,10 @@
 				</tr>
 				</tr>
 			</table>
-			<div class="emphazise-header anchored-bot-right">Selected {{champ.amount_match() | prettyNumber}} / {{champ.amount() | prettyNumber}}
+			<div class="emphazise-header anchored-bot-right align-right">
+				<button ng-click="champ.move_match()" ng-disabled="!champ.can_move_match()">+</button>
+				<button ng-click="champ.move_bake()" ng-disabled="!champ.can_move_bake()">-</button><br>
+				<span>Selected {{champ.amount_match() | prettyNumber}} / {{champ.amount() | prettyNumber}}</span>
 			</div>
 		</div>
 	</div>

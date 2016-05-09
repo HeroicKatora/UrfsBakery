@@ -1,4 +1,4 @@
-<div class="box fill-parent">
+<div class="box fill-parent anchor">
 	<div id="bakery-header" class="row filler centered-shrink">
 		<ng-include src="'app/components/game/gameHeader.htm'">
 		</ng-include>
@@ -9,21 +9,21 @@
 			<div class="ruler"></div>
 			<ng-include src="'app/components/game/matchOverview.htm'" class="equal-flex scrollable-y" ng-click="Menu.openMenu('match')"></ng-include>
 		</div>
-		<div id="bakery-menu" class="anchored-bot centered-shrink" ng-hide="Menu.menuPath == ''">
-			<div class="sheet fill-parent">
-				<div style="height: 100%; overflow: auto;">
-					<div id="menu-close">
-						<button class="close-button" ng-click="Menu.openMenu('')">Close</button>
-					</div>
-					<ng-include src="Menu.menuPath">
-					</ng-include>
+	</div>
+	<div id="bakery-menu" class="anchored-bot centered-shrink" ng-hide="Menu.menuPath == ''">
+		<div class="sheet fill-parent">
+			<div style="height: 100%; overflow: auto;">
+				<div id="menu-close">
+					<button class="close-button" ng-click="Menu.openMenu('')">Close</button>
 				</div>
+				<ng-include src="Menu.menuPath">
+				</ng-include>
 			</div>
 		</div>
-		<div id="message-board" class="anchored-bot centered-shrink" ng-include="'app/components/game/messageBoard.htm'">
-		</div>
 	</div>
-	<div ng-repeat="particle in Menu.particles track by $index" class="particle unclickable" ng-style="{'top': particle.y, 'left': particle.x}">
+	<div id="message-board" class="anchored-bot centered-shrink" ng-include="'app/components/game/messageBoard.htm'">
+	</div>
+	<div ng-repeat="particle in Menu.particles track by $index" class="particle unclickable" ng-init="particleInfo=particle.info" ng-style="{'top': particle.y, 'left': particle.x}">
 		<ng-include src="particle.path">
 		</ng-include>
 	</div>

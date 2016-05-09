@@ -1,6 +1,6 @@
-<div ng-click="upgrade.buy()" ng-disabled="!upgrade.can_buy()">
+<div ng-click="upgrade.buy_upgrade()" ng-if="!upgrade.has_upgrade() && upgrade.display()">
 	<div class="box horizontal" style="padding: 5px;">
-		<div class="row filler splash" ng-style="{'background': 'url(' + upgrade.imghref() + ') center center/contain no-repeat'}">
+		<div class="row filler splash" ng-style="{'background': 'url(' + upgrade.image() + ') center center/contain no-repeat'}">
 		</div>
 		<div class="row content">
 			<div>

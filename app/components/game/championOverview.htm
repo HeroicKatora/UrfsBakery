@@ -1,5 +1,9 @@
 <div class="">
 	<h1 class="section-header">Upgrade Overview</h1>
+	<div class="repeat-anchor"></div>
+	<div class="repeat-fallback centered">
+		<span>No upgrades available</span>
+	</div>
 	<h1 class="section-header">Kitchen Overview</h1>
 	<table>
 		<tr class="overviewRow" ng-repeat="(type, class) in Bakery.to_display.classes">
@@ -7,7 +11,7 @@
 			</td>
 			<td ng-repeat="champ in class.champions | orderBy:['-amount()','costs()']" ng-if="champ.display()">
 				<div class="anchor icon">
-					<div class="icon" ng-style="{'background': 'url(' + champ.imghref + ')', 'background-size': 'contain', 'opacity': champ.amount() ? '1' : '0.5'}">
+					<div class="icon" ng-style="{'background': 'url(' + champ.imghref + ')', 'background-size': 'contain', 'opacity': champ.amount() ? '1' : '0.5'}" ng-class="{'glow': champ.can_buy()}">
 					</div>
 					<div ng-if="champ.amount() > 0" class="anchored-bot-right"><small>{{champ.amount() | prettyNumber}}</small>
 					</div>

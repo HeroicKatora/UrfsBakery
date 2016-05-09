@@ -1,8 +1,8 @@
 <div>
 	<div id="match-champions" ng-show="Bakery.show_start_match()">
-		<h2 class="section-header">Champions picked for match</h2>
+		<h2 class="section-header">Champions pick phase</h2>
 		<div style="text-align: center">Champions in a match will earn experience every second but won't produce as much pastries</div>
-		<div class="wrap-floating">
+		<div class="wrap-floating" ng-scope>
 			<div class="vertical-tab-selection" ng-init="view_tab = 'tank'">
 				<div ng-repeat="(type, class) in Bakery.to_display.classes" ng-class="{'active': view_tab == type}" ng-click="$parent.view_tab = type" class="tab-item">
 					<div class="icon" ng-style="{'background': 'url(' + class.icon_href + ')', 'background-position': -class.icon_y + ' ' + -class.icon_x}", 'background-size': '48px 48px'></div>
@@ -11,48 +11,36 @@
 			</div>
 			<div class="vertical-tab-content">
 				<div ng-repeat="(type, class) in Bakery.to_display.classes" ng-show="view_tab == type">
-					<h2 class="small-section-header">{{class.name}} champions:<span style="font-size: small;">{{class.descr}}</span></h2>
-					<ng-include ng-repeat="champ in class.champions" src="'app/components/game/championMatch.htm'" ng-if="champ.amount() > 0">
-					</ng-include>
-					<div ng-if="!class.champions.length"><span>No champion of this class is currently working for you. Try another one</span>
+					<h2 class="small-section-header">{{class.name}} champions:</h2>
+					<div>
+						<div class="repeat-anchor"></div>
+						<ng-include ng-repeat="champ in class.champions" src="'app/components/game/championMatch.htm'" ng-if="champ.amount() > 0">
+						</ng-include>
+						<div class="repeat-fallback"><span>No champion of this class is currently working for you. Try another one</span>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<button ng-click="Bakery.start_match()">Lock in and play</button>
+		<div class="align-right"><button ng-click="Bakery.start_match()">Lock in and play</button></div>
 	</div>
 	<div id="match-in-game" style="width: 100%; height: 80%; position: relative" ng-show="Bakery.show_cancel_match()">
 		<div ng-show="Bakery.show_fight()">
-			<div class="box" style="width: 100%; float: left">
-				<div style="float: left; width: 45%;">
-					<h2 class="section-header">Your team</h2>
-					<div ng-repeat="champ in Bakery.state.match.fight.friendlies" style="text-align: left">
-						<div ng-style="{ 'width': champ.hp/champ.max_hp*100 + '%' }" style="background-color: #00F000">
-							{{champ.champ_id}}
-						</div>
-					</div>
-				</div>
-				<div style="float: right; width: 45%;">
-					<h2 class="section-header">Enemy team</h2>
-					<div ng-repeat="enemy in Bakery.state.match.fight.enemies" style="text-align: right;">
-						<div ng-style="{'width': enemy.hp/enemy.max_hp*100 + '%'}" style="background-color: #00F000">
-							{{enemy.name}}
-						</div>
-					</div>
-				</div>
-			</div>
+			<ng-include src="'app/components/game/ingameFight.htm'">
+			</ng-include>
 		</div>
-		<div ng-show="Bakery.show_start_fight()" style="width: 50%">
+		<div class="centered-shrink" ng-show="Bakery.show_start_fight()" style="width: 50%">
 			<h2 class="section-header">Select a lane to fight</h2>
 			<ng-include src="'app/components/game/matchMap.htm'" ng-init="allow_start=true"></ng-include>
 		</div>
-		<div>
+		<div class="centered">
+			<button ng-click="Bakery.end_fight()" ng-if="Bakery.show_end_fight()">Cancel current fight</button>
 			<button ng-click="Bakery.cancel_match()">Cancel current match</button>
 		</div>
 	</div>
 	<div ng-show="Bakery.show_reward()">
 		<h2 class="section-header">Rewards for your last game</h2>
-		<div style="text-align: center">Your reward is {{Bakery.state.match.rewards}}</div>
+		<div style="text-align: center" class="costs">Your reward is {{Bakery.state.match.rewards.pastries}}</div>
 		<button ng-click="Bakery.collect_rewards()">Collect game rewards</button>
 		<div style="text-align: center">You are also promoted</div>
 	</div>

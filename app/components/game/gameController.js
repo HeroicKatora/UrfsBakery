@@ -8,13 +8,14 @@ bakeryModule
 		'mastery' : 'app/components/game/masteryMenu.htm',
 		'options' : 'app/components/game/optionsMenu.htm',
 		'match' : 'app/components/game/matchMenu.htm',
+		'info' : 'app/components/game/infoMenu.htm',
 		'' : '',
 	}
 	var particleIndex = 0;
 	var timeoutQueue = [];
 	return {
 		particles: [],
-		spawnParticle: function(x, y, templatePath, timeOnScreen) {
+		spawnParticle: function(x, y, templatePath, particleInfo, timeOnScreen) {
 			if(!timeOnScreen || timeOnScreen < 0) timeOnScreen = 2000;
 			var ours = particleIndex++ % 1000;
 			var particles = this.particles;
@@ -24,7 +25,8 @@ bakeryModule
 			particles[ours] = {
 				x: x,
 				y: y,
-				path: templatePath
+				path: templatePath,
+				info: particleInfo
 			};
 			$timeout(function() {
 				particles[ours] = undefined;

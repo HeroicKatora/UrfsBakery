@@ -1,0 +1,34 @@
+<div>
+	<h1 class="section-header">General</h1>
+
+This is a game about baking pastries. You, Urf, the mighty manatee, lord of the spatula, want the bake the most pastries of all of the residents of Runeterra. For this, you not only bake them by your own <s>hands</s> fins but also trick the Justice League's most valuable bakers into cooking for you - by paying them in pastries. If that isn't simply clever. Of course they will need some time off, then and now, but they always come back as even greater chocolatiers. And so your pastry imperium grows and grows and grows...
+
+	<h1 class="section-header">How to play</h1>
+The core mechanic is simple to understand: Just bake as much pastries and pancakes and cookies and all that sweet stuff as you can, as quickly as you can. You start on your own, without any help. For that reason you have to know how to make pasteries by hand.<br><br>
+When clicking on Urf, King of the Manatees, in the middle of the screen, you will get pastries. It's not much but enough for a start. Clicking will be worth more once you progress, but as it tires your hand and we don't want you to get <a href="https://de.wikipedia.org/wiki/Repetitive-Strain-Injury-Syndrom">RSI</a> you should look into tactics to avoid having to click on your own.<br><br>
+Entrance Kitchen Staff. Simply click on the pane that says Kitchen Overview to see your employees. Grouped by their classes into Tanks, Assassins, Supports, etc... you'll see some of the fine Gentlemen and Ladies that make up your favorite Justice League. Here you can - given you have enough pastries to bribe them into it - purchase their help in your kitchen. This will give you two boni:<br>
+<ul>
+	<li>The champion will passively generate pastries over time</li>
+	<li>The champion will add to the passive class bonus of his or her class</li>
+</ul>
+You will hopefully see a nice progression and soon staff your kitchen with only the best cooks but after earning specific achievements (shh.. they are secret, but I'm sure you'll figure some out) you can purchase Upgrades which make your employees even more effective!<br>
+<br>
+On the right side of the overview, you can see your current rank in the League of Bakers. This is a League just like any other and you need to win games in order to progress. Simply click on the panel, add or remove champions from your lineup, click Play and begin to fight matches. In each match you try to destroy the enemy nexus by pushing lanes with towers and inhibitors, just like in a real game in the League of Legends. But here, when you win a game, your champions will get experience to get even better at baking. And that's all that counts, in the end, right?<br>
+Pro tip: You can give your champion bakers a head start in experience by linking your summoner profile via the Mastery button (automatically opens when you start the game). It will generally be faster to play a game of real League of Legends to gain Mastery Points than through Urf's Bakery. Balance them wisely, this is an idle game after all.<br>
+<br>
+One last thing: you can save your progress by pressing the Save button on the top right.<br>
+<br>
+That is it, everything you have to know has been explained. Good luck and have fun baking as many pastries as you can!
+
+	<h1 class="section-header">Readme</h1>
+This started out as a really crazy idea to make an idle game for the 2016 Riot API challenge, but the we started to realize how well it fits into your perfect League experience, we couldn't hold back.<br>
+Why an idle game, and what's so good about it? The answer of course, you can play it while playing League of Legends! Combined with the feature that champion mastery points give you a bonus in game, it makes it a perfect game to play during queue time.<br>
+<br>
+We quickly decided to use github-pages as a static webhost simply because we don't have a server that can stem the webtraffic - given the game (hopefully) grows bigger. Because we want to use the champion mastery data of the player while he plays we also needed to deploy a little cache-server that hosts all of that and refreshs it as needed.<br>
+<br>
+We use a simple python-script to scrape some more static data from the Riot API, such as champion attributes. You can find those in the 'server' folder in the github repository.<br>
+Everything else (the game) is done on the Client with javascript. Most notably we make use of the angularJS library to keep dynamic layout hassles to a minimum. Apart from that, a few extra image assets from the LoL Client are used to give everything a nice, more familiar look.<br>
+<br>
+And now that you came this far, again, enjoy the game, thanks for playing and have a nice da!
+
+</div>
