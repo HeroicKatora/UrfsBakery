@@ -351,7 +351,7 @@ function ClickerSetup($scope, Menu){
 		var amount = 1;
 		var marksman_count = amount_champion_type('marksman');
 		amount *= (1 + 0.5*marksman_count);
-		var clicking_amount = count_unlock(retrieve_object(state.upgrades, ['user', 'clicking']));
+		var clicking_amount = count_sub_upgrades(['user', 'clicking']);
 		amount += calculate_pps() * 0.05 * clicking_amount;
 
 		increment_count(state.stats, ['manual_bake'], amount);
@@ -439,6 +439,10 @@ function ClickerSetup($scope, Menu){
 			var passive_exp = 0.1 * time_step / 1000;
 			var fighter_bonus = (1 + 0.1 * amount_champion_type('fighter'));
 			passive_exp *= state.rank * fighter_bonus;
+
+			var exp_upgrades = count_sub_upgrades(['experience', 'total']);
+			passive_exp *= Math.pow(1.5, exp_upgrades);
+
 			for(var champid in state.match.champions){
 				if(!state.match.champions) continue;
 				add_experience(champid, passive_exp, ' farming in a lane');
@@ -463,9 +467,12 @@ function ClickerSetup($scope, Menu){
 				match.fight.friendlies.forEach(function(champ){
 					var target = match.fight.enemies[Math.floor(Math.random()*match.fight.enemies.length)];
 					dlog(2, target, 'attacked by', champ);
+					var damage_buffs = count_sub_upgrades(['champion', champ.champ_id, 'damage_dealt']);
+					var damage_mult = Math.pow(2, damage_buffs);
+
 					var damage = damage_of_entity(champ) ;
-					var ph_dmg = damage.physical * fightspeed;
-					var mg_dmg = damage.magical * fightspeed;
+					var ph_dmg = damage.physical * fightspeed * damage_mult;
+					var mg_dmg = damage.magical * fightspeed * damage_mult;
 					var ph_damage_done = damage_entity_physical(target, ph_dmg);
 					var mg_damage_done = damage_entity_magic(target, mg_dmg);
 					deal_damage(champ.champ_id, ph_damage_done + mg_damage_done);
@@ -473,9 +480,12 @@ function ClickerSetup($scope, Menu){
 				match.fight.enemies.forEach(function(enemy){
 					var target = match.fight.friendlies[Math.floor(Math.random()*match.fight.friendlies.length)];
 					dlog(2, target, 'attacked by', enemy);
-					var damage = damage_of_entity(enemy) ;
-					var ph_dmg = damage.physical * fightspeed;
-					var mg_dmg = damage.magical * fightspeed;
+					var defense_bufs = count_sub_upgrades(['champion', target.champ_id, 'damage_received']);
+					var defense_mult = Math.pow(0.5, defense_bufs);
+					var damage = damage_of_entity(enemy);
+
+					var ph_dmg = damage.physical * fightspeed * defense_mult;
+					var mg_dmg = damage.magical * fightspeed * defense_mult;
 					var ph_damage_received = damage_entity_physical(target, ph_dmg);
 					var mg_damage_received = damage_entity_magic(target, mg_dmg);
 					received_damage(target.champ_id, ph_damage_received+mg_damage_received);
@@ -489,6 +499,10 @@ function ClickerSetup($scope, Menu){
 							var exp = exp_bonus / match.fight.friendlies.length;
 							var assassin_count = amount_champion_type('assassin');
 							exp *= (1 + 0.1 * assassin_count);
+
+							var exp_upgrades = count_sub_upgrades(['experience', 'total']);
+							exp *= Math.pow(1.5, exp_upgrades);
+
 							add_experience(ident, exp, ' defeating '+enemy.name);
 						});
 						return false;
@@ -669,6 +683,10 @@ function ClickerSetup($scope, Menu){
 	function count_unlock(obj){
 		return count_object(obj, function(_,sub){return sub['unlocked'];});
 	}	
+
+	function count_sub_upgrades(ident){
+		return count_unlock(retrieve_object(state.upgrades, ident));
+	}
 
 	function champion_skin(ident){
 		var upg = -1;
@@ -853,7 +871,7 @@ function ClickerSetup($scope, Menu){
 				6: {name: 'Nexus', hp: 4000, attack: 0, armor: 100, mr: 50, exp: 200}
 			}
 			var push_mul = Math.pow(1.1, push);
-			var rank_mul = Math.pow(2, state.rank)
+			var rank_mul = Math.pow(1.6, state.rank);
 			{//Tower
 				var tower_stat = tower_base_stats[push];
 				var tower_name = tower_stat.name;
