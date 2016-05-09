@@ -58,6 +58,9 @@ function retrieve_object(object, path, create=true){
 	}, object);
 }
 
+/**
+ * Store an object in a path storage and returns the object stored
+ */
 function store_object(object_base, path, data){
 	if(!path.length) return false;
 	var prop = path[0];
@@ -67,13 +70,20 @@ function store_object(object_base, path, data){
 	}
 	if(typeof object_base[prop] !== 'Object')
 		object_base[prop] = {};
-	store_object(object_base[prop], rest, data);
+	return store_object(object_base[prop], rest, data);
 }
 
+/**
+ * Increments the counter in the object and returns the new value
+ */
 function increment_count(object_base, path, amount = 1){
 	var count = retrieve_object(object_base, path, false) || 0;
-	store_object(object_base, path, count + amount);
+	return store_object(object_base, path, count + amount);
 }
+
+/*
+ * Counts the number of sub objects for which the predicate is fulfilled
+ */
 function count_object(object_base, fn){
 	var count = 0;
 	for(var sub in object_base){
@@ -341,6 +351,9 @@ function ClickerSetup($scope, Menu){
 		var amount = 1;
 		var marksman_count = amount_champion_type('marksman');
 		amount *= (1 + 0.5*marksman_count);
+		var clicking_amount = count_unlock(retrieve_object(state.upgrades, ['user', 'clicking']));
+		amount += pastries_per_second() * 0.05 * clicking_amount;
+
 		increment_count(state.stats, ['manual_bake'], amount);
 	
 		Menu.addMessage('+'+amount);
@@ -398,10 +411,12 @@ function ClickerSetup($scope, Menu){
 	function damage_entity_physical(entity, damage){
 		damage *= 100/(100+entity.armor);
 		entity.hp -= damage;
+		return damage;
 	}
 	function damage_entity_magic(entity, damage){
 		damage *= 100/(100+entity.magic_res);
 		entity.hp -= damage;
+		return damage;
 	}
 	function damage_split(fighter_t){
 		var split = {};
@@ -421,6 +436,13 @@ function ClickerSetup($scope, Menu){
 		//This ignores time step for now
 		var match = state.match;
 		if(!match.is_fighting){
+			var passive_exp = 0.1 * time_step / 1000;
+			var fighter_bonus = (1 + 0.1 * amount_champion_type('fighter'));
+			passive_exp *= state.rank * fighter_bonus;
+			for(var champid in state.match.champions){
+				if(!state.match.champions) continue;
+				add_experience(champid, passive_exp, ' farming in a lane');
+			}
 			//Farm
 		}else{
 			if(!match.fight.friendlies.length || match.fight.objective().hp <= 0){
@@ -444,8 +466,9 @@ function ClickerSetup($scope, Menu){
 					var damage = damage_of_entity(champ) ;
 					var ph_dmg = damage.physical * fightspeed;
 					var mg_dmg = damage.magical * fightspeed;
-					damage_entity_physical(target, ph_dmg);
-					damage_entity_magic(target, mg_dmg);
+					var ph_damage_done = damage_entity_physical(target, ph_dmg);
+					var mg_damage_done = damage_entity_magic(target, mg_dmg);
+					deal_damage(champ.champ_id, ph_damage_done + mg_damage_done);
 				});
 				match.fight.enemies.forEach(function(enemy){
 					var target = match.fight.friendlies[Math.floor(Math.random()*match.fight.friendlies.length)];
@@ -453,8 +476,9 @@ function ClickerSetup($scope, Menu){
 					var damage = damage_of_entity(enemy) ;
 					var ph_dmg = damage.physical * fightspeed;
 					var mg_dmg = damage.magical * fightspeed;
-					damage_entity_physical(target, ph_dmg);
-					damage_entity_magic(target, mg_dmg);
+					var ph_damage_received = damage_entity_physical(target, ph_dmg);
+					var mg_damage_received = damage_entity_magic(target, mg_dmg);
+					received_damage(target.champ_id, ph_damage_received+mg_damage_received);
 				});
 				match.fight.friendlies = match.fight.friendlies.filter(lives_entity);
 				match.fight.enemies = match.fight.enemies.filter(function(enemy){
@@ -463,8 +487,8 @@ function ClickerSetup($scope, Menu){
 						match.fight.friendlies.forEach(function(ch){
 							var ident = ch.champ_id;
 							var exp = exp_bonus / match.fight.friendlies.length;
-							var fighter_count = amount_champion_type('fighter');
-							exp *= (1 + 0.1 * fighter_count);
+							var assassin_count = amount_champion_type('assassin');
+							exp *= (1 + 0.1 * assassin_count);
 							add_experience(ident, exp, ' defeating '+enemy.name);
 						});
 						return false;
@@ -475,6 +499,22 @@ function ClickerSetup($scope, Menu){
 		}
 	};
 
+	function deal_damage(champion, amount){
+		var dmg_done = increment_count(state.stats, ['champion', champion, 'damage_dealt'], amount);
+		if(dmg_done >= 1e3) unlock_achievement(['champion', champion, 'damage_dealt', 0]);
+		if(dmg_done >= 1e6) unlock_achievement(['champion', champion, 'damage_dealt', 1]);
+		if(dmg_done >= 1e9) unlock_achievement(['champion', champion, 'damage_dealt', 2]);
+		if(dmg_done >= 1e12) unlock_achievement(['champion', champion, 'damage_dealt', 3]);
+	}
+
+
+	function received_damage(champion, amount){
+		var dmg_received = increment_count(state.stats, ['champion', champion, 'damage_received'], amount);
+		if(dmg_received >= 1e3) unlock_achievemt(['champion', champion, 'damage_received', 0]);
+		if(dmg_received >= 1e6) unlock_achievemt(['champion', champion, 'damage_received', 1]);
+		if(dmg_received >= 1e9) unlock_achievemt(['champion', champion, 'damage_received', 2]);
+		if(dmg_received >= 1e12) unlock_achievemt(['champion', champion, 'damage_received', 3]);
+	}
 
 	var loop = function(){
 		var handle = setInterval(function(){
@@ -529,6 +569,13 @@ function ClickerSetup($scope, Menu){
 	}
 
 	function add_experience(ident, amount, reason){
+		var total_farmed = increment_count(state.stats, ['experience', 'total'], amount);
+		if(total_farmed >= 1e3) unlock_achievement(['experience', 'total', 0]);
+		if(total_farmed >= 1e5) unlock_achievement(['experience', 'total', 1]);
+		if(total_farmed >= 1e7) unlock_achievement(['experience', 'total', 2]);
+		if(total_farmed >= 1e9) unlock_achievement(['experience', 'total', 3]);
+		if(total_farmed >= 1e11) unlock_achievement(['experience', 'total', 4]);
+
 		var level_pre = champion_level(ident);
 		state.champions[ident].experience += amount;
 		var level_post = champion_level(ident);
@@ -553,6 +600,14 @@ function ClickerSetup($scope, Menu){
 		}
 		state.pastries -= costs;
 		state.champions[ident].amount = amount_champion(ident) + 1;
+		var amount = state.champions[ident].amount;
+		if(amount >= 5) unlock_achievement(['champion', ident, 'number', 0]);
+		if(amount >= 10) unlock_achievement(['champion', ident, 'number', 1]);
+		if(amount >= 25) unlock_achievement(['champion', ident, 'number', 2]);
+		if(amount >= 50) unlock_achievement(['champion', ident, 'number', 3]);
+		if(amount >= 75) unlock_achievement(['champion', ident, 'number', 4]);
+		if(amount >= 100) unlock_achievement(['champion', ident, 'number', 5]);
+		if(amount >= 120) unlock_achievement(['champion', ident, 'number', 6]);
 		progress();
 	};
 	function buy_item(ident){
@@ -569,7 +624,8 @@ function ClickerSetup($scope, Menu){
 	function unlock_achievement(ident){
 		var achievement_object = retrieve_object(state.achievements, ident, true);
 		if(!achievement_object['unlocked']){
-			Menu.addMessage('You have unlocked:\n'+retrieve_object(data.achievement_map, ident).name);
+			var name = retrieve_object(data.achievement_map, ident).name;
+			Menu.addMessage('You have unlocked an achievement:\n'+(name?name:ident));
 		}
 		achievement_object['unlocked'] = true;
 	}
@@ -579,9 +635,14 @@ function ClickerSetup($scope, Menu){
 
 	function can_unlock_upgrade(ident){
 		if(!ident) return false;
+		return has_achievement(ident);
+
+		//Short circuit for now as now other logic is reasonable right now
 		var category = ident[0];
 		if(category == 'champion'){
+			return has_achievement(ident);
 		}else if(category == 'type'){
+			return has_achievement(ident);
 		}else if(category == 'bakery'){
 		}
 	}
@@ -600,8 +661,8 @@ function ClickerSetup($scope, Menu){
 	function champion_skin(ident){
 		var upg = -1;
 		var skin = String.format('http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{0}_0.jpg', ident);
-		for(var upgrade in retrieve_object(state.upgrades, ['champion', ident])){
-			if(upgrade > upg && has_upgrade(['champion', ident, upgrade])){
+		for(var upgrade in retrieve_object(state.upgrades, ['champion', ident, 'number'])){
+			if(upgrade > upg && has_upgrade(['champion', ident, 'number', upgrade])){
 				upg = upgrade;
 				skin = retrieve_object(state.upgrades, ['champion', ident, upgrade]).skin;
 			}
@@ -664,8 +725,19 @@ function ClickerSetup($scope, Menu){
 		if(xp < 21600) return 4;
 		if(xp < 33000) return 5;
 		if(xp < 46800) return 6;
-		return Math.floor(Math.log(xp/46800)/Math.log(1.25))
+		return Math.floor(Math.log(xp/46800)/Math.log(1.25)) + 7;
 	};
+
+	function exp_for_level(level){
+		if(level == 1) return 0;
+		if(level == 2) return 1800;
+		if(level == 3) return 6000;
+		if(level == 4) return 12600;
+		if(level == 5) return 21600;
+		if(level == 6) return 33000;
+		if(level == 7) return 46800;
+		return Math.pow(1.25, level - 7) * 46800;
+	}
 	function mk_champion_hp(id){
 		return data.champions.map[id].base_hp;
 	};
@@ -767,14 +839,16 @@ function ClickerSetup($scope, Menu){
 				5: {name: 'Base tower 2', hp: 3000, attack: 100, armor: 100, mr: 50, exp: 200},
 				6: {name: 'Nexus', hp: 4000, attack: 0, armor: 100, mr: 50, exp: 200}
 			}
+			var push_mul = Math.pow(1.1, push);
+			var rank_mul = Math.pow(2, state.rank)
 			{//Tower
 				var tower_stat = tower_base_stats[push];
-				var tower_name = tower_stat.name;
-				var tower_hp = tower_stat.hp;
-				var tower_attack = tower_stat.attack;
-				var tower_armor = tower_stat.armor;
-				var tower_mr = tower_stat.mr;
-				var tower_exp = tower_stat.exp;
+				var tower_name = tower_stat.name * rank_mul * push_mul;
+				var tower_hp = tower_stat.hp * rank_mul *  push_mul; 
+				var tower_attack = tower_stat.attack * rank_mul * push_mul;
+				var tower_armor = tower_stat.armor * rank_mul * push_mul;
+				var tower_mr = tower_stat.mr * rank_mul * push_mul;
+				var tower_exp = tower_stat.exp * (1 + push/7) * (1 + state.rank);
 				var tower_type = fighter_type.physical;
 				var objective = mk_enemy(tower_name, tower_type, tower_hp, tower_attack, tower_armor, tower_mr, tower_exp);
 				if(match.lane_hp[lane] > 0){
@@ -789,10 +863,10 @@ function ClickerSetup($scope, Menu){
 				var enm_champ = data.champions.map[rnd_champ];
 				var enm_name = enm_champ.name;
 				var enm_type = champion_type[enm_champ.ch_class];
-				var enm_hp = enm_champ.base_hp;
-				var enm_attack = enm_champ.base_attack;
-				var enm_armor = enm_champ.base_armor;
-				var enm_mr = enm_champ.base_mr;
+				var enm_hp = enm_champ.base_hp * rank_mul * push_mul;
+				var enm_attack = enm_champ.base_attack * rank_mul * push_mul;
+				var enm_armor = enm_champ.base_armor * rank_mul * push_mul;
+				var enm_mr = enm_champ.base_mr * rank_mul * push_mul;
 				var enm_exp = 100;
 				match.fight.enemies.push(mk_enemy(enm_name, enm_type, enm_hp, enm_attack, enm_armor, enm_mr, enm_exp));
 			}
@@ -832,7 +906,10 @@ function ClickerSetup($scope, Menu){
 	function win_match(){
 		state.rank += 1;
 		state.match.lanes = {top:0,mid:0,bot:0,base:0};
-		state.match.rewards = {pastries: 10000};
+		var min_pastries = pastries_per_second() * 1e2;
+		var max_pastries = pastries_per_second() * 1e6;
+		var pastries = state.pastries * 0.1;
+		state.match.rewards = {pastries: Math.max(min_pastries, Math.min(max_pastries, pastries))};
 		state.match.is_in_game = false;
 		Menu.addMessage('You won a Match, collect your reward now!');
 	}
@@ -893,10 +970,16 @@ function ClickerSetup($scope, Menu){
 		disp.costs = cost_item.bind(this, item.identifier);
 		return disp;
 	}
+	function achievement_disp(achievement){
+		var disp = JSON.parse(JSON.stringify(achievement));
+		disp.has_achievement = has_achievement.bind(this, achievement.identifier);
+		return disp;
+	}
 	function upgrade_disp(upgrade){
 		var disp = JSON.parse(JSON.stringify(upgrade));
 		disp.display = can_unlock_upgrade.bind(this, upgrade.identifier);
 		disp.costs = cost_upgrade.bind(this, upgrade.identifier);
+		disp.has_upgrade = has_upgrade.bind(this, upgrade.identifier);
 		return disp;
 	}
 	function champ_disp(id){
@@ -909,6 +992,7 @@ function ClickerSetup($scope, Menu){
 		disp.amount_match = match_champion.bind(this, id);
 		disp.amount_fight = fight_champion.bind(this, id);
 		disp.level = champion_level.bind(this, id);
+		disp.experience = champion_exp.bind(this, id); 
 		disp.totalpps = pps_champion.bind(this, id);
 
 		disp.costs = cost_champion.bind(this, id);
@@ -980,8 +1064,10 @@ function ClickerSetup($scope, Menu){
 			assassin: classes_disp(data.classes.assassin),
 			support: classes_disp(data.classes.support)
 		},
-		lanes : lanes_disp()
+		lanes : lanes_disp(),
+		achievements : data.achievements.map(achievement_disp)
 	};
+	this.exp_for_level = exp_for_level;
 	this.rank = display_rank;
 	if(!canLoad() || !startSavedData()){
 		console.log('Could not load saved data, maybe this is the first play through');

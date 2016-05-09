@@ -7,7 +7,7 @@ Achievement = namedtuple('Achievement', 'identifier name imghref description inf
 Ach = Achievement
 PurchaseElement = namedtuple('Upgrade', 'identifier base_cost name imghref description info')
 PhE = PurchaseElement
-ChampUpgrade = namedtuple('ChampUpgrade', 'base_cost name description skin')
+ChampUpgrade = namedtuple('ChampUpgrade', 'identifier index base_cost name description info')
 ChU = ChampUpgrade
 ItemUpgrade = namedtuple('ItemUpgrade', 'base_hp base_attack base_armor base_mr')
 ItU = ItemUpgrade
@@ -54,8 +54,8 @@ class ChampReg:
 
     def __exit__(self, stat, typ, exc):
         self.upgrades.sort(key=lambda t:t.base_cost)
-        for ind, up in enumerate(self.upgrades):
-            ref_up = PurchaseElement(['champion', self.name, ind], up.base_cost, up.name, self.mk_portrait(ind), up.description, {'skin': self.mk_skin(up.skin)})
+        for up in self.upgrades:
+            ref_up = PurchaseElement(['champion', self.name]+up.identifier+[up.index], up.base_cost, up.name, self.mk_portrait(up.index), up.description, up.info)
             self.upref.register_upgrade(ref_up)
 
 
@@ -160,10 +160,10 @@ if __name__ == "__main__":
     up = UpgradeReg('6.9.1')
 #Classes ---------------------------------------------
     up.register_class(ClassReg(tank, 'Tank', 'Employing more tanks will decrease the cost of other champions (due to their attractiveness, e.g. Taric)', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 7*48))
-    up.register_class(ClassReg(fighter, 'Fighter', 'More fighters will earn you more exp for defeating enemies', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 3*48))
+    up.register_class(ClassReg(fighter, 'Fighter', 'More fighters will earn you more exp obtained in farming', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 3*48))
     up.register_class(ClassReg(mage, 'Mage', 'Mages magically minimize upgrade costs to mysterious levels', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 4*48))
     up.register_class(ClassReg(marksman, 'Marksman', 'More AD, more right click power. Earn more pastries by clicking yourself', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 5*48))
-    up.register_class(ClassReg(assassin, 'Assassin', 'You need damage? You get damage. Employing more assassins reduces item costs', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 2*48))
+    up.register_class(ClassReg(assassin, 'Assassin', 'You need damage? Kill more enemies? Employing more assassins increases your experience reward', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 2*48))
     up.register_class(ClassReg(support, 'Support', 'Supports carry everone. They adda a little bonus to all your production', '//ddragon.leagueoflegends.com/cdn/6.9.1/img/sprite/profileicon0.png', 18*48, 6*48))
 
 #Upgrades --------------------------------------------
@@ -173,12 +173,13 @@ if __name__ == "__main__":
     up.register_item(up.itemFromId(1055, 120, 'A very basic item for everyday use'), ItU(20, 10, 5, 5))
 
 #Champions -------------------------------------------
+#Upgrade arguments are sub-identifier, index, cost, name, description, info
     # Tanks
     with up.for_champion('TahmKench', 1000, 2, 'His taste just makes him more qualified', tank, 400, 50, 30, 50) as ch_reg:
         pass
     # Fighters
     with up.for_champion('Pantheon', 100, 0.4, 'The best baker on summoners rift', fighter, 400, 60, 20, 40) as ch_reg:
-        ch_reg.register_upgrade(ChU(140, 'Weat flavoured spear', 'After the fight, his enemies smell like bread. Terrifying.', '1'))
+        ch_reg.register_upgrade(ChU(['number'], 0, 140, 'Weat flavoured spear', 'After the fight, his enemies smell like bread. Terrifying.', {'skin': '1'}))
     with up.for_champion('Jax', 400, 10, 'Who wants a piece of the cake?', fighter, 380, 63, 27, 33) as ch_reg:
         pass
     # Mages
