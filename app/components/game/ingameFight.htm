@@ -1,0 +1,18 @@
+<div class="box horizontal" style="width: 100%">
+	<div class="row content">
+		<h2 class="section-header">Your team</h2>
+		<div ng-repeat="champ in Bakery.state.match.fight.friendlies" style="text-align: left">
+			<div ng-style="{ 'width': champ.hp/champ.max_hp*100 + '%' }" style="background-color: #00F000">
+				{{champ.champ_id}}
+			</div>
+		</div>
+	</div>
+	<div class="row content">
+		<h2 class="section-header">Enemy team</h2>
+		<div ng-repeat="enemy in Bakery.state.match.fight.enemies" style="text-align: right;">
+			<div ng-style="{'width': enemy.hp/enemy.max_hp*100 + '%'}" style="background-color: #00F000">
+				{{enemy.name}}
+			</div>
+		</div>
+	</div>
+</div>
