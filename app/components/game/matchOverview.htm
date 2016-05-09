@@ -1,10 +1,9 @@
 <div>
-	<div style="position:relative">
-		<ng-include src="'app/components/game/matchRank.htm'"></ng-include>
-	</div>
-	<div style="width: 50%; height: 50%;">
+	<h2 class="section-header">Rank</h2>
+	<ng-include src="'app/components/game/matchRank.htm'"></ng-include>
+	<div class="centered-shrink">
 		<ng-include src="'app/components/game/matchMap.htm'" ng-if="Bakery.show_start_fight()"></ng-include>
-		<div ng-if="Bakery.show_start_match()">You are not in a match right now</div>
-		<div ng-if="Bakery.show_reward()">Collect your rewards</div>
+		<div class="centered" ng-if="Bakery.show_start_match()">You are not in a match right now</div>
+		<div class="centered" ng-if="Bakery.show_reward()">Collect your rewards</div>
 	</div>
 </div>
