@@ -175,24 +175,64 @@ if __name__ == "__main__":
 #Champions -------------------------------------------
 #Upgrade arguments are sub-identifier, index, cost, name, description, info
     # Tanks
-    with up.for_champion('TahmKench', 1000, 2, 'His taste just makes him more qualified', tank, 400, 50, 30, 50) as ch_reg:
+    with up.for_champion('Taric', 200, 0.2, 'Have you seen his frosting? Outrageous!', tank, 400, 50, 30, 50) as ch_reg:
+        pass
+    with up.for_champion('DrMundo', 2300, 1.5, 'A bit of that crazy potion... oops too much', tank, 400, 50, 30, 50) as ch_reg:
+        pass
+    with up.for_champion('Poppy', 25000, 12, 'Can\'t miss the Yordle', tank, 400, 50, 30, 50) as ch_reg:
+        pass
+    with up.for_champion('Gnar', 200000, 80, '"Ceega .. Caaga .. cookies"?', tank, 400, 50, 30, 50) as ch_reg:
+        pass
+    with up.for_champion('Rammus', 1800000, 550, 'Ok', tank, 400, 50, 30, 50) as ch_reg:
+        pass
+    with up.for_champion('TahmKench', 10000000, 4000, 'His taste just makes him more qualified', tank, 400, 50, 30, 50) as ch_reg:
         pass
     # Fighters
-    with up.for_champion('Pantheon', 100, 0.4, 'The best baker on summoners rift', fighter, 400, 60, 20, 40) as ch_reg:
+    with up.for_champion('Pantheon', 100, 0.15, 'The best baker on summoners rift', fighter, 400, 60, 20, 40) as ch_reg:
         ch_reg.register_upgrade(ChU(['number'], 0, 140, 'Weat flavoured spear', 'After the fight, his enemies smell like bread. Terrifying.', '1'))
-    with up.for_champion('Jax', 400, 10, 'Who wants a piece of the cake?', fighter, 380, 63, 27, 33) as ch_reg:
+    with up.for_champion('Fizz', 1000, 1, 'Fishcakes. Not my favorite flavour.', fighter, 400, 60, 20, 40) as ch_reg:
+        pass
+    with up.for_champion('Jax', 9001, 10, 'Who wants a piece of the cake?', fighter, 380, 63, 27, 33) as ch_reg:
+        pass
+    with up.for_champion('Fiora', 80085, 77, 'Gratious even when she spills the milk', fighter, 400, 60, 20, 40) as ch_reg:
         pass
     # Mages
-    with up.for_champion('Gragas', 200, 1, 'His booze-infused cookies are the best!', mage, 400, 50, 30, 50) as ch_reg:
+    with up.for_champion('Gragas', 150, 0.2, 'His booze-infused cookies are the best!', mage, 400, 50, 30, 50) as ch_reg:
+        pass
+    with up.for_champion('Veigar', 2000, 2.1, 'His "evil-cupcakes" are delicious', mage, 400, 50, 30, 50) as ch_reg:
+        pass
+    with up.for_champion('Ziggs', 8048, 8, 'Warning: Don\'t eat his rum truffles', mage, 400, 50, 30, 50) as ch_reg:
+        pass
+    with up.for_champion('Yorick', 100000, 69, 'That champion exists?', mage, 400, 50, 30, 50) as ch_reg:
+        pass
+    with up.for_champion('AurelionSol', 1000001, 666, 'Starforger? More like star baker.', mage, 400, 50, 30, 50) as ch_reg:
         pass
     # Marksman
-    with up.for_champion('Kalista', 2000, 13, 'She\'s surprisingly good in the kitchen', marksman, 330, 65, 30, 30) as ch_reg:
+    with up.for_champion('Kalista', 120, 0.17, 'She\'s surprisingly good in the kitchen', marksman, 330, 65, 30, 30) as ch_reg:
+        pass
+    with up.for_champion('Draven', 1300, 1.35, 'Draven', marksman, 330, 65, 30, 30) as ch_reg:
+        pass
+    with up.for_champion('Jhin', 15000, 10.4, 'Born an artist', marksman, 330, 65, 30, 30) as ch_reg:
+        pass
+    with up.for_champion('Teemo', 666999, 0.1, 'Shhh, you didn\'t see him. Maybe he stays away', marksman, 330, 65, 30, 30) as ch_reg:
         pass
     # Assassin
-    with up.for_champion('MasterYi', 99, 0.2, 'Wuju style - helpful in every situation', assassin, 320, 70, 30, 30):
+    with up.for_champion('MasterYi', 99, 0.1, 'Wuju style - helpful in every situation', assassin, 320, 70, 30, 30):
+        pass
+    with up.for_champion('Tryndamere', 777, 0.8, '"Argh... my arm is tired from all the stirring"', assassin, 320, 70, 30, 30):
+        pass
+    with up.for_champion('Shaco', 6000, 9, 'His specialty: Suddenly bursting pies', assassin, 320, 70, 30, 30):
+        pass
+    with up.for_champion('Ekko', 98989, 89, '"Aaand try again... why is it always so fluid?"', assassin, 320, 70, 30, 30):
         pass
     # Support
-    with up.for_champion('Lulu', 2000, 13, 'One word: Cupcakes!', support, 350, 40, 30, 30) as ch_reg:
+    with up.for_champion('Alistar', 50, 0.05, 'I wonder where he gets his milk from', support, 400, 50, 30, 50) as ch_reg:
+        pass
+    with up.for_champion('Braum', 1000, 1, '"I will show you how to bake delicious pancakes"', support, 400, 50, 30, 50) as ch_reg:
+        pass
+    with up.for_champion('Lulu', 17872, 12, 'One word: Cupcakes!', support, 350, 40, 30, 30) as ch_reg:
+        pass
+    with up.for_champion('Sona', 135535, 90, 'Harmony with your kitchen utensils', support, 400, 50, 30, 50) as ch_reg:
         pass
 
 #Achievements ----------------------------------------
