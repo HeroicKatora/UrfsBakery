@@ -34,12 +34,13 @@
 			<ng-include src="'app/components/game/matchMap.htm'" ng-init="allow_start=true"></ng-include>
 		</div>
 		<div class="centered">
+			<button ng-click="Bakery.end_fight()" ng-if="Bakery.show_end_fight()">Cancel current fight</button>
 			<button ng-click="Bakery.cancel_match()">Cancel current match</button>
 		</div>
 	</div>
 	<div ng-show="Bakery.show_reward()">
 		<h2 class="section-header">Rewards for your last game</h2>
-		<div style="text-align: center">Your reward is {{Bakery.state.match.rewards}}</div>
+		<div style="text-align: center" class="costs">Your reward is {{Bakery.state.match.rewards.pastries}}</div>
 		<button ng-click="Bakery.collect_rewards()">Collect game rewards</button>
 		<div style="text-align: center">You are also promoted</div>
 	</div>

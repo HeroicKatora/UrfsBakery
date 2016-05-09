@@ -3,7 +3,7 @@
 var bakeryModule = angular.module('bakery', ['ngAnimate']);
 
 bakeryModule.run(['Game', 'Menu', '$rootScope', function(Game, Menu, $scope){
-	$scope.pageTitle = 'example title';
+	$scope.pageTitle = 'Urf\'s Bakery';
 	// Inject the service
 	$scope.Bakery = Game;
 	$scope.Menu = Menu;

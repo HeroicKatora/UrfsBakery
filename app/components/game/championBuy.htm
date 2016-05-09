@@ -18,8 +18,10 @@
 					<span class="emphazise-header" style="padding-right: 10px">Level {{champ.level()}}</span>
 				</div>
 				<small>{{champ.experience()-champ.earned_experience() | prettyNumber:2}} exp from Mastery Points</small>
-				<div class="anchor" style="height: 10%">{{champ.experience() | prettyNumber:2 }} / {{Bakery.exp_for_level(champ.level()+1) | prettyNumber:2}}
-					<div class="anchored-bot-left" ng-style="{'value': champ.experience(), 'max': Bakery.exp_for_level(champ.level()+1))}"></div>
+				<div style="height: 10%; border: 2px solid black" style="width: 100%; text-align: left">
+					<span style="white-space: nowrap; vertical-align: top" ng-style="{ 'width': (champ.experience() / Bakery.exp_for_level(champ.level()+1))*100 +'%' }" style="display: inline-block;background-color: #6666F0">
+					{{champ.experience() | prettyNumber:2 }} / {{Bakery.exp_for_level(champ.level()+1) | prettyNumber:2}}
+					</span>
 				</div>
 			</div>
 		</div>
