@@ -281,3 +281,9 @@ button:hover, input[type="button"]:hover {
   opacity: 1;
 }
 
+.minimap {
+  border: 0.5em solid var(--light-dark);
+  border-radius: 0.2em;
+  background-origin: border-box !important;
+}
+

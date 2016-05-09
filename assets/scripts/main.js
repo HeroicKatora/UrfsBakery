@@ -830,11 +830,12 @@ function ClickerSetup($scope, Menu){
 			champ.attack = att * level_bonus * num_bonus;
 			champ.armor = armor * level_bonus * num_bonus;
 			champ.magic_res = mr * level_bonus * num_bonus;
+			champ.icon_href = data.champions.map[id].imghref;
 			match.fight.friendlies.push(champ);
 			match.in_fight[id] = num;
 		}
 
-		function mk_enemy(name_i, type_i, hp_i, attack_i, armor_i, magic_res_i, exp_i){
+		function mk_enemy(name_i, type_i, hp_i, attack_i, armor_i, magic_res_i, exp_i, icon_href){
 			return {name : name_i,
 				type :type_i,
 				hp : hp_i,
@@ -843,7 +844,8 @@ function ClickerSetup($scope, Menu){
 				armor : armor_i,
 				magic_res : magic_res_i,
 				experience: exp_i,
-				friendly : false};
+				friendly : false,
+				icon_href : icon_href};
 		}
 		if(lane.startsWith('buff_')){
 			var buffname = lane.substring(5);
@@ -855,7 +857,7 @@ function ClickerSetup($scope, Menu){
 			var base_armor = buff.base_armor * Math.pow(1.05, slay_count);
 			var base_mr = buff.base_magic_res * Math.pow(1.10, slay_count);
 			var base_exp = buff.base_exp * (1 + slay_count/4);
-			var objective = mk_enemy(buff.name, buff.type, base_hp, base_attack, base_armor, base_mr, base_exp);
+			var objective = mk_enemy(buff.name, buff.type, base_hp, base_attack, base_armor, base_mr, base_exp, buff.imghref);
 			match.fight.enemies.push(objective);
 		}else{
 			var push = match.lanes[lane] + (lane == 'base'?4:0);
@@ -873,6 +875,7 @@ function ClickerSetup($scope, Menu){
 			var push_mul = Math.pow(1.1, push);
 			var rank_mul = Math.pow(1.6, state.rank);
 			{//Tower
+				var towerhref = 'assets/img/tower.png';
 				var tower_stat = tower_base_stats[push];
 				var tower_name = tower_stat.name;
 				var tower_hp = tower_stat.hp * rank_mul *  push_mul; 
@@ -881,7 +884,7 @@ function ClickerSetup($scope, Menu){
 				var tower_mr = tower_stat.mr * rank_mul * push_mul;
 				var tower_exp = tower_stat.exp * (1 + push/7) * (1 + state.rank);
 				var tower_type = fighter_type.physical;
-				var objective = mk_enemy(tower_name, tower_type, tower_hp, tower_attack, tower_armor, tower_mr, tower_exp);
+				var objective = mk_enemy(tower_name, tower_type, tower_hp, tower_attack, tower_armor, tower_mr, tower_exp, towerhref);
 				if(match.lane_hp[lane] > 0){
 					objective.hp = match.lane_hp[lane];
 				}
@@ -899,7 +902,7 @@ function ClickerSetup($scope, Menu){
 				var enm_armor = enm_champ.base_armor * rank_mul * push_mul;
 				var enm_mr = enm_champ.base_mr * rank_mul * push_mul;
 				var enm_exp = 100;
-				match.fight.enemies.push(mk_enemy(enm_name, enm_type, enm_hp, enm_attack, enm_armor, enm_mr, enm_exp));
+				match.fight.enemies.push(mk_enemy(enm_name, enm_type, enm_hp, enm_attack, enm_armor, enm_mr, enm_exp, enm_champ.imghref));
 			}
 			
 		}
