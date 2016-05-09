@@ -3,12 +3,24 @@
 		<div class="row filler splash" ng-style="{'background': 'url(' + champ.champion_skin() + ') center center/contain no-repeat'}">
 		</div>
 		<div class="row content">
-			<div>
+			<div style="width: 60%">
 				<span class="emphazise-header">{{champ.name}}</span><small>{{champ.description}}</small>
 			</div>
-			<p><small style="padding-left: 2em">[+{{champ.base_production | prettyNumber:2}} / second] resulting currently in a production of {{champ.totalpps()}} pasteries per second</small></p>
-			<p><small style="padding-left: 1em" ng-style="{'color': (champ.costs() > Bakery.state.pastries) ? 'var(--error)' : 'inherit'}" class="costs">{{champ.costs() | prettyNumber}}</small></p>
-			<div class="emphazise-header anchored-bot-right">{{champ.amount() | prettyNumber}}
+			<p style="width: 60%"><small style="padding-left: 2em">[+{{champ.base_production | prettyNumber:2}} / second] resulting currently in a production of {{champ.totalpps()}} pasteries per second</small></p>
+			<p><span class="emphazise-header">Costs</span><small style="padding-left: 1em" ng-style="{'color': (champ.costs() > Bakery.state.pastries) ? 'var(--error)' : 'inherit'}" class="costs">{{champ.costs() | prettyNumber}}</small></p>
+			<div class="anchored-bot-right"><small>Currently working </small><span class="emphazise-header">{{champ.amount() | prettyNumber}}</span>
+			</div>
+			<div class="anchored-top-right">
+				<div class="anchored-bot-left"></div>
+			</div>
+			<div class="anchored-top-right anchor" style="width: 30%">
+				<div>
+					<span class="emphazise-header" style="padding-right: 10px">Level {{champ.level()}}</span>
+				</div>
+				<small>{{champ.experience()-champ.earned_experience() | prettyNumber:2}} exp from Mastery Points</small>
+				<div class="anchor" style="height: 10%">{{champ.experience() | prettyNumber:2 }} / {{Bakery.exp_for_level(champ.level()+1) | prettyNumber:2}}
+					<div class="anchored-bot-left" ng-style="{'value': champ.experience(), 'max': Bakery.exp_for_level(champ.level()+1))}"></div>
+				</div>
 			</div>
 		</div>
 	</div>

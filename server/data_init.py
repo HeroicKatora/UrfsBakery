@@ -7,7 +7,7 @@ Achievement = namedtuple('Achievement', 'identifier name imghref description inf
 Ach = Achievement
 PurchaseElement = namedtuple('Upgrade', 'identifier base_cost name imghref description info')
 PhE = PurchaseElement
-ChampUpgrade = namedtuple('ChampUpgrade', 'identifier index base_cost name description info')
+ChampUpgrade = namedtuple('ChampUpgrade', 'identifier index base_cost name description skin')
 ChU = ChampUpgrade
 ItemUpgrade = namedtuple('ItemUpgrade', 'base_hp base_attack base_armor base_mr')
 ItU = ItemUpgrade
@@ -55,7 +55,7 @@ class ChampReg:
     def __exit__(self, stat, typ, exc):
         self.upgrades.sort(key=lambda t:t.base_cost)
         for up in self.upgrades:
-            ref_up = PurchaseElement(['champion', self.name]+up.identifier+[up.index], up.base_cost, up.name, self.mk_portrait(up.index), up.description, up.info)
+            ref_up = PurchaseElement(['champion', self.name]+up.identifier+[up.index], up.base_cost, up.name, self.mk_portrait(up.index), up.description, {'skin': self.mk_skin(up.skin)})
             self.upref.register_upgrade(ref_up)
 
 
@@ -179,7 +179,7 @@ if __name__ == "__main__":
         pass
     # Fighters
     with up.for_champion('Pantheon', 100, 0.4, 'The best baker on summoners rift', fighter, 400, 60, 20, 40) as ch_reg:
-        ch_reg.register_upgrade(ChU(['number'], 0, 140, 'Weat flavoured spear', 'After the fight, his enemies smell like bread. Terrifying.', {'skin': '1'}))
+        ch_reg.register_upgrade(ChU(['number'], 0, 140, 'Weat flavoured spear', 'After the fight, his enemies smell like bread. Terrifying.', '1'))
     with up.for_champion('Jax', 400, 10, 'Who wants a piece of the cake?', fighter, 380, 63, 27, 33) as ch_reg:
         pass
     # Mages

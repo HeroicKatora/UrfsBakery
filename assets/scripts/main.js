@@ -352,7 +352,7 @@ function ClickerSetup($scope, Menu){
 		var marksman_count = amount_champion_type('marksman');
 		amount *= (1 + 0.5*marksman_count);
 		var clicking_amount = count_unlock(retrieve_object(state.upgrades, ['user', 'clicking']));
-		amount += pastries_per_second() * 0.05 * clicking_amount;
+		amount += calculate_pps() * 0.05 * clicking_amount;
 
 		increment_count(state.stats, ['manual_bake'], amount);
 	
@@ -377,6 +377,7 @@ function ClickerSetup($scope, Menu){
 	 */
 	function pps_champion(ident){
 		var pps = data.champions.map[ident].base_production;
+		pps *= (1 + count_unlock(retrieve_object(state.upgrades, ['champion', ident, 'number'])));
 		var champ_amou = amount_champion(ident);
 		var champ_match = state.match.champions[ident] || 0;
 		var champ_fight = state.match.in_fight[ident] || 0;
@@ -610,7 +611,7 @@ function ClickerSetup($scope, Menu){
 		progress();
 	};
 	function buy_item(ident){
-		var cost = cost_item(ident);
+		var costs = cost_item(ident);
 		if(costs > state.pastries){
 			console.log('Not enough to buy');
 			return;
@@ -619,6 +620,18 @@ function ClickerSetup($scope, Menu){
 		state.champions[ident].amount = amount_champion(ident) + 1;
 		progress();
 	}
+
+	function buy_upgrade(ident){
+		var costs = cost_upgrade(ident);
+		if(costs > state.pastries){
+			console.log('Not enough to buy');
+			return;
+		}
+		state.pastries -= costs;
+		unlock_upgrade(ident);
+		progress();
+	}
+
 
 	function unlock_achievement(ident){
 		var achievement_object = retrieve_object(state.achievements, ident, true);
@@ -654,7 +667,7 @@ function ClickerSetup($scope, Menu){
 	}
 
 	function count_unlock(obj){
-		return count_object(obj, function(sub){return sub['unlocked'];});
+		return count_object(obj, function(_,sub){return sub['unlocked'];});
 	}	
 
 	function champion_skin(ident){
@@ -663,7 +676,7 @@ function ClickerSetup($scope, Menu){
 		for(var upgrade in retrieve_object(state.upgrades, ['champion', ident, 'number'])){
 			if(upgrade > upg && has_upgrade(['champion', ident, 'number', upgrade])){
 				upg = upgrade;
-				skin = retrieve_object(state.upgrades, ['champion', ident, upgrade]).skin;
+				skin = retrieve_object(data.upgrade_map, ['champion', ident, 'number', upgrade]).skin;
 			}
 		}
 		return skin;
@@ -714,7 +727,8 @@ function ClickerSetup($scope, Menu){
 
 	function champion_exp(champ){
 		var champion_id = data.champions.map[champ].numeric_id;
-		return (state.mastery[champion_id] || 0) + (state.champions[champ].experience || 0);
+		var mastery_exp = (state.mastery.data[champion_id] || {championPoints : 0}).championPoints;
+		return mastery_exp + (state.champions[champ].experience || 0);
 	};
 	function champion_level(id){
 		var xp = champion_exp(id);
@@ -842,7 +856,7 @@ function ClickerSetup($scope, Menu){
 			var rank_mul = Math.pow(2, state.rank)
 			{//Tower
 				var tower_stat = tower_base_stats[push];
-				var tower_name = tower_stat.name * rank_mul * push_mul;
+				var tower_name = tower_stat.name;
 				var tower_hp = tower_stat.hp * rank_mul *  push_mul; 
 				var tower_attack = tower_stat.attack * rank_mul * push_mul;
 				var tower_armor = tower_stat.armor * rank_mul * push_mul;
@@ -905,8 +919,8 @@ function ClickerSetup($scope, Menu){
 	function win_match(){
 		state.rank += 1;
 		state.match.lanes = {top:0,mid:0,bot:0,base:0};
-		var min_pastries = pastries_per_second() * 1e2;
-		var max_pastries = pastries_per_second() * 1e6;
+		var min_pastries = calculate_pps() * 1e2;
+		var max_pastries = calculate_pps() * 1e6;
 		var pastries = state.pastries * 0.1;
 		state.match.rewards = {pastries: Math.max(min_pastries, Math.min(max_pastries, pastries))};
 		state.match.is_in_game = false;
@@ -977,8 +991,10 @@ function ClickerSetup($scope, Menu){
 	function upgrade_disp(upgrade){
 		var disp = JSON.parse(JSON.stringify(upgrade));
 		disp.display = can_unlock_upgrade.bind(this, upgrade.identifier);
+		disp.image = function(){return upgrade.imghref;};
 		disp.costs = cost_upgrade.bind(this, upgrade.identifier);
 		disp.has_upgrade = has_upgrade.bind(this, upgrade.identifier);
+		disp.buy_upgrade = buy_upgrade.bind(this, upgrade.identifier);
 		return disp;
 	}
 	function champ_disp(id){
@@ -992,6 +1008,7 @@ function ClickerSetup($scope, Menu){
 		disp.amount_fight = fight_champion.bind(this, id);
 		disp.level = champion_level.bind(this, id);
 		disp.experience = champion_exp.bind(this, id); 
+		disp.earned_experience = function(){return state.champions[id].experience;};
 		disp.totalpps = pps_champion.bind(this, id);
 
 		disp.costs = cost_champion.bind(this, id);

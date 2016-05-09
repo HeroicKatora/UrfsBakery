@@ -90,6 +90,12 @@
   right: 0;
 }
 
+.anchored-top-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
 .anchored-bot-left {
  position: absolute;
  bottom: 0;
