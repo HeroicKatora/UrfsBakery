@@ -459,7 +459,7 @@ function ClickerSetup($scope, Menu){
 					win_match();
 				}
 			}else{
-				var fightspeed = 1/4000;
+				var fightspeed = 1/4;
 				match.fight.friendlies.forEach(function(champ){
 					var target = match.fight.enemies[Math.floor(Math.random()*match.fight.enemies.length)];
 					dlog(2, target, 'attacked by', champ);

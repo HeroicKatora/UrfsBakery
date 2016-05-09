@@ -7,9 +7,9 @@
 				</td>
 				<td>
 					<div style="border: 2px solid black">
-					<div ng-style="{ 'width': champ.hp/champ.max_hp*100 + '%' }" style="background-color: #00F000">
-					{{champ.champ_id}}
-					</div>
+						<span ng-style="{ 'width': champ.hp/champ.max_hp*100 + '%' }" style="display: inline-block; background-color: #00F000">
+						{{champ.champ_id}}
+						</span>
 					</div>
 				</td>
 			</tr>
@@ -20,10 +20,10 @@
 		<table style="width: 100%">
 			<tr ng-repeat="enemy in Bakery.state.match.fight.enemies" style="text-align: right;">
 				<td>
-					<div style="border: 2px solid black">
-					<div ng-style="{'width': enemy.hp/enemy.max_hp*100 + '%'}" style="background-color: #00F000">
-					{{enemy.name}}
-					</div>
+					<div class="align-right" style="border: 2px solid black;">
+						<span ng-style="{'width': enemy.hp/enemy.max_hp*100 + '%'}" style="display: inline-block; background-color: #00F000">
+						{{enemy.name}}
+						</span>
 					</div>
 				</td>
 				<td class="icon" ng-style="{'background': 'url(' + enemy.icon_href + ') no-repeat 0% 0%/contain'}" style="display: table-cell">
